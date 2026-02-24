@@ -7,6 +7,11 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        inter: ["var(--font-inter)", "Inter", "sans-serif"],
+        poppins: ["var(--font-poppins)", "Poppins", "sans-serif"],
+        roboto: ["var(--font-roboto)", "Roboto", "sans-serif"],
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",

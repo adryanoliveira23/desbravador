@@ -35,7 +35,7 @@ const plans = [
     ],
     color: "bg-blue-600",
     textColor: "text-blue-600",
-    link: "#",
+    link: process.env.NEXT_PUBLIC_CAKTO_BOM_AVENTUREIRO || "#",
   },
   {
     name: "Só Desbravador",
@@ -45,7 +45,7 @@ const plans = [
     color: "bg-primary",
     textColor: "text-primary",
     popular: true,
-    link: "#",
+    link: process.env.NEXT_PUBLIC_CAKTO_SO_DESBRAVADOR || "#",
   },
   {
     name: "Desbrava Total",
@@ -54,7 +54,7 @@ const plans = [
     features: ["Tudo liberado", "IA Ilimitada", "Multi-Clubes", "Suporte VIP"],
     color: "bg-orange-500",
     textColor: "text-orange-500",
-    link: "#",
+    link: process.env.NEXT_PUBLIC_CAKTO_DESBRAVA_TOTAL || "#",
   },
 ];
 
@@ -381,17 +381,24 @@ export default function LandingPage() {
                   ))}
                 </div>
 
-                <Button
-                  size="lg"
-                  className={cn(
-                    "w-full h-20 text-lg font-black uppercase tracking-widest transform transition-all active:scale-95",
-                    plan.popular
-                      ? "bg-primary hover:bg-red-700 shadow-xl shadow-primary/30"
-                      : "bg-slate-900 hover:bg-black text-white",
-                  )}
+                <a
+                  href={plan.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full"
                 >
-                  Assinar agora
-                </Button>
+                  <Button
+                    size="lg"
+                    className={cn(
+                      "w-full h-20 text-lg font-black uppercase tracking-widest transform transition-all active:scale-95",
+                      plan.popular
+                        ? "bg-primary hover:bg-red-700 shadow-xl shadow-primary/30"
+                        : "bg-slate-900 hover:bg-black text-white",
+                    )}
+                  >
+                    Assinar agora
+                  </Button>
+                </a>
               </Card>
             ))}
           </div>

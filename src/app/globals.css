@@ -40,10 +40,20 @@
   }
   body {
     @apply bg-[#f8fafc] text-foreground;
+    font-family: var(--font-inter), "Inter", sans-serif;
     font-feature-settings:
       "rlig" 1,
       "calt" 1;
   }
+}
+
+/* Font utility classes */
+.font-poppins {
+  font-family: var(--font-poppins), "Poppins", sans-serif;
+}
+
+.font-roboto {
+  font-family: var(--font-roboto), "Roboto", sans-serif;
 }
 
 /* Glassmorphism Classes */

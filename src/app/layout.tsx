@@ -1,16 +1,25 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Inter, Poppins, Roboto } from "next/font/google";
 import "./globals.css";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
 });
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  variable: "--font-poppins",
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+});
+
+const roboto = Roboto({
+  subsets: ["latin"],
+  variable: "--font-roboto",
+  weight: ["300", "400", "500", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -24,9 +33,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${poppins.variable} ${roboto.variable} antialiased`}
       >
         {children}
       </body>
