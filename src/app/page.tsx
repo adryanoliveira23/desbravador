@@ -517,7 +517,7 @@ export default function LandingPage() {
 
                 <div className="p-7 md:p-8">
                   {/* Plan name */}
-                  <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">
+                  <p className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-4">
                     {plan.name}
                   </p>
 
