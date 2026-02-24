@@ -1,17 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import {
-  FileSpreadsheet,
-  Search,
-  Download,
-  Table as TableIcon,
-  Tag,
-  Calendar,
-  Zap,
-} from "lucide-react";
+import { FileSpreadsheet, Download, Tag, Calendar, Zap } from "lucide-react";
 
 const spreadsheets = [
   {
@@ -38,8 +30,6 @@ const spreadsheets = [
 ];
 
 export default function PlanilhasPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

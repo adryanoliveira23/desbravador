@@ -6,15 +6,15 @@ import {
   ShieldAlert,
   Search,
   UserPlus,
-  MoreVertical,
-  ChevronLeft,
   Lock,
   Zap,
   CheckCircle2,
   XCircle,
   Loader2,
+  Eye,
+  Trash2,
 } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
+import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { motion, AnimatePresence } from "framer-motion";
@@ -32,10 +32,23 @@ import {
 } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 
+interface AdminUser {
+  id: string;
+  fullName?: string;
+  clubName?: string;
+  email?: string;
+  plan?: string;
+  status?: string;
+  role?: string;
+  credits?: number;
+  whatsapp?: string;
+  createdAt?: string;
+}
+
 export default function AdminPanel() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -119,8 +132,11 @@ export default function AdminPanel() {
       setNewEmail("");
       setNewPassword("");
       alert("Conta criada com sucesso!");
-    } catch (error: any) {
-      alert("Erro ao criar conta: " + error.message);
+    } catch (error: unknown) {
+      alert(
+        "Erro ao criar conta: " +
+          (error instanceof Error ? error.message : String(error)),
+      );
     } finally {
       setIsCreating(false);
     }
@@ -324,7 +340,9 @@ export default function AdminPanel() {
                       </td>
                       <td className="px-8 py-5">
                         <button
-                          onClick={() => handleToggleStatus(u.id, u.status)}
+                          onClick={() =>
+                            handleToggleStatus(u.id, u.status || "ativo")
+                          }
                           className="flex items-center gap-2 group"
                         >
                           {u.status === "ativo" ? (

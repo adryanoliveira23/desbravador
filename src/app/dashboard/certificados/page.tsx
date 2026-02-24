@@ -1,18 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import React from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import {
-  Award,
-  Download,
-  Eye,
-  Send,
-  Search,
-  CheckCircle2,
-  User,
-} from "lucide-react";
-import { motion } from "framer-motion";
+import { Award, Download, Eye, Send, Search, User } from "lucide-react";
 
 const certificates = [
   {
@@ -42,8 +33,6 @@ const certificates = [
 ];
 
 export default function CertificatesPage() {
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

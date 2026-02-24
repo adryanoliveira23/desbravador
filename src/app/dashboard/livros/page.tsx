@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import {
-  Library,
   Search,
   Download,
   FileText,
@@ -12,7 +11,6 @@ import {
   Filter,
   CheckCircle2,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const books = [
   {

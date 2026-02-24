@@ -10,12 +10,20 @@ import { Bell, Search, Home, Settings } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
+interface UserData {
+  fullName?: string;
+  name?: string;
+  role?: string;
+  clubName?: string;
+  [key: string]: unknown;
+}
+
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();

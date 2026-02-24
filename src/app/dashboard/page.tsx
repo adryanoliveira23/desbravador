@@ -31,6 +31,11 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
+interface UserData {
+  clubName?: string;
+  [key: string]: unknown;
+}
+
 // Dados estáticos padrão caso o Firebase falhe
 const defaultStatsData = [
   {
@@ -110,9 +115,8 @@ const mainTools = [
 ];
 
 export default function DashboardPage() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<UserData | null>(null);
   const [stats, setStats] = useState(defaultStatsData);
-  const [meetings, setMeetings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Efeito para carregar as estatísticas e reuniões
@@ -149,12 +153,8 @@ export default function DashboardPage() {
             orderBy("date", "asc"),
             limit(3),
           );
-          onSnapshot(meetingsQ, (snap) => {
-            const list = snap.docs.map((doc) => ({
-              id: doc.id,
-              ...doc.data(),
-            }));
-            setMeetings(list);
+          onSnapshot(meetingsQ, () => {
+            // meetings data available if needed in future
           });
         }
         setLoading(false);
