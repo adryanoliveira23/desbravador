@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -570,9 +571,12 @@ export default function AIHelperPage() {
                   </div>
                 ) : imageUrl ? (
                   <div className="space-y-8 animate-in fade-in zoom-in duration-700">
-                    <img
+                    <Image
                       src={imageUrl}
                       alt="IA Generated"
+                      width={800}
+                      height={800}
+                      unoptimized
                       className="w-full rounded-[2rem] shadow-2xl border-4 border-white/10"
                     />
                     <div className="flex gap-4">

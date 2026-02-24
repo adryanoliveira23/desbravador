@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -115,9 +116,11 @@ export default function SpecialtiesPage() {
                     key={x}
                     className="w-10 h-10 rounded-full border-4 border-white bg-slate-100 flex items-center justify-center text-[10px] text-white font-bold overflow-hidden shadow-sm"
                   >
-                    <img
+                    <Image
                       src={`https://i.pravatar.cc/100?u=${x + i}`}
                       alt="User"
+                      width={40}
+                      height={40}
                       className="w-full h-full object-cover"
                     />
                   </div>
