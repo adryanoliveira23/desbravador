@@ -16,11 +16,17 @@ import {
   ChevronDown,
   Globe,
   Check,
+  Sparkles,
+  Shield,
+  Menu,
+  X,
 } from "lucide-react";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+
+/* ============================================================
+   DATA
+   ============================================================ */
 
 const plans = [
   {
@@ -33,17 +39,24 @@ const plans = [
       "Suporte IA",
       "Certificados",
     ],
-    color: "bg-blue-600",
-    textColor: "text-blue-600",
+    gradient: "from-blue-500 to-cyan-400",
+    iconBg: "bg-blue-500/10",
+    iconColor: "text-blue-500",
     link: process.env.NEXT_PUBLIC_CAKTO_BOM_AVENTUREIRO || "#",
   },
   {
     name: "Só Desbravador",
     price: "25,90",
     description: "O favorito dos diretores",
-    features: ["Especialidades Full", "Cantinho da IA", "Planejador", "Kits"],
-    color: "bg-primary",
-    textColor: "text-primary",
+    features: [
+      "Especialidades Full",
+      "Cantinho da IA",
+      "Planejador",
+      "Kits Prontos",
+    ],
+    gradient: "from-primary to-orange-500",
+    iconBg: "bg-primary/10",
+    iconColor: "text-primary",
     popular: true,
     link: process.env.NEXT_PUBLIC_CAKTO_SO_DESBRAVADOR || "#",
   },
@@ -52,8 +65,9 @@ const plans = [
     price: "39,90",
     description: "Experiência completa",
     features: ["Tudo liberado", "IA Ilimitada", "Multi-Clubes", "Suporte VIP"],
-    color: "bg-orange-500",
-    textColor: "text-orange-500",
+    gradient: "from-orange-500 to-yellow-400",
+    iconBg: "bg-orange-500/10",
+    iconColor: "text-orange-500",
     link: process.env.NEXT_PUBLIC_CAKTO_DESBRAVA_TOTAL || "#",
   },
 ];
@@ -63,30 +77,62 @@ const features = [
     title: "IA Especialista DSA",
     desc: "Crie roteiros e planos de aula baseados 100% nos manuais oficiais da Divisão Sul-Americana.",
     icon: Bot,
-    color: "primary",
+    gradient: "from-violet-500 to-purple-600",
   },
   {
     title: "Gestão de Classes Pro",
     desc: "Controle de requisitos individual com visão de progresso em tempo real para a diretoria.",
     icon: Target,
-    color: "blue",
+    gradient: "from-blue-500 to-cyan-500",
   },
   {
     title: "Secretaria Automática",
     desc: "Certificados, atas e relatórios trimestrais gerados em PDF com apenas um clique.",
     icon: FileSpreadsheet,
-    color: "green",
+    gradient: "from-emerald-500 to-teal-500",
   },
   {
     title: "Banco de Especialidades",
     desc: "Acesso a requisitos e materiais de ensino para todas as especialidades vigentes.",
     icon: Award,
-    color: "orange",
+    gradient: "from-orange-500 to-amber-500",
   },
 ];
 
+const stats = [
+  { label: "Clubes Ativos", value: "1.200+" },
+  { label: "Metas Concluídas", value: "450k" },
+  { label: "Minutos de IA", value: "85k+" },
+  { label: "Satisfação", value: "99.9%" },
+];
+
+const faqItems = [
+  {
+    q: "O sistema salva os dados offline?",
+    a: "Sim! Nossa tecnologia PWA permite carregar e sincronizar dados mesmo em locais sem sinal de internet, ideal para acampamentos.",
+  },
+  {
+    q: "Posso exportar os dados para o SGC?",
+    a: "Atualmente oferecemos exportação em planilhas compatíveis com o formato de importação em massa do sistema oficial.",
+  },
+  {
+    q: "Existe limite de desbravadores por clube?",
+    a: "Não! No plano Desbrava Total você pode cadastrar quantos membros desejar sem custo adicional.",
+  },
+  {
+    q: "Dá para usar no celular e no computador?",
+    a: "Com certeza. A interface é totalmente responsiva e funciona perfeitamente em qualquer dispositivo.",
+  },
+];
+
+/* ============================================================
+   COMPONENT
+   ============================================================ */
+
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [mobileMenu, setMobileMenu] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -94,488 +140,622 @@ export default function LandingPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const navLinks = [
+    { label: "Funcionalidades", href: "#funcionalidades" },
+    { label: "Preços", href: "#pricing" },
+    { label: "FAQ", href: "#faq" },
+  ];
+
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-primary/10 font-sans overflow-x-hidden">
-      {/* Navigation */}
+    <div className="min-h-screen bg-white text-slate-900 font-inter selection:bg-primary/10 overflow-x-hidden">
+      {/* ─── NAVIGATION ─── */}
       <nav
         className={cn(
-          "fixed top-0 w-full z-50 transition-all duration-300 p-6 px-4 md:px-12",
+          "fixed top-0 w-full z-50 transition-all duration-500",
           scrolled
-            ? "bg-white/90 backdrop-blur-md border-b border-slate-200 py-4 shadow-sm"
-            : "bg-transparent py-6",
+            ? "bg-white/80 backdrop-blur-xl border-b border-slate-200/60 shadow-sm py-3"
+            : "bg-transparent py-5",
         )}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-              <Zap size={20} className="text-white fill-current" />
+        <div className="max-w-7xl mx-auto flex items-center justify-between px-5 md:px-8">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="w-9 h-9 bg-gradient-to-br from-primary to-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-primary/25">
+              <Zap size={18} className="text-white fill-current" />
             </div>
-            <div className="flex flex-col">
-              <span className="font-ex-bold text-xl tracking-tighter leading-none text-slate-900">
-                DESBRAVA <span className="text-primary italic">TOTAL</span>
+            <div className="flex flex-col leading-none">
+              <span className="font-bebas text-xl tracking-wide text-slate-900">
+                DESBRAVA <span className="text-primary">TOTAL</span>
               </span>
-              <span className="text-[9px] text-slate-400 font-black tracking-widest uppercase">
-                Elite Management System
+              <span className="text-[8px] font-semibold tracking-[0.2em] text-slate-400 uppercase">
+                Management System
               </span>
             </div>
-          </div>
+          </Link>
 
-          <div className="hidden lg:flex items-center gap-10">
-            {["Ferramentas", "Funcionalidades", "Preços", "FAQ"].map((item) => (
+          {/* Desktop links */}
+          <div className="hidden md:flex items-center gap-8">
+            {navLinks.map((l) => (
               <Link
-                key={item}
-                href={`#${item.toLowerCase()}`}
-                className="text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-primary transition-colors"
+                key={l.label}
+                href={l.href}
+                className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors"
               >
-                {item}
+                {l.label}
               </Link>
             ))}
           </div>
 
-          <div className="flex items-center gap-4">
-            <Link href="/auth">
-              <Button
-                variant="ghost"
-                className="text-slate-600 hover:text-primary font-bold"
-              >
-                Acessar
-              </Button>
+          {/* Desktop actions */}
+          <div className="hidden md:flex items-center gap-3">
+            <Link
+              href="/auth"
+              className="text-sm font-semibold text-slate-600 hover:text-primary transition-colors px-4 py-2"
+            >
+              Acessar
             </Link>
-            <Link href="#pricing">
-              <Button className="shadow-lg shadow-primary/20 h-11 px-8 font-black uppercase tracking-wider hidden sm:flex">
-                Começar Agora
-              </Button>
+            <Link
+              href="#pricing"
+              className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all shadow-lg shadow-slate-900/20 hover:shadow-xl hover:shadow-slate-900/30"
+            >
+              Começar Agora
+              <ArrowRight size={16} />
             </Link>
           </div>
+
+          {/* Mobile hamburger */}
+          <button
+            onClick={() => setMobileMenu(!mobileMenu)}
+            className="md:hidden p-2 text-slate-600"
+            aria-label="Menu"
+          >
+            {mobileMenu ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
+
+        {/* Mobile drawer */}
+        <AnimatePresence>
+          {mobileMenu && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden bg-white border-t border-slate-100 overflow-hidden"
+            >
+              <div className="px-5 py-4 space-y-1">
+                {navLinks.map((l) => (
+                  <Link
+                    key={l.label}
+                    href={l.href}
+                    onClick={() => setMobileMenu(false)}
+                    className="block py-3 text-base font-medium text-slate-600 hover:text-primary transition-colors"
+                  >
+                    {l.label}
+                  </Link>
+                ))}
+                <hr className="border-slate-100 my-2" />
+                <Link
+                  href="/auth"
+                  onClick={() => setMobileMenu(false)}
+                  className="block py-3 text-base font-medium text-slate-600"
+                >
+                  Acessar
+                </Link>
+                <Link
+                  href="#pricing"
+                  onClick={() => setMobileMenu(false)}
+                  className="block mt-2 text-center bg-slate-900 text-white font-semibold py-3 rounded-xl"
+                >
+                  Começar Agora
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
-      {/* Hero Section */}
-      <section className="relative pt-48 pb-32 px-4 md:px-12 overflow-hidden">
-        {/* Background Decorative Elements */}
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 blur-[150px] rounded-full -mr-40 -mt-40 -z-10 animate-pulse" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-sky-500/5 blur-[120px] rounded-full -ml-40 -mb-40 -z-10" />
+      {/* ─── HERO ─── */}
+      <section className="relative pt-32 pb-20 md:pt-44 md:pb-32 px-5 md:px-8 overflow-hidden bg-gradient-to-b from-slate-50 to-white">
+        {/* Decorative gradient orbs */}
+        <div className="absolute top-[-200px] right-[-200px] w-[600px] h-[600px] bg-gradient-to-br from-primary/10 to-orange-500/10 rounded-full blur-[120px] animate-glow-pulse pointer-events-none" />
+        <div className="absolute bottom-[-100px] left-[-150px] w-[400px] h-[400px] bg-gradient-to-tr from-blue-500/8 to-violet-500/8 rounded-full blur-[100px] animate-glow-pulse pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
+        <div className="max-w-5xl mx-auto text-center relative z-10">
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="relative z-10"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
           >
-            <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-slate-900 text-white text-[10px] font-black uppercase tracking-[0.2em] mb-10 shadow-2xl">
-              <span className="flex h-2 w-2 rounded-full bg-primary animate-ping"></span>
-              Lançamento: Versão 2.4 com IA Integrada
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-slate-900 text-white text-xs font-medium mb-8 shadow-xl">
+              <Sparkles size={14} className="text-amber-400" />
+              Versão 2.4 — IA Integrada
             </div>
 
-            <h1 className="text-4xl md:text-7xl font-black mb-8 leading-tight tracking-tight text-slate-900 uppercase">
-              Está cansado de <br />{" "}
-              <span className="text-primary italic">procurar matérias?</span>
+            {/* Title */}
+            <h1 className="font-bebas text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-wide leading-[0.95] text-slate-900 mb-6">
+              ESTÁ CANSADO DE <br className="hidden sm:block" />
+              <span className="bg-gradient-to-r from-primary to-orange-500 bg-clip-text text-transparent">
+                PROCURAR MATÉRIAS?
+              </span>
             </h1>
 
-            <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto mb-12 font-medium leading-relaxed italic">
+            {/* Description */}
+            <p className="text-base sm:text-lg md:text-xl text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed font-inter">
               A plataforma Desbrava Total une tecnologia de ponta aos manuais
               oficiais para você focar no que importa:{" "}
-              <span className="text-slate-900 font-bold border-b-2 border-primary/20">
+              <span className="text-slate-900 font-semibold">
                 Salvar do Pecado e Guiar no Serviço.
               </span>
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-              <Link href="#pricing">
-                <Button
-                  size="lg"
-                  className="h-16 px-12 text-lg gap-4 font-black uppercase tracking-widest shadow-[0_20px_40px_rgba(217,45,32,0.2)] hover:scale-105 transition-transform"
-                >
-                  Ver Planos <ChevronRight size={24} />
-                </Button>
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link
+                href="#pricing"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-primary hover:bg-red-700 text-white font-semibold px-8 py-4 rounded-xl text-base transition-all shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-0.5"
+              >
+                Ver Planos
+                <ChevronRight size={20} />
+              </Link>
+              <Link
+                href="#funcionalidades"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 border-2 border-slate-200 hover:border-slate-300 text-slate-700 font-semibold px-8 py-4 rounded-xl text-base transition-all hover:bg-slate-50"
+              >
+                Explorar Ferramentas
               </Link>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Stats Bar */}
-      <section className="bg-white border-y border-slate-200 py-12 px-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-          {[
-            { label: "Clubes Ativos", value: "1.200+" },
-            { label: "Metas Concluídas", value: "450k" },
-            { label: "Minutos de IA", value: "85k+" },
-            { label: "Satisfação", value: "99.9%" },
-          ].map((stat, i) => (
-            <div key={i} className="text-center">
-              <p className="text-3xl md:text-5xl font-black text-slate-900 mb-1">
+      {/* ─── STATS BAR ─── */}
+      <section className="border-y border-slate-100 bg-white py-10 px-5">
+        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+          {stats.map((stat, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1, duration: 0.5 }}
+              className="text-center"
+            >
+              <p className="font-bebas text-3xl sm:text-4xl md:text-5xl text-slate-900 mb-1">
                 {stat.value}
               </p>
-              <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
                 {stat.label}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
 
-      {/* Features Grid */}
-      <section id="funcionalidades" className="py-32 px-6">
+      {/* ─── FEATURES ─── */}
+      <section id="funcionalidades" className="py-20 md:py-32 px-5 md:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-8">
-            <div className="max-w-2xl">
-              <h2 className="text-4xl md:text-7xl font-black text-slate-900 tracking-tighter uppercase leading-[0.9] mb-6">
-                A MÁQUINA DE <br />{" "}
-                <span className="text-primary italic">RESULTADOS.</span>
+          {/* Section header */}
+          <div className="max-w-2xl mb-16 md:mb-20">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <p className="text-sm font-semibold text-primary mb-3 uppercase tracking-widest">
+                Ferramentas
+              </p>
+              <h2 className="font-bebas text-4xl sm:text-5xl md:text-6xl tracking-wide text-slate-900 mb-5">
+                TUDO QUE VOCÊ PRECISA,{" "}
+                <span className="bg-gradient-to-r from-primary to-orange-500 bg-clip-text text-transparent">
+                  NUM SÓ LUGAR.
+                </span>
               </h2>
-              <p className="text-lg text-slate-500 font-medium">
+              <p className="text-base md:text-lg text-slate-500 font-inter leading-relaxed">
                 Cada ferramenta foi desenhada para resolver as dores reais de um
                 diretor. Gestão não precisa ser chata.
               </p>
-            </div>
-            <Button
-              variant="outline"
-              className="h-14 px-8 border-2 border-slate-200"
-            >
-              Ver Todas as Features
-            </Button>
+            </motion.div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Feature cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {features.map((feat, i) => (
-              <Card
-                key={i}
-                className="group !p-0 bg-white border-2 border-slate-100 hover:border-primary transition-all duration-500 overflow-hidden shadow-sm"
-              >
-                <div className="p-10">
-                  <div
-                    className={cn(
-                      "w-16 h-16 rounded-2xl flex items-center justify-center mb-8 bg-slate-50 group-hover:scale-110 transition-transform",
-                    )}
-                  >
-                    <feat.icon size={32} className="text-primary" />
-                  </div>
-                  <h3 className="text-2xl font-black text-slate-900 mb-4">
-                    {feat.title}
-                  </h3>
-                  <p className="text-slate-500 leading-relaxed font-medium mb-8 italic text-sm">
-                    {feat.desc}
-                  </p>
-                  <ArrowRight
-                    className="text-slate-200 group-hover:text-primary transition-colors"
-                    size={24}
-                  />
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Trust Section - "Por que o Desbrava Total?" */}
-      <section className="py-32 px-6 bg-slate-900 text-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-20 relative z-10">
-          <div className="flex-1">
-            <h2 className="text-4xl md:text-6xl font-black mb-10 tracking-tighter uppercase italic leading-[0.9]">
-              SEGURANÇA E <br />{" "}
-              <span className="text-primary italic underline decoration-white/10 underline-offset-8">
-                OFICIALISMO.
-              </span>
-            </h2>
-            <div className="space-y-8">
-              {[
-                "Sempre atualizado com o Manual Administrativo da DSA.",
-                "Hospedagem segura com proteção de dados de menores.",
-                "Sincronização opcional com o SGC oficial.",
-                "Acesso offline para acampamentos e atividades de campo.",
-              ].map((text, i) => (
-                <div key={i} className="flex items-center gap-4">
-                  <CheckCircle2 className="text-primary shrink-0" size={24} />
-                  <p className="text-lg text-slate-300 font-medium">{text}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="flex-1 w-full max-w-lg aspect-square bg-gradient-to-br from-primary to-orange-500 rounded-[3rem] p-[2px] shadow-3xl shadow-primary/20">
-            <div className="w-full h-full bg-slate-900 rounded-[2.8rem] flex items-center justify-center p-12 text-center">
-              <div>
-                <Globe
-                  size={80}
-                  className="text-primary mb-8 mx-auto animate-pulse"
-                />
-                <h3 className="text-2xl font-black mb-4 italic">
-                  Presente em 8 Países
-                </h3>
-                <p className="text-slate-400 font-medium">
-                  Nossa plataforma já é o padrão de excelência para regionais e
-                  distritais em toda a América do Sul.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section id="preços" className="py-32 px-4 md:px-12">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-24">
-            <h2 className="text-5xl md:text-8xl font-black mb-6 tracking-tighter uppercase text-slate-900 italic leading-none">
-              Investimento <span className="text-primary italic">Mensal.</span>
-            </h2>
-            <p className="text-slate-500 max-w-xl mx-auto font-black uppercase tracking-[0.3em] text-xs">
-              Custo-benefício imbatível para o seu clube.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            {plans.map((plan, i) => (
-              <Card
-                key={i}
-                className={cn(
-                  "flex flex-col w-full !p-12 transition-all duration-500 bg-white border-2 relative",
-                  plan.popular
-                    ? "border-primary shadow-[0_30px_60px_rgba(217,45,32,0.15)] scale-105 z-10"
-                    : "border-slate-200",
-                )}
-              >
-                {plan.popular && (
-                  <div className="absolute top-0 right-10 -translate-y-1/2 bg-primary text-white text-[10px] font-black px-8 py-3 rounded-full uppercase tracking-[0.2em] shadow-xl">
-                    MAIS COMPLETO
-                  </div>
-                )}
-                <div className="mb-12">
-                  <p
-                    className={cn(
-                      "text-[10px] font-black uppercase tracking-[0.4em] mb-4 shadow-sm inline-block px-4 py-1.5 rounded-lg text-white",
-                      plan.color,
-                    )}
-                  >
-                    {plan.name}
-                  </p>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-6xl font-black text-slate-900 tracking-tighter">
-                      R$ {plan.price}
-                    </span>
-                    <span className="text-slate-300 font-black uppercase text-[10px] tracking-widest italic">
-                      /mês
-                    </span>
-                  </div>
-                  <p className="text-slate-400 text-xs mt-6 font-black uppercase italic tracking-widest">
-                    {plan.description}
-                  </p>
-                </div>
-
-                <div className="space-y-6 mb-16 flex-1 pt-8 border-t border-slate-50">
-                  {plan.features.map((f, j) => (
-                    <div key={j} className="flex items-start gap-4">
-                      <div
-                        className={cn(
-                          "w-5 h-5 rounded-full flex items-center justify-center shrink-0",
-                          plan.color,
-                        )}
-                      >
-                        <Check size={12} className="text-white" />
-                      </div>
-                      <span className="text-sm text-slate-600 font-bold italic">
-                        {f}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                <a
-                  href={plan.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full"
-                >
-                  <Button
-                    size="lg"
-                    className={cn(
-                      "w-full h-20 text-lg font-black uppercase tracking-widest transform transition-all active:scale-95",
-                      plan.popular
-                        ? "bg-primary hover:bg-red-700 shadow-xl shadow-primary/30"
-                        : "bg-slate-900 hover:bg-black text-white",
-                    )}
-                  >
-                    Assinar agora
-                  </Button>
-                </a>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA WhatsApp Ultra Focus */}
-      <section className="py-32 px-6 overflow-hidden">
-        <div className="max-w-5xl mx-auto">
-          <Card className="bg-slate-50 border-4 border-slate-100 !p-16 md:!p-24 text-center relative rounded-[4rem]">
-            <div className="absolute top-10 left-10 text-slate-100 -rotate-12">
-              <Star size={120} />
-            </div>
-            <div className="absolute bottom-10 right-10 text-slate-100 rotate-12">
-              <Zap size={120} />
-            </div>
-
-            <div className="relative z-10">
-              <div className="w-24 h-24 bg-green-500 rounded-3xl flex items-center justify-center mx-auto mb-10 shadow-3xl animate-float">
-                <MessageCircle size={48} className="text-white fill-current" />
-              </div>
-              <h2 className="text-4xl md:text-7xl font-black mb-8 tracking-tighter uppercase italic text-slate-900 leading-[0.9]">
-                Dúvidas? <br />{" "}
-                <span className="text-green-600 italic">Fale conosco.</span>
-              </h2>
-              <p className="text-slate-400 text-lg md:text-xl font-bold mb-16 max-w-lg mx-auto uppercase tracking-tighter italic leading-relaxed">
-                NOSSO SUPORTE É HUMANO E ESPECIALISTA NO MINISTÉRIO DOS CLUBES.
-              </p>
-              <a
-                href="https://wa.me/556699762785"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button
-                  size="lg"
-                  className="bg-green-600 hover:bg-green-700 h-24 px-16 text-2xl gap-6 font-black uppercase tracking-[0.1em] shadow-2xl shadow-green-500/30 rounded-full group"
-                >
-                  WhatsApp Oficial{" "}
-                  <ArrowRight
-                    size={32}
-                    className="group-hover:translate-x-4 transition-transform"
-                  />
-                </Button>
-              </a>
-            </div>
-          </Card>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section
-        id="faq"
-        className="py-32 px-6 bg-slate-50 border-t border-slate-200"
-      >
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-24">
-            <h2 className="text-4xl font-black mb-4 uppercase tracking-tighter text-slate-900 italic">
-              Perguntas <span className="text-primary italic">Frequentes.</span>
-            </h2>
-          </div>
-
-          <div className="space-y-6">
-            {[
-              {
-                q: "O sistema salva os dados offline?",
-                a: "Sim! Nossa tecnologia PWA permite carregar e sincronizar dados mesmo em locais sem sinal de internet, ideal para acampamentos.",
-              },
-              {
-                q: "Posso exportar os dados para o SGC?",
-                a: "Atualmente oferecemos exportação em planilhas compatíveis com o formato de importação em massa do sistema oficial.",
-              },
-              {
-                q: "Existe limite de desbravadores por clube?",
-                a: "Não! No plano Desbrava Total você pode cadastrar quantos membros desejar sem custo adicional.",
-              },
-              {
-                q: "Dá para usar no celular e no computador?",
-                a: "Com certeza. A interface é totalmente responsiva e funciona perfeitamente em qualquer dispositivo.",
-              },
-            ].map((item, i) => (
               <motion.div
-                initial={false}
                 key={i}
-                className="border-b-2 border-slate-200 pb-6"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+                className="group relative bg-white border border-slate-200/80 rounded-2xl p-7 hover:border-slate-300 transition-all duration-300 hover:shadow-xl hover:shadow-slate-200/50 hover:-translate-y-1"
               >
-                <button className="flex justify-between items-center w-full text-left group">
-                  <span className="text-xl font-black text-slate-800 uppercase tracking-tight group-hover:text-primary transition-colors">
-                    {item.q}
-                  </span>
-                  <ChevronDown
-                    size={24}
-                    className="text-slate-300 group-hover:text-primary"
-                  />
-                </button>
-                <p className="mt-4 text-slate-500 font-medium leading-relaxed italic">
-                  {item.a}
+                <div
+                  className={cn(
+                    "w-12 h-12 rounded-xl flex items-center justify-center mb-5 bg-gradient-to-br text-white shadow-lg",
+                    feat.gradient,
+                  )}
+                >
+                  <feat.icon size={22} />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">
+                  {feat.title}
+                </h3>
+                <p className="text-sm text-slate-500 leading-relaxed font-inter">
+                  {feat.desc}
                 </p>
+                <ArrowRight
+                  className="mt-4 text-slate-200 group-hover:text-primary group-hover:translate-x-1 transition-all"
+                  size={18}
+                />
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Footer Elite */}
-      <footer className="py-24 bg-slate-900 text-white px-6 overflow-hidden relative">
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-20 mb-24 text-center md:text-left">
-            <div className="lg:col-span-2">
-              <div className="flex items-center gap-4 mb-8 justify-center md:justify-start">
-                <Zap size={32} className="text-primary fill-current" />
-                <span className="font-ex-bold text-4xl tracking-tighter uppercase leading-none">
-                  DESBRAVA <span className="text-primary italic">TOTAL</span>
+      {/* ─── TRUST / SEGURANÇA ─── */}
+      <section className="py-20 md:py-32 px-5 md:px-8 bg-slate-950 text-white relative overflow-hidden">
+        {/* Background effects */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-primary/15 to-transparent rounded-full blur-[120px] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-20 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="flex-1"
+          >
+            <p className="text-sm font-semibold text-primary mb-3 uppercase tracking-widest">
+              Confiança
+            </p>
+            <h2 className="font-bebas text-4xl sm:text-5xl md:text-6xl tracking-wide mb-8 leading-[0.95]">
+              SEGURANÇA E{" "}
+              <span className="bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">
+                OFICIALISMO.
+              </span>
+            </h2>
+            <div className="space-y-5">
+              {[
+                "Sempre atualizado com o Manual Administrativo da DSA.",
+                "Hospedagem segura com proteção de dados de menores.",
+                "Sincronização opcional com o SGC oficial.",
+                "Acesso offline para acampamentos e atividades de campo.",
+              ].map((text, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <CheckCircle2
+                    className="text-primary shrink-0 mt-0.5"
+                    size={20}
+                  />
+                  <p className="text-base text-slate-300 font-inter leading-relaxed">
+                    {text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="flex-1 w-full max-w-md"
+          >
+            <div className="relative bg-gradient-to-br from-white/[0.08] to-white/[0.02] backdrop-blur-lg border border-white/10 rounded-3xl p-8 md:p-10">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-3xl" />
+              <div className="relative z-10 text-center">
+                <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-primary to-orange-500 rounded-2xl flex items-center justify-center shadow-xl shadow-primary/30">
+                  <Shield size={32} className="text-white" />
+                </div>
+                <h3 className="font-bebas text-3xl md:text-4xl mb-3 tracking-wide">
+                  PRESENTE EM 8 PAÍSES
+                </h3>
+                <p className="text-sm text-slate-400 font-inter leading-relaxed">
+                  Nossa plataforma já é o padrão de excelência para regionais e
+                  distritais em toda a América do Sul.
+                </p>
+                <div className="mt-6 flex items-center justify-center gap-4">
+                  {["🇧🇷", "🇦🇷", "🇨🇱", "🇵🇪", "🇨🇴"].map((flag, i) => (
+                    <span key={i} className="text-2xl">
+                      {flag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ─── PRICING ─── */}
+      <section id="pricing" className="py-20 md:py-32 px-5 md:px-8 bg-slate-50">
+        <div className="max-w-6xl mx-auto">
+          {/* Section header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-14 md:mb-20"
+          >
+            <p className="text-sm font-semibold text-primary mb-3 uppercase tracking-widest">
+              Planos
+            </p>
+            <h2 className="font-bebas text-4xl sm:text-5xl md:text-7xl tracking-wide text-slate-900 mb-4">
+              INVESTIMENTO{" "}
+              <span className="bg-gradient-to-r from-primary to-orange-500 bg-clip-text text-transparent">
+                MENSAL.
+              </span>
+            </h2>
+            <p className="text-base text-slate-500 font-inter max-w-lg mx-auto">
+              Custo-benefício imbatível para o seu clube. Cancele quando quiser.
+            </p>
+          </motion.div>
+
+          {/* Plan cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-start">
+            {plans.map((plan, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+                className={cn(
+                  "relative bg-white rounded-2xl border transition-all duration-300",
+                  plan.popular
+                    ? "border-primary/30 shadow-2xl shadow-primary/10 md:scale-105 z-10"
+                    : "border-slate-200 shadow-sm hover:shadow-lg hover:shadow-slate-200/50",
+                )}
+              >
+                {plan.popular && (
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-orange-500 text-white text-xs font-bold px-5 py-1.5 rounded-full shadow-lg shadow-primary/30 whitespace-nowrap">
+                    ⭐ MAIS POPULAR
+                  </div>
+                )}
+
+                <div className="p-7 md:p-8">
+                  {/* Plan name */}
+                  <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">
+                    {plan.name}
+                  </p>
+
+                  {/* Price */}
+                  <div className="flex items-baseline gap-1.5 mb-1">
+                    <span className="text-sm font-medium text-slate-400">
+                      R$
+                    </span>
+                    <span className="font-bebas text-5xl md:text-6xl text-slate-900">
+                      {plan.price}
+                    </span>
+                  </div>
+                  <p className="text-sm text-slate-400 mb-7">
+                    {plan.description}
+                  </p>
+
+                  {/* Divider */}
+                  <div className="h-px bg-slate-100 mb-6" />
+
+                  {/* Features */}
+                  <div className="space-y-4 mb-8">
+                    {plan.features.map((f, j) => (
+                      <div key={j} className="flex items-center gap-3">
+                        <div
+                          className={cn(
+                            "w-5 h-5 rounded-full flex items-center justify-center bg-gradient-to-br",
+                            plan.gradient,
+                          )}
+                        >
+                          <Check size={12} className="text-white" />
+                        </div>
+                        <span className="text-sm text-slate-600 font-inter">
+                          {f}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* CTA */}
+                  <a
+                    href={plan.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(
+                      "block w-full text-center font-semibold py-3.5 rounded-xl transition-all text-sm",
+                      plan.popular
+                        ? "bg-gradient-to-r from-primary to-red-600 hover:from-red-700 hover:to-red-700 text-white shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30"
+                        : "bg-slate-900 hover:bg-slate-800 text-white",
+                    )}
+                  >
+                    Assinar agora
+                  </a>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── WHATSAPP CTA ─── */}
+      <section className="py-20 md:py-28 px-5 md:px-8">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 sm:p-12 md:p-16 text-center overflow-hidden"
+          >
+            {/* Glow */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/10 rounded-full blur-[80px] pointer-events-none" />
+
+            <div className="relative z-10">
+              <div className="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-500/30">
+                <MessageCircle size={32} className="text-white fill-current" />
+              </div>
+              <h2 className="font-bebas text-3xl sm:text-4xl md:text-6xl tracking-wide text-white mb-4">
+                DÚVIDAS? <span className="text-green-400">FALE CONOSCO.</span>
+              </h2>
+              <p className="text-slate-400 text-sm sm:text-base font-inter mb-8 max-w-md mx-auto leading-relaxed">
+                Nosso suporte é humano e especialista no ministério dos clubes.
+                Resposta rápida via WhatsApp.
+              </p>
+              <a
+                href="https://wa.me/556699762785"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-4 rounded-xl text-base transition-all shadow-xl shadow-green-500/25 hover:shadow-2xl hover:shadow-green-500/30 hover:-translate-y-0.5"
+              >
+                WhatsApp Oficial
+                <ArrowRight
+                  size={20}
+                  className="group-hover:translate-x-1 transition-transform"
+                />
+              </a>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ─── FAQ ─── */}
+      <section id="faq" className="py-20 md:py-28 px-5 md:px-8 bg-slate-50">
+        <div className="max-w-3xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-14"
+          >
+            <p className="text-sm font-semibold text-primary mb-3 uppercase tracking-widest">
+              Dúvidas
+            </p>
+            <h2 className="font-bebas text-4xl sm:text-5xl tracking-wide text-slate-900">
+              PERGUNTAS{" "}
+              <span className="bg-gradient-to-r from-primary to-orange-500 bg-clip-text text-transparent">
+                FREQUENTES.
+              </span>
+            </h2>
+          </motion.div>
+
+          <div className="space-y-3">
+            {faqItems.map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05, duration: 0.4 }}
+                className="bg-white border border-slate-200/80 rounded-xl overflow-hidden"
+              >
+                <button
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  className="flex justify-between items-center w-full text-left px-6 py-5 group"
+                >
+                  <span className="text-sm sm:text-base font-semibold text-slate-800 pr-4 group-hover:text-primary transition-colors">
+                    {item.q}
+                  </span>
+                  <ChevronDown
+                    size={18}
+                    className={cn(
+                      "shrink-0 text-slate-400 transition-transform duration-300",
+                      openFaq === i && "rotate-180 text-primary",
+                    )}
+                  />
+                </button>
+                <AnimatePresence>
+                  {openFaq === i && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="overflow-hidden"
+                    >
+                      <p className="px-6 pb-5 text-sm text-slate-500 font-inter leading-relaxed">
+                        {item.a}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── FOOTER ─── */}
+      <footer className="bg-slate-950 text-white pt-16 pb-10 px-5 md:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-14">
+            {/* Brand */}
+            <div className="sm:col-span-2 lg:col-span-2">
+              <div className="flex items-center gap-2.5 mb-4">
+                <Zap size={24} className="text-primary fill-current" />
+                <span className="font-bebas text-2xl tracking-wide">
+                  DESBRAVA <span className="text-primary">TOTAL</span>
                 </span>
               </div>
-              <p className="text-slate-400 text-lg max-w-sm mb-10 font-bold uppercase tracking-tighter italic mx-auto md:mx-0">
+              <p className="text-sm text-slate-400 font-inter max-w-sm mb-6 leading-relaxed">
                 A plataforma definitiva para quem leva o ministério de liderança
                 a sério.
               </p>
-              <div className="flex gap-4 justify-center md:justify-start">
-                <Button
-                  variant="ghost"
-                  className="w-12 h-12 p-0 bg-white/5 hover:bg-primary transition-colors"
-                >
-                  <Globe size={20} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="w-12 h-12 p-0 bg-white/5 hover:bg-primary transition-colors"
-                >
-                  <MessageCircle size={20} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="w-12 h-12 p-0 bg-white/5 hover:bg-primary transition-colors"
-                >
-                  <Star size={20} />
-                </Button>
+              <div className="flex gap-2">
+                {[Globe, MessageCircle, Star].map((Icon, i) => (
+                  <button
+                    key={i}
+                    className="w-10 h-10 rounded-xl bg-white/5 hover:bg-primary/20 flex items-center justify-center transition-colors"
+                  >
+                    <Icon size={16} className="text-slate-400" />
+                  </button>
+                ))}
               </div>
             </div>
 
+            {/* Links */}
             <div>
-              <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-10">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-5">
                 Explorar
               </h4>
-              <ul className="space-y-5 text-sm font-bold uppercase tracking-widest italic">
-                {["Início", "Ferramentas", "Funcionalidades", "Preços"].map(
-                  (l) => (
-                    <li key={l}>
-                      <Link
-                        href="#"
-                        className="hover:text-primary transition-colors"
-                      >
-                        {l}
-                      </Link>
-                    </li>
-                  ),
-                )}
+              <ul className="space-y-3">
+                {[
+                  { label: "Início", href: "#" },
+                  { label: "Ferramentas", href: "#funcionalidades" },
+                  { label: "Preços", href: "#pricing" },
+                  { label: "FAQ", href: "#faq" },
+                ].map((l) => (
+                  <li key={l.label}>
+                    <Link
+                      href={l.href}
+                      className="text-sm text-slate-400 hover:text-white transition-colors font-inter"
+                    >
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
             <div>
-              <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-10">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-5">
                 Suporte
               </h4>
-              <ul className="space-y-5 text-sm font-bold uppercase tracking-widest italic">
+              <ul className="space-y-3">
                 {[
-                  "Central de Ajuda",
-                  "WhatsApp Direto",
-                  "Termos de Uso",
-                  "Admin",
+                  { label: "Central de Ajuda", href: "#" },
+                  {
+                    label: "WhatsApp Direto",
+                    href: "https://wa.me/556699762785",
+                  },
+                  { label: "Termos de Uso", href: "#" },
+                  { label: "Admin", href: "/admin" },
                 ].map((l) => (
-                  <li key={l}>
+                  <li key={l.label}>
                     <Link
-                      href={l === "Admin" ? "/admin" : "#"}
-                      className="hover:text-primary transition-colors"
+                      href={l.href}
+                      className="text-sm text-slate-400 hover:text-white transition-colors font-inter"
                     >
-                      {l}
+                      {l.label}
                     </Link>
                   </li>
                 ))}
@@ -583,16 +763,14 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="pt-20 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-10">
-            <p className="text-[10px] font-black uppercase tracking-[0.5em] text-white/20">
+          {/* Bottom bar */}
+          <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4 text-center">
+            <p className="text-xs text-slate-600">
               © 2024 — DESBRAVA TOTAL. Todos os direitos reservados.
             </p>
-            <div className="flex items-center gap-4">
-              <div className="h-10 w-[1px] bg-white/10 hidden md:block"></div>
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 italic">
-                Feito com paixão pelo Ministério dos Clubes
-              </p>
-            </div>
+            <p className="text-xs text-slate-600">
+              Feito com ❤️ pelo Ministério dos Clubes
+            </p>
           </div>
         </div>
       </footer>

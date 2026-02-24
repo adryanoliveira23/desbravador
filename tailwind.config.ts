@@ -11,6 +11,7 @@ module.exports = {
         inter: ["var(--font-inter)", "Inter", "sans-serif"],
         poppins: ["var(--font-poppins)", "Poppins", "sans-serif"],
         roboto: ["var(--font-roboto)", "Roboto", "sans-serif"],
+        bebas: ["var(--font-bebas)", "'Bebas Neue'", "sans-serif"],
       },
       colors: {
         background: "var(--background)",
