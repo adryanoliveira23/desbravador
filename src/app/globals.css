@@ -3,25 +3,108 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: 210 40% 98%;
+  --foreground: 222 47% 11%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+
+  --primary: 0 72% 51%; /* Vermelho Desbravador */
+  --primary-foreground: 210 40% 98%;
+
+  --secondary: 45 100% 51%; /* Amarelo Destaque */
+  --secondary-foreground: 222 47.4% 11.2%;
+
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+
+  --accent: 221 83% 53%; /* Azul Portal */
+  --accent-foreground: 210 40% 98%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 0 72% 51%;
+
+  --radius: 0.75rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    @apply bg-[#f8fafc] text-foreground;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+/* Glassmorphism Classes */
+.glass {
+  @apply bg-white/[0.03] backdrop-blur-xl border border-white/5 shadow-2xl;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+.glass-card {
+  @apply bg-white/[0.02] backdrop-blur-md border border-white/5 shadow-xl transition-all duration-300;
+}
+
+.glass-card:hover {
+  @apply bg-white/[0.05] border-white/10 scale-[1.01];
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-white/10 rounded-full border-2 border-transparent bg-clip-content;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-white/20;
+}
+
+/* UI Elements */
+.premium-table tr {
+  @apply border-b border-white/5 hover:bg-white/5 transition-colors;
+}
+
+.premium-input {
+  @apply bg-white/5 border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all;
+}
+
+.premium-gradient {
+  background: linear-gradient(
+    135deg,
+    hsla(0, 72%, 51%, 1) 0%,
+    hsla(222, 47%, 11%, 1) 100%
+  );
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
   }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
