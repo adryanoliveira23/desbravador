@@ -86,20 +86,20 @@ const plans = [
 
 const faqItems = [
   {
-    q: "O sistema salva os dados offline?",
-    a: "Sim! Nossa tecnologia PWA permite carregar e sincronizar dados mesmo em locais sem sinal de internet, ideal para acampamentos.",
+    q: "A plataforma funciona sem sinal de internet?",
+    a: "Sim. Utilizamos tecnologia PWA de última geração que permite o acesso e a sincronização automática de dados, mesmo em locais remotos como acampamentos.",
   },
   {
-    q: "Posso exportar os dados para o SGC?",
-    a: "Atualmente oferecemos exportação em planilhas compatíveis com o formato de importação em massa do sistema oficial.",
+    q: "Como funciona a integração com sistemas oficiais?",
+    a: "Oferecemos ferramentas de exportação de dados em formatos compatíveis com os padrões de lançamento em massa, facilitando a atualização das informações do seu clube.",
   },
   {
-    q: "Existe limite de desbravadores por clube?",
-    a: "Não! No plano Desbrava Total você pode cadastrar quantos membros desejar sem custo adicional.",
+    q: "Existe limite de membros inscritos no clube?",
+    a: "Não há limites. Nosso sistema foi projetado para crescer junto com o seu clube, permitindo o cadastro ilimitado de membros em nossos planos principais.",
   },
   {
-    q: "Dá para usar no celular e no computador?",
-    a: "Com certeza. A interface é totalmente responsiva e funciona perfeitamente em qualquer dispositivo.",
+    q: "Quais dispositivos podem acessar o sistema?",
+    a: "Qualquer dispositivo com navegador de internet. A interface é 100% responsiva, funcionando perfeitamente em celulares, tablets e computadores.",
   },
 ];
 
@@ -324,74 +324,74 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
-                title: "TODAS as 6 classes",
-                desc: "Conteúdo completo de Amigo a Guia com requisitos e materiais.",
+                title: "Classes de Amigo a Guia",
+                desc: "Requisitos e orientações integrados para todas as etapas da jornada.",
                 icon: Globe,
                 color: "bg-blue-600",
               },
               {
-                title: "+200 Especialidades",
-                desc: "Materiais completos e organizados para todas as áreas.",
+                title: "Vasto Acervo Acadêmico",
+                desc: "Material estruturado em diversas áreas para expandir conhecimentos.",
                 icon: Monitor,
                 color: "bg-purple-500",
               },
               {
-                title: "Banco de Provas",
-                desc: "Acesso total a provas e gabaritos oficiais DSA.",
+                title: "Central de Avaliações",
+                desc: "Modelos de testes inspirados nos padrões oficiais para validar o aprendizado.",
                 icon: BrainCircuit,
                 color: "bg-green-500",
               },
               {
-                title: "Dashboard Netflix",
-                desc: "Interface moderna e intuitiva inspirada nos maiores sistemas.",
+                title: "Interface de Alto Nível",
+                desc: "Navegação moderna e fluida, desenhada para máxima produtividade.",
                 icon: Zap,
                 color: "bg-orange-500",
               },
               {
-                title: "Certificados Automáticos",
-                desc: "Gere certificados de conclusão com um único clique.",
+                title: "Emissor de Certificados",
+                desc: "Gere documentos prontos para impressão com apenas um clique.",
                 icon: CheckCircle2,
                 color: "bg-primary",
               },
               {
-                title: "Sistema de Gestão",
-                desc: "Controle total de secretaria, membros e progresso do clube.",
+                title: "Controle Administrativo",
+                desc: "Gestão completa de membros, secretaria e progresso individual.",
                 icon: Shield,
                 color: "bg-slate-900",
               },
               {
-                title: "Ferramentas Diretor",
-                desc: "Recursos exclusivos para a gestão administrativa do clube.",
+                title: "Gestão para Diretoria",
+                desc: "Recursos estratégicos exclusivos para a coordenação do Clube.",
                 icon: Shield,
                 color: "bg-blue-900",
               },
               {
-                title: "Ferramentas Líder",
-                desc: "Materiais e controles para instrutores e líderes de classe.",
+                title: "Suporte ao Instrutor",
+                desc: "Acompanhamento e suporte completo para o ensino de classes.",
                 icon: MessageCircle,
                 color: "bg-blue-500",
               },
               {
-                title: "Espaço Conselheiro",
-                desc: "Acompanhamento direto da unidade e seus desbravadores.",
+                title: "Foco na Unidade",
+                desc: "Espaço dedicado para o acompanhamento próximo de cada unidade.",
                 icon: MessageCircle,
                 color: "bg-indigo-500",
               },
               {
-                title: "Gabaritos Oficiais",
-                desc: "Respostas detalhadas para todas as provas e requisitos.",
+                title: "Orientações Pedagógicas",
+                desc: "Respostas detalhadas e guias de ensino para todos os materiais.",
                 icon: Check,
                 color: "bg-emerald-600",
               },
               {
-                title: "Atualizações",
-                desc: "Acesso garantido a todas as melhorias e novos materiais.",
+                title: "Evolução Contínua",
+                desc: "Plataforma em constante atualização com novas funções e dados.",
                 icon: ArrowRight,
                 color: "bg-emerald-500",
               },
               {
-                title: "Suporte Prioritário",
-                desc: "Atendimento especializado para tirar todas as suas dúvidas.",
+                title: "Canais de Suporte",
+                desc: "Atendimento dedicado para garantir sua melhor experiência.",
                 icon: MessageCircle,
                 color: "bg-red-500",
               },
@@ -420,146 +420,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── CLASSES DOS DESBRAVADORES ─── */}
-      <section className="py-24 md:py-32 bg-white">
-        <div className="max-w-7xl mx-auto px-5 md:px-8">
-          <div className="text-center mb-20">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-50 text-orange-600 text-[10px] font-bold mb-6 uppercase tracking-widest">
-              6 Classes Disponíveis
-            </div>
-            <h2 className="font-bebas text-5xl sm:text-6xl md:text-7xl tracking-wide text-slate-900 mb-6 uppercase">
-              CLASSES DOS <span className="text-[#FDB022]">DESBRAVADORES</span>
-            </h2>
-            <p className="text-lg text-slate-500 font-inter leading-relaxed">
-              Material completo para cada etapa da sua jornada
-            </p>
-          </div>
-
-          <div className="space-y-12">
-            {[
-              {
-                name: "Classe Amigo",
-                desc: "Início da jornada desbravadora com fundamentos essenciais",
-                color: "bg-[#2E90FA]",
-                side: "left",
-                specs: [
-                  "Ordem Unida",
-                  "Nós e Amarras",
-                  "Primeiros Socorros Básico",
-                  "Vida Cristã",
-                  "Civismo",
-                  "Natureza",
-                ],
-                checklist: [
-                  "Material completo em PDF",
-                  "Slides por especialidade",
-                  "Provas oficiais",
-                  "Gabaritos",
-                  "Certificados digitais",
-                ],
-              },
-              {
-                name: "Classe Companheiro",
-                desc: "Aprofundando conhecimentos e habilidades práticas",
-                color: "bg-[#12B76A]",
-                side: "right",
-                specs: [
-                  "Acampamento",
-                  "Culinária",
-                  "Excursionismo",
-                  "Orientação",
-                  "Arte de Contar Histórias",
-                ],
-                checklist: [
-                  "Requisitos detalhados",
-                  "Vídeos auxiliares",
-                  "Fichas de acompanhamento",
-                  "Sugestões de atividades",
-                ],
-              },
-            ].map((cls, i) => (
-              <div
-                key={i}
-                className={cn(
-                  "flex flex-col lg:flex-row items-stretch rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-2xl shadow-slate-200/50",
-                  cls.side === "right" && "lg:flex-row-reverse",
-                )}
-              >
-                {/* Image/Color Side */}
-                <div
-                  className={cn(
-                    "w-full lg:w-2/5 min-h-[300px] flex flex-center justify-center p-12 text-white relative",
-                    cls.color,
-                  )}
-                >
-                  <div className="absolute inset-0 bg-black/5" />
-                  <div className="relative z-10 text-center flex flex-col items-center justify-center h-full">
-                    <span className="text-xs font-bold uppercase tracking-widest opacity-80 mb-4">
-                      Classe
-                    </span>
-                    <h3 className="font-bebas text-5xl md:text-7xl uppercase tracking-wide">
-                      {cls.name.replace("Classe ", "")}
-                    </h3>
-                  </div>
-                </div>
-                {/* Content Side */}
-                <div className="flex-1 bg-white p-8 md:p-12">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold mb-4 uppercase tracking-widest">
-                    Classe {i + 1} de 6
-                  </div>
-                  <h4 className="text-2xl font-bold text-slate-900 mb-3">
-                    {cls.name}
-                  </h4>
-                  <p className="text-slate-500 mb-8">{cls.desc}</p>
-
-                  <div className="mb-8">
-                    <p className="text-[10px] font-bold text-orange-500 uppercase tracking-widest mb-4">
-                      Especialidades Incluídas:
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {cls.specs.map((spec, j) => (
-                        <div
-                          key={j}
-                          className="px-4 py-2 rounded-full border border-slate-200 text-[11px] font-medium text-slate-600 bg-slate-50/50"
-                        >
-                          {spec}
-                        </div>
-                      ))}
-                      <div className="px-4 py-2 rounded-full border border-orange-100 text-[11px] font-bold text-orange-500 bg-orange-50/50 italic">
-                        E muito mais...
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-8">
-                    {cls.checklist.map((item, j) => (
-                      <div key={j} className="flex items-center gap-3">
-                        <div className="w-5 h-5 rounded-full bg-orange-100 flex items-center justify-center">
-                          <Check size={12} className="text-orange-600" />
-                        </div>
-                        <span className="text-xs font-medium text-slate-600">
-                          {item}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-10">
-                    <Link
-                      href="#pricing"
-                      className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-xl text-sm transition-all shadow-lg shadow-blue-500/20"
-                    >
-                      Ver planos
-                      <ArrowRight size={16} />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-      {/* ─── EXPERIENCE / TOOLS ─── */}
       <section className="py-24 md:py-32 bg-slate-50 border-y border-slate-100">
         <div className="max-w-7xl mx-auto px-5 md:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -572,28 +432,30 @@ export default function LandingPage() {
                 Gestão Moderna
               </div>
               <h2 className="font-bebas text-5xl md:text-7xl tracking-wide text-slate-900 mb-8 uppercase leading-[0.95]">
-                DASHBOARD ESTILO{" "}
-                <span className="text-primary italic">NETFLIX</span>
+                DASHBOARD <br />
+                <span className="text-primary italic">
+                  INTUITIVO E COMPLETO
+                </span>
               </h2>
               <p className="text-lg text-slate-500 font-inter mb-10 leading-relaxed">
-                Nossa interface foi desenhada para ser intuitiva e rápida.
-                Encontre tudo que precisa em segundos, com uma experiência
-                visual premium.
+                Nossa interface foi desenhada para facilitar o dia a dia.
+                Recupere o controle sobre a burocracia e foque no
+                desenvolvimento físico, mental e espiritual de cada desbravador.
               </p>
 
               <div className="space-y-6 mb-10">
                 {[
                   {
-                    title: "Ferramentas para Diretor",
-                    desc: "Visão 360º do clube e secretaria",
+                    title: "Automação Administrativa",
+                    desc: "Visão 360º de tudo que acontece no Clube",
                   },
                   {
-                    title: "Ferramentas para Líder",
-                    desc: "Gestão de classes e acompanhamento",
+                    title: "Acompanhamento Acadêmico",
+                    desc: "Gestão inteligente de classes e requisitos",
                   },
                   {
-                    title: "Ferramentas para Conselheiro",
-                    desc: "Controle de frequência e tarefas",
+                    title: "Foco na Unidade",
+                    desc: "Controle simplificado para conselheiros",
                   },
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-4">
@@ -610,7 +472,7 @@ export default function LandingPage() {
 
               <Link
                 href="#pricing"
-                className="inline-flex items-center gap-3 bg-slate-900 text-white font-bold px-8 py-4 rounded-2xl hover:bg-slate-800 transition-all shadow-lg"
+                className="inline-flex items-center gap-3 bg-primary text-white font-bold px-8 py-4 rounded-2xl hover:bg-primary/90 transition-all shadow-lg"
               >
                 Começar agora o teste grátis
                 <ArrowRight size={18} />
@@ -624,16 +486,23 @@ export default function LandingPage() {
               className="bg-white rounded-[3rem] p-4 shadow-2xl shadow-slate-200 border border-slate-100"
             >
               <div className="bg-slate-900 rounded-[2.5rem] aspect-video flex items-center justify-center relative overflow-hidden">
-                {/* Dummy UI elements to represent Netflix style dashboard */}
+                {/* Dummy UI elements to represent premium dashboard */}
                 <div className="absolute inset-0 bg-gradient-to-br from-slate-800/50 to-transparent p-8 flex flex-col justify-end">
                   <div className="w-2/3 h-4 bg-white/20 rounded-full mb-3" />
                   <div className="w-1/2 h-4 bg-white/10 rounded-full" />
                 </div>
-                <Zap
-                  size={60}
-                  className="text-primary animate-pulse"
-                  fill="currentColor"
-                />
+                <div className="relative z-10 text-center">
+                  <div className="w-20 h-20 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-primary/30">
+                    <Zap
+                      size={40}
+                      className="text-primary"
+                      fill="currentColor"
+                    />
+                  </div>
+                  <span className="text-white font-bebas text-2xl tracking-widest">
+                    ECOSSISTEMA DIGITAL
+                  </span>
+                </div>
               </div>
             </motion.div>
           </div>
