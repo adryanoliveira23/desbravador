@@ -104,8 +104,8 @@ export default function SpecialtiesPage() {
     );
     const unsubscribeRecent = onSnapshot(qRecent, (snapshot) => {
       const recent = snapshot.docs.map((doc) => ({
-        id: doc.id,
         ...(doc.data() as Conclusion),
+        id: doc.id,
       }));
       setRecentConclusions(recent);
     });

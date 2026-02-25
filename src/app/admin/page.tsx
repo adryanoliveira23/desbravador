@@ -76,8 +76,8 @@ export default function AdminPanel() {
       const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
       const unsubscribe = onSnapshot(q, (snapshot) => {
         const uList = snapshot.docs.map((doc) => ({
-          id: doc.id,
           ...doc.data(),
+          id: doc.id,
         })) as AdminUser[];
         setUsers(uList);
         setLoading(false);

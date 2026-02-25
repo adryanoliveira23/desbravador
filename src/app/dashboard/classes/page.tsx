@@ -148,8 +148,8 @@ export default function ClassesPage() {
     );
     onSnapshot(mq, (snapshot) => {
       const members = snapshot.docs.map((doc) => ({
-        id: doc.id,
         ...(doc.data() as Member),
+        id: doc.id,
       }));
       setClassMembers(members);
     });
@@ -401,7 +401,7 @@ export default function ClassesPage() {
                     </p>
                   </div>
                 ) : (
-                  classMembers.map((member: any) => (
+                  classMembers.map((member: Member) => (
                     <div
                       key={member.id}
                       className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between group hover:bg-white hover:shadow-lg transition-all"
