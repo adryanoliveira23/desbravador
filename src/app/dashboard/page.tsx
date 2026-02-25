@@ -26,8 +26,6 @@ import {
   collection,
   query,
   where,
-  limit,
-  orderBy,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
@@ -119,42 +117,58 @@ export default function DashboardPage() {
   const [stats, setStats] = useState(defaultStatsData);
   const [loading, setLoading] = useState(true);
 
-  // Efeito para carregar as estatísticas e reuniões
+  // Determinar contexto do ministério (Aventureiro vs Desbravador)
+  const isAventureiro = user?.ministry === "aventureiro";
+  const ministryTheme = isAventureiro
+    ? {
+        primary: "text-orange-600",
+        bg: "bg-orange-600",
+        gradient: "from-orange-600 to-red-700",
+        label: "Aventureiros",
+        icon: Zap,
+        shield: "border-orange-500/20",
+      }
+    : {
+        primary: "text-blue-700",
+        bg: "bg-blue-700",
+        gradient: "from-blue-700 to-blue-900",
+        label: "Desbravadores",
+        icon: Zap,
+        shield: "border-secondary/10",
+      };
+
+  const isPremium = user?.plan === "desbrava_total";
+
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        // 1. Carregar dados do usuário/clube
         const userDoc = await getDoc(doc(db, "users", currentUser.uid));
         if (userDoc.exists()) {
           const userData = userDoc.data();
           setUser(userData);
 
-          // 2. Mocking real stats search (idealmente viria de um doc do clube ou agregados)
-          // Para esta versão, vamos buscar dinamicamente o que houver nas coleções
-
-          // Membros (Exemplo de query real)
+          // 1. Membros Ativos Real
           const membersQ = query(
             collection(db, "users"),
             where("clubName", "==", userData.clubName || ""),
           );
           onSnapshot(membersQ, (snap) => {
-            const count = snap.size;
             setStats((prev) => {
               const newStats = [...prev];
-              newStats[0].value = count.toString();
+              newStats[0].value = snap.size.toString();
               return newStats;
             });
           });
 
-          // Reuniões (Próximas 3)
-          const meetingsQ = query(
-            collection(db, "meetings"),
-            where("clubName", "==", userData.clubName || ""),
-            orderBy("date", "asc"),
-            limit(3),
-          );
-          onSnapshot(meetingsQ, () => {
-            // meetings data available if needed in future
+          // 2. Especialidades Concluídas Real
+          // Aqui usamos a coleção que criamos/otimizamos antes
+          const specQ = query(collection(db, "specialties_concluded"));
+          onSnapshot(specQ, (snap) => {
+            setStats((prev) => {
+              const newStats = [...prev];
+              newStats[3].value = snap.size.toString();
+              return newStats;
+            });
           });
         }
         setLoading(false);
@@ -169,7 +183,7 @@ export default function DashboardPage() {
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-          <p className="text-white/40 font-black uppercase tracking-widest text-xs">
+          <p className="text-slate-400 font-black uppercase tracking-widest text-xs">
             Sincronizando Dados...
           </p>
         </div>
@@ -178,100 +192,126 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-10 pb-20">
-      {/* Welcome Banner - Estilo Portal Oficial */}
+    <div className="space-y-8 md:space-y-10 pb-20">
+      {/* Welcome Banner */}
       <section className="relative">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-blue-700 to-blue-900 p-12 text-white shadow-2xl min-h-[240px] flex flex-col justify-center border-b-4 border-secondary"
+          className={cn(
+            "relative overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] p-6 md:p-12 text-white shadow-2xl min-h-[220px] md:min-h-[280px] flex flex-col justify-center bg-gradient-to-br",
+            ministryTheme.gradient,
+          )}
         >
-          {/* Decorative Shield Pattern (simulando elementos do escudo) */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rotate-45 translate-x-1/2 -translate-y-1/2 blur-2xl pointer-events-none"></div>
-          <div className="absolute bottom-[-50px] left-[-50px] w-64 h-64 border-[32px] border-secondary/10 rounded-full blur-xl"></div>
+          {/* Decorative Elements */}
+          <div className="absolute top-0 right-0 w-64 md:w-96 h-64 md:h-96 bg-white/10 rotate-45 translate-x-1/2 -translate-y-1/2 blur-3xl pointer-events-none"></div>
 
           <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center p-2 shadow-lg">
-                <Zap size={24} className="text-primary fill-current" />
+            <div className="flex flex-wrap items-center gap-3 mb-4 md:mb-6">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-xl flex items-center justify-center p-2 shadow-lg">
+                <ministryTheme.icon
+                  size={24}
+                  className={cn(
+                    "fill-current",
+                    isAventureiro ? "text-orange-600" : "text-blue-700",
+                  )}
+                />
               </div>
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-blue-100">
-                Portal de Liderança
-              </span>
+              <div className="flex flex-col">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">
+                  Portal de Liderança
+                </span>
+                <span className="text-[10px] font-bold text-white/60 uppercase">
+                  Contexto: {ministryTheme.label}
+                </span>
+              </div>
+              {isPremium && (
+                <div className="ml-auto md:ml-4 px-3 py-1 bg-secondary text-slate-900 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg animate-pulse">
+                  Desbrava Total
+                </div>
+              )}
             </div>
-            <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tighter uppercase leading-none">
-              Bem-vindo ao <span className="text-secondary">Portal!</span>
+            <h1 className="text-3xl md:text-6xl font-black mb-3 md:mb-4 tracking-tighter uppercase leading-[0.9]">
+              {isAventureiro ? "Grande" : "Bem-vindo ao"}{" "}
+              <span className="text-secondary">
+                {isAventureiro ? "Líder!" : "Portal!"}
+              </span>
             </h1>
-            <p className="text-lg text-blue-50 font-medium max-w-2xl leading-relaxed">
-              Central oficial de recursos para o ministério dos Desbravadores.
-              Gestão de classes e materiais para o clube{" "}
-              <span className="font-bold border-b-2 border-primary">
-                {user?.clubName || "Carregando..."}
+            <p className="text-sm md:text-lg text-white/90 font-medium max-w-2xl leading-relaxed">
+              Gestão inteligente para o clube{" "}
+              <span className="font-bold border-b-2 border-secondary/50">
+                {user?.clubName || "Seu Clube"}
               </span>
               .
+              {isPremium
+                ? " Todas as ferramentas premium estão desbloqueadas."
+                : " Explore os recursos essenciais do seu ministério."}
             </p>
           </div>
         </motion.div>
       </section>
 
-      {/* Stats Grid - Estilo Imagem 2 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {stats.map((stat, i) => (
           <Card
             key={i}
-            className="bg-white border-slate-100 shadow-sm hover:shadow-md transition-all p-6 py-8 flex items-center justify-between group"
+            className="bg-white border-slate-100 shadow-sm hover:shadow-md transition-all p-6 flex items-center justify-between group"
           >
             <div className="space-y-1">
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                 {stat.label}
               </p>
-              <h3 className="text-4xl font-bold text-slate-800 tracking-tight">
-                {stat.value}+
+              <h3 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter">
+                {stat.value}
               </h3>
             </div>
             <div
               className={cn(
-                "p-4 rounded-xl shadow-sm group-hover:scale-110 transition-transform",
-                stat.bg.replace("/10", "/5"),
+                "p-4 rounded-2xl shadow-sm group-hover:scale-110 transition-transform",
+                stat.bg,
               )}
             >
-              <stat.icon size={28} className={stat.color} />
+              <stat.icon size={24} className={stat.color} />
             </div>
           </Card>
         ))}
       </div>
 
-      {/* Quick Access Section - Estilo Imagem 2 */}
+      {/* Quick Access */}
       <div className="space-y-6">
-        <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2 uppercase tracking-tight">
-          <ArrowUpRight size={20} className="text-primary" /> Acesso Rápido
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg md:text-xl font-black text-slate-900 flex items-center gap-2 uppercase tracking-tight">
+            <ArrowUpRight size={20} className="text-primary" /> Ferramentas do
+            Clube
+          </h2>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-sans">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {mainTools.map((tool, i) => (
             <Link key={i} href={tool.href}>
-              <Card className="bg-white border-slate-100 hover:border-primary/20 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all p-6 group cursor-pointer flex items-center justify-between">
-                <div className="flex items-center gap-5">
+              <Card className="bg-white border-slate-100 hover:border-primary/20 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all p-5 md:p-6 group cursor-pointer flex items-center justify-between min-h-[100px]">
+                <div className="flex items-center gap-4 md:gap-5">
                   <div
                     className={cn(
-                      "w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg",
+                      "w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center text-white shadow-lg shrink-0",
                       tool.color.replace("from-", "bg-").split(" ")[0],
                     )}
                   >
                     <tool.icon size={24} />
                   </div>
-                  <div>
-                    <h3 className="font-bold text-slate-900 group-hover:text-primary transition-colors">
+                  <div className="min-w-0">
+                    <h3 className="font-black text-slate-900 group-hover:text-primary transition-colors text-sm md:text-base truncate">
                       {tool.title}
                     </h3>
-                    <p className="text-xs text-slate-400 font-medium leading-relaxed max-w-[180px]">
+                    <p className="text-[10px] md:text-xs text-slate-500 font-medium leading-tight line-clamp-2">
                       {tool.desc}
                     </p>
                   </div>
                 </div>
                 <ChevronRight
-                  size={20}
-                  className="text-slate-200 group-hover:text-primary group-hover:translate-x-1 transition-all"
+                  size={18}
+                  className="text-slate-300 group-hover:text-primary group-hover:translate-x-1 transition-all shrink-0"
                 />
               </Card>
             </Link>
@@ -279,48 +319,51 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Activity Timeline / Insights */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Timeline & Info - Estilo Imagem 2 */}
+      {/* Timeline & Premium Promo */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
         <div className="lg:col-span-2">
-          {" "}
-          {/* Adjusted to wrap the two cards */}
-          <Card className="bg-white border-slate-100 shadow-sm p-8">
-            <div className="flex items-center justify-between mb-8 border-b border-slate-50 pb-4">
+          <Card className="bg-white border-slate-100 shadow-sm p-6 md:p-8">
+            <div className="flex items-center justify-between mb-6 md:mb-8 border-b border-slate-50 pb-4">
               <div>
-                <h3 className="text-lg font-bold text-slate-800 uppercase tracking-tight">
-                  Atividades do Clube
+                <h3 className="text-base md:text-lg font-black text-slate-900 uppercase tracking-tight">
+                  Atividades Recentes
                 </h3>
-                <p className="text-xs text-slate-400 font-medium">
-                  Cronograma atualizado em tempo real.
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                  Eventos sincronizados do {user?.clubName}
                 </p>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-blue-600 font-bold text-xs uppercase hover:bg-blue-50"
-              >
-                Ver Calendário
-              </Button>
+              <Link href="/dashboard/planejador">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-primary font-black text-[10px] uppercase hover:bg-primary/5 tracking-widest"
+                >
+                  Ver Agenda
+                </Button>
+              </Link>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               {[
                 {
-                  title: "Instrução de Nós",
-                  type: "Classe",
+                  title: isAventureiro
+                    ? "Manual do Castor"
+                    : "Instrução de Nós",
+                  type: "Ensino",
                   time: "Hoje, 19:00",
                   color: "bg-blue-500",
                 },
                 {
-                  title: "Reunião de Staff",
+                  title: "Reunião de Diretoria",
                   type: "Gestão",
                   time: "Amanhã, 20:00",
-                  color: "bg-slate-800",
+                  color: "bg-slate-900",
                 },
                 {
-                  title: "Acampamento de Unid.",
-                  type: "Evento",
+                  title: isAventureiro
+                    ? "Passeio no Parque"
+                    : "Acampamento de Unid.",
+                  type: "Outdoor",
                   time: "Sexta, 18:00",
                   color: "bg-orange-500",
                 },
@@ -331,20 +374,20 @@ export default function DashboardPage() {
                 >
                   <div className="flex items-center gap-4">
                     <div
-                      className={cn("w-2 h-10 rounded-full", item.color)}
+                      className={cn("w-1.5 h-8 rounded-full", item.color)}
                     ></div>
                     <div>
                       <h4 className="font-bold text-slate-800 text-sm">
                         {item.title}
                       </h4>
-                      <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
                         {item.type} • {item.time}
                       </p>
                     </div>
                   </div>
                   <ArrowUpRight
                     size={16}
-                    className="text-slate-300 group-hover:text-blue-500 transition-colors"
+                    className="text-slate-300 group-hover:text-primary transition-colors"
                   />
                 </div>
               ))}
@@ -352,29 +395,49 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        <Card className="bg-primary text-white p-8 relative overflow-hidden group">
-          <div className="absolute top-1/2 right-[-20px] w-48 h-48 border-[20px] border-white/5 rounded-full -translate-y-1/2"></div>
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary via-primary to-blue-900 opacity-60"></div>
-
-          <div className="relative z-10 flex flex-col h-full justify-between">
-            <div>
-              <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-6">
-                <Sparkles size={24} className="text-secondary" />
+        {!isPremium && (
+          <Card className="bg-slate-900 text-white p-8 relative overflow-hidden group border-none">
+            <div className="absolute top-1/2 right-[-20px] w-48 h-48 border-[20px] border-white/5 rounded-full -translate-y-1/2"></div>
+            <div className="relative z-10 flex flex-col h-full justify-between">
+              <div>
+                <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-6">
+                  <Sparkles size={24} className="text-secondary" />
+                </div>
+                <h3 className="text-xl font-black mb-2 uppercase tracking-tight">
+                  IA <span className="text-secondary">Premium</span>
+                </h3>
+                <p className="text-sm text-white/70 font-medium leading-relaxed">
+                  Desbloqueie geradores de provas, roteiros e planejadores IA
+                  com o plano{" "}
+                  <span className="text-white font-bold">Desbrava Total</span>.
+                </p>
               </div>
-              <h3 className="text-xl font-bold mb-2 uppercase tracking-tight">
-                IA <span className="text-secondary">Premium</span>
-              </h3>
-              <p className="text-sm text-white/80 font-medium leading-relaxed">
-                Crie planos de ensino e provas personalizadas em segundos com
-                nossa inteligência líder.
-              </p>
-            </div>
 
-            <Button className="w-full bg-white text-primary hover:bg-slate-50 font-bold uppercase tracking-widest mt-8 py-6 rounded-xl shadow-lg border-none">
-              Começar Agora
-            </Button>
-          </div>
-        </Card>
+              <Button className="w-full bg-secondary text-slate-900 hover:bg-white font-black uppercase tracking-widest mt-8 py-6 rounded-xl shadow-lg border-none text-xs">
+                Assinar Agora
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {isPremium && (
+          <Card className="bg-gradient-to-br from-primary/10 to-transparent border-primary/20 p-8 flex flex-col justify-center items-center text-center group">
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6 border border-primary/20">
+              <Sparkles size={32} className="text-primary animate-pulse" />
+            </div>
+            <h3 className="text-xl font-black text-slate-900 mb-2 uppercase tracking-tight">
+              Líder <span className="text-primary italic">Total</span>
+            </h3>
+            <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mb-6">
+              Acesso Completo Ativado
+            </p>
+            <Link href="/dashboard/ia" className="w-full">
+              <Button className="w-full h-12 font-black uppercase tracking-widest">
+                Usar Ferramentas IA
+              </Button>
+            </Link>
+          </Card>
+        )}
       </div>
     </div>
   );

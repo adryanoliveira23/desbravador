@@ -131,7 +131,7 @@ export function Sidebar({ role }: { role?: string }) {
             <span className="font-bold text-slate-900 text-lg tracking-tight leading-none block">
               Desbravador
             </span>
-            <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">
+            <span className="text-[10px] text-slate-600 font-medium uppercase tracking-wider">
               Portal de Gestão
             </span>
           </div>
@@ -142,7 +142,7 @@ export function Sidebar({ role }: { role?: string }) {
       <nav className="flex-1 px-4 overflow-y-auto custom-scrollbar pt-6">
         {filteredSections.map((section, idx) => (
           <div key={idx} className="mb-8">
-            <h3 className="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">
+            <h3 className="px-4 text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-4">
               {section.title}
             </h3>
             <div className="space-y-1.5">
@@ -156,7 +156,7 @@ export function Sidebar({ role }: { role?: string }) {
                       "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative",
                       isActive
                         ? "bg-primary text-white font-semibold shadow-md shadow-primary/20"
-                        : "text-slate-500 hover:text-slate-900 hover:bg-slate-50",
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50",
                     )}
                   >
                     <item.icon

@@ -8,11 +8,11 @@ import {
   Package,
   Plus,
   Tag,
-  ShoppingCart,
   Trash2,
   Loader2,
   X,
   Sparkles,
+  Zap,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { db } from "@/lib/firebase";
@@ -39,11 +39,13 @@ export default function KitsPage() {
   const [kits, setKits] = useState<Kit[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [generatedContent, setGeneratedContent] = useState<string | null>(null);
 
   // Form State
   const [name, setName] = useState("");
   const [category, setCategory] = useState("Logística");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     const q = query(collection(db, "kits"), orderBy("name", "asc"));
@@ -58,6 +60,30 @@ export default function KitsPage() {
     return () => unsubscribe();
   }, []);
 
+  const handleGenerateAI = async () => {
+    if (!name) return;
+    setIsGenerating(true);
+    setGeneratedContent(null);
+    try {
+      const response = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: `Crie um kit completo para Desbravadores sobre o tema: ${name}. Liste os itens necessários e uma breve explicação pedagógica.`,
+        }),
+      });
+      const data = await response.json();
+      if (data.result) {
+        setGeneratedContent(data.result);
+      }
+    } catch (error) {
+      console.error(error);
+      setGeneratedContent("Erro ao gerar conteúdo via IA.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const handleCreateKit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -71,6 +97,7 @@ export default function KitsPage() {
       });
       setShowModal(false);
       setName("");
+      setGeneratedContent(null);
     } catch (error) {
       console.error(error);
     } finally {
@@ -85,29 +112,178 @@ export default function KitsPage() {
   };
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-slate-900 mb-2">
-            Gestão de <span className="text-primary italic">Kits</span>
-          </h1>
-          <p className="text-slate-500 font-medium">
-            Organize materiais, recursos visuais e listas de compras do clube.
-          </p>
+    <div className="space-y-12 max-w-7xl mx-auto pb-20">
+      {/* ─── HEADER ─── */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-100 pb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+            <Package size={24} />
+          </div>
+          <div>
+            <div className="flex items-center gap-2 text-[10px] font-black text-slate-600 uppercase tracking-widest mb-1">
+              Painel IA / Ferramentas
+            </div>
+            <h1 className="text-3xl font-black text-slate-900 leading-none">
+              Portal{" "}
+              <span className="text-primary uppercase tracking-tighter">
+                Desbravadores
+              </span>
+            </h1>
+          </div>
         </div>
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            className="gap-2 h-14 px-6 border-amber-100 text-slate-600 font-bold rounded-2xl"
-          >
-            <ShoppingCart size={18} /> Lista de Compras
-          </Button>
-          <Button
-            className="gap-2 h-14 px-8 font-black uppercase tracking-widest shadow-xl shadow-primary/20"
-            onClick={() => setShowModal(true)}
-          >
-            <Plus size={18} /> Novo Kit
-          </Button>
+
+        <div className="flex items-center gap-3">
+          <button className="p-3 bg-slate-50 text-slate-400 rounded-xl hover:bg-slate-100 transition-all">
+            <Plus size={20} />
+          </button>
+          <div className="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-2xl">
+            <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white font-black text-xs uppercase">
+              U
+            </div>
+            <div className="text-left hidden sm:block">
+              <p className="text-[10px] font-black text-slate-900 uppercase leading-none">
+                Diretor
+              </p>
+              <p className="text-[9px] font-bold text-slate-400 uppercase">
+                Configurações
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        {/* ─── LEFT SIDE: CONFIG ─── */}
+        <Card className="bg-white rounded-[3rem] p-12 border-none shadow-2xl shadow-slate-200/50">
+          <div className="flex items-center gap-4 mb-10">
+            <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500 shadow-lg shadow-orange-500/10">
+              <Zap size={32} />
+            </div>
+            <div>
+              <h2 className="text-2xl md:text-4xl font-black text-slate-900 leading-tight">
+                FÁBRICA DE KITS
+              </h2>
+              <p className="text-slate-700 font-medium">
+                Gere materiais pedagógicos, listas de compras e passos de
+                atividades.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-8">
+            <div>
+              <label className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-4 block">
+                Tema ou Especialidade
+              </label>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ex: Kit de Primeiros Socorros"
+                className="h-16 bg-slate-50 border-none rounded-2xl px-6 text-lg font-bold text-slate-700 placeholder:text-slate-300 shadow-inner"
+              />
+            </div>
+
+            <Button
+              onClick={handleGenerateAI}
+              disabled={isGenerating || !name}
+              className="w-full h-16 md:h-20 bg-[#D32F2F] hover:bg-[#B71C1C] text-white font-black text-lg md:text-xl uppercase tracking-widest rounded-2xl md:rounded-3xl shadow-2xl shadow-red-600/30 transition-all active:scale-95 disabled:opacity-50"
+            >
+              {isGenerating ? (
+                <Loader2 className="animate-spin mr-2" />
+              ) : (
+                "Gerar com Inteligência"
+              )}
+            </Button>
+          </div>
+        </Card>
+
+        {/* ─── RIGHT SIDE: RESULTS ─── */}
+        <Card className="bg-slate-50/50 rounded-[2rem] md:rounded-[3rem] p-6 md:p-12 border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[400px] md:min-h-[500px]">
+          <AnimatePresence mode="wait">
+            {!generatedContent && !isGenerating ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="space-y-4"
+              >
+                <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center text-slate-600 mx-auto border border-slate-100 shadow-xl">
+                  <Sparkles size={40} />
+                </div>
+                <p className="text-slate-600 font-bold uppercase text-xs tracking-widest">
+                  Aguardando sua ideia...
+                </p>
+              </motion.div>
+            ) : isGenerating ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex flex-col items-center gap-6"
+              >
+                <div className="relative">
+                  <div className="w-24 h-24 border-4 border-primary/10 border-t-primary rounded-full animate-spin"></div>
+                  <Zap
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primary animate-pulse"
+                    size={32}
+                  />
+                </div>
+                <div>
+                  <p className="text-primary font-black uppercase text-sm tracking-widest mb-2">
+                    Processando
+                  </p>
+                  <p className="text-slate-600 font-medium">
+                    Consultando manuais oficiais da DSA...
+                  </p>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="w-full h-full text-left"
+              >
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center text-white">
+                      <Zap size={20} />
+                    </div>
+                    <p className="text-[10px] font-black text-green-600 uppercase tracking-widest">
+                      Análise concluída com sucesso
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handleCreateKit}
+                    className="h-10 px-6 font-black uppercase tracking-widest text-[10px]"
+                  >
+                    Salvar Kit
+                  </Button>
+                </div>
+                <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-xl prose prose-slate max-w-none prose-sm">
+                  {generatedContent?.split("\n").map((line, i) => (
+                    <p
+                      key={i}
+                      className="mb-2 last:mb-0 font-medium text-slate-600"
+                    >
+                      {line}
+                    </p>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Decorative gradients */}
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-orange-100/50 blur-[120px] rounded-full pointer-events-none" />
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-100/50 blur-[120px] rounded-full pointer-events-none" />
+        </Card>
+      </div>
+
+      <div className="pt-12">
+        <div className="flex items-center gap-4 mb-8">
+          <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight">
+            Meus <span className="text-primary italic">Kits Salvos</span>
+          </h2>
+          <div className="h-px flex-1 bg-slate-100"></div>
         </div>
       </div>
 

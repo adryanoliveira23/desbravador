@@ -12,11 +12,14 @@ import {
   Globe,
   CheckCircle2,
   ArrowRight,
-  ChevronRight,
   ChevronDown,
   Zap,
   Bot,
   Check,
+  Compass,
+  Tent,
+  BookOpen,
+  Trophy,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -24,6 +27,38 @@ import { cn } from "@/lib/utils";
 /* ============================================================
    DATA
    ============================================================ */
+
+const ideals = [
+  {
+    title: "Voto",
+    text: "Pela graça de Deus, serei puro, bondoso e leal; guardarei a lei do Desbravador, serei servo de Deus e amigo de todos.",
+    color: "from-blue-600 to-blue-400",
+  },
+  {
+    title: "Lei",
+    text: "A Lei do Desbravador ordena-me: Observar a devoção matinal; Cumprir com fidelidade a parte que me corresponde...",
+    color: "from-yellow-600 to-yellow-400",
+  },
+  {
+    title: "Alvo",
+    text: "A mensagem do advento a todo o mundo em minha geração.",
+    color: "from-red-600 to-red-400",
+  },
+  {
+    title: "Lema",
+    text: "O amor de Cristo me motiva.",
+    color: "from-emerald-600 to-emerald-400",
+  },
+];
+
+const classes = [
+  { name: "Amigo", color: "bg-blue-600" },
+  { name: "Companheiro", color: "bg-red-600" },
+  { name: "Pesquisador", color: "bg-emerald-600" },
+  { name: "Pioneiro", color: "bg-gray-600" },
+  { name: "Excursionista", color: "bg-purple-600" },
+  { name: "Guia", color: "bg-yellow-500" },
+];
 
 const plans = [
   {
@@ -129,39 +164,36 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-inter selection:bg-primary/10 overflow-x-hidden">
+    <div className="min-h-screen bg-[#0A0D14] text-white font-inter selection:bg-blue-500/30 overflow-x-hidden">
       {/* ─── NAVIGATION ─── */}
       <nav
         className={cn(
           "fixed top-0 w-full z-50 transition-all duration-500",
           scrolled
-            ? "bg-white/80 backdrop-blur-xl border-b border-slate-200/60 shadow-sm py-3"
-            : "bg-transparent py-5",
+            ? "bg-[#0A0D14]/80 backdrop-blur-xl border-b border-white/5 shadow-2xl py-3"
+            : "bg-transparent py-6",
         )}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-5 md:px-8">
+        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 md:px-10">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-gradient-to-br from-primary to-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-primary/25">
-              <Zap size={18} className="text-white fill-current" />
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
+              <Zap size={20} className="text-white fill-current" />
             </div>
-            <div className="flex flex-col leading-none">
-              <span className="font-bebas text-xl tracking-wide text-slate-900">
-                DESBRAVA <span className="text-primary">TOTAL</span>
-              </span>
-              <span className="text-[8px] font-semibold tracking-[0.2em] text-slate-400 uppercase">
-                Management System
+            <div className="flex flex-col leading-tight">
+              <span className="font-extrabold text-2xl tracking-tight text-white">
+                DESBRAVA<span className="text-blue-500">TOTAL</span>
               </span>
             </div>
           </Link>
 
           {/* Desktop links */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-10">
             {navLinks.map((l) => (
               <Link
                 key={l.label}
                 href={l.href}
-                className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors"
+                className="text-sm font-semibold text-slate-400 hover:text-white transition-colors"
               >
                 {l.label}
               </Link>
@@ -169,29 +201,29 @@ export default function LandingPage() {
           </div>
 
           {/* Desktop actions */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-4">
             <Link
               href="/auth"
-              className="text-sm font-semibold text-slate-600 hover:text-primary transition-colors px-4 py-2"
+              className="text-sm font-bold text-slate-300 hover:text-white transition-colors px-5 py-2.5"
             >
-              Acessar
+              Entrar
             </Link>
             <Link
               href="#pricing"
-              className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all shadow-lg shadow-slate-900/20 hover:shadow-xl hover:shadow-slate-900/30"
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-blue-600/20 active:scale-95"
             >
               Começar Agora
-              <ArrowRight size={16} />
+              <ArrowRight size={18} />
             </Link>
           </div>
 
           {/* Mobile hamburger */}
           <button
             onClick={() => setMobileMenu(!mobileMenu)}
-            className="md:hidden p-2 text-slate-600"
+            className="md:hidden p-2 text-slate-400 hover:text-white transition-colors"
             aria-label="Menu"
           >
-            {mobileMenu ? <X size={24} /> : <Menu size={24} />}
+            {mobileMenu ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
 
@@ -199,37 +231,38 @@ export default function LandingPage() {
         <AnimatePresence>
           {mobileMenu && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-white border-t border-slate-100 overflow-hidden"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="md:hidden bg-[#0A0D14] border-t border-white/5 absolute w-full shadow-2xl"
             >
-              <div className="px-5 py-4 space-y-1">
+              <div className="px-6 py-8 space-y-2">
                 {navLinks.map((l) => (
                   <Link
                     key={l.label}
                     href={l.href}
                     onClick={() => setMobileMenu(false)}
-                    className="block py-3 text-base font-medium text-slate-600 hover:text-primary transition-colors"
+                    className="block py-4 text-lg font-bold text-slate-300 hover:text-white border-b border-white/5"
                   >
                     {l.label}
                   </Link>
                 ))}
-                <hr className="border-slate-100 my-2" />
-                <Link
-                  href="/auth"
-                  onClick={() => setMobileMenu(false)}
-                  className="block py-3 text-base font-medium text-slate-600"
-                >
-                  Acessar
-                </Link>
-                <Link
-                  href="#pricing"
-                  onClick={() => setMobileMenu(false)}
-                  className="block mt-2 text-center bg-slate-900 text-white font-semibold py-3 rounded-xl"
-                >
-                  Começar Agora
-                </Link>
+                <div className="pt-6 space-y-4">
+                  <Link
+                    href="/auth"
+                    onClick={() => setMobileMenu(false)}
+                    className="block text-center py-4 text-lg font-bold text-slate-300"
+                  >
+                    Entrar
+                  </Link>
+                  <Link
+                    href="#pricing"
+                    onClick={() => setMobileMenu(false)}
+                    className="block text-center bg-blue-600 text-white font-bold py-4 rounded-2xl text-lg shadow-xl shadow-blue-600/20"
+                  >
+                    Começar Agora
+                  </Link>
+                </div>
               </div>
             </motion.div>
           )}
@@ -237,181 +270,428 @@ export default function LandingPage() {
       </nav>
 
       {/* ─── HERO ─── */}
-      <section className="relative pt-40 pb-20 md:pt-48 md:pb-32 px-5 md:px-8 bg-white">
-        <div className="max-w-4xl mx-auto text-center relative z-10">
+      <section className="relative pt-44 pb-24 md:pt-60 md:pb-40 px-6 md:px-10 overflow-hidden">
+        {/* Abstract Background Decor */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] pointer-events-none opacity-40">
+          <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-blue-600/20 blur-[140px] rounded-full" />
+        </div>
+
+        <div className="max-w-5xl mx-auto text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900/5 backdrop-blur-sm border border-slate-900/10 text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-10">
-              <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-              Versão 5.0 — IA integrada
+            {/* Notion-style floating icons placeholder logic */}
+            <div className="relative mb-14 inline-block">
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="absolute -top-16 -left-20 w-16 h-16 bg-[#1A1F2B] rounded-2xl flex items-center justify-center p-3 border border-white/5 shadow-2xl rotate-[-12deg]"
+              >
+                <Compass className="text-yellow-500" size={32} />
+              </motion.div>
+              <motion.div
+                animate={{ y: [0, 10, 0] }}
+                transition={{
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 0.5,
+                }}
+                className="absolute -top-12 -right-20 w-14 h-14 bg-[#1A1F2B] rounded-2xl flex items-center justify-center p-3 border border-white/5 shadow-2xl rotate-[12deg]"
+              >
+                <Tent className="text-blue-500" size={28} />
+              </motion.div>
+
+              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-[11px] font-black text-yellow-500 uppercase tracking-[0.2em] mb-4">
+                <span className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
+                Plataforma oficial para desbravadores
+              </div>
             </div>
 
-            <h1 className="font-bebas text-6xl sm:text-7xl md:text-8xl tracking-tight leading-[0.9] text-slate-900 mb-8 uppercase">
-              ESTÁ CANSADO DE <br />
-              <span className="text-primary italic">PROCURAR MATERIAIS?</span>
+            <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-[92px] font-bebas tracking-wide leading-[0.9] text-white mb-10 uppercase">
+              Gerencie seu Clube <br />
+              <span className="text-yellow-500">com excelência.</span>
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl text-slate-500 max-w-2xl mx-auto mb-12 leading-relaxed font-inter">
+            <p className="text-lg sm:text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto mb-16 leading-relaxed font-medium">
               A plataforma Desbrava Total une tecnologia e materiais oficiais
-              para você focar no que importa:{" "}
-              <span className="text-slate-900 font-bold">
+              para você focar no que realmente importa:{" "}
+              <span className="text-white font-bold">
                 Salvar do Pecado e Guiar no Serviço.
               </span>
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-5 justify-center items-center mb-24">
+            <div className="flex flex-col sm:flex-row gap-5 justify-center items-center mb-28">
               <Link
-                href="#pricing"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary hover:bg-red-700 text-white font-bold px-10 py-5 rounded-2xl text-lg transition-all shadow-xl shadow-primary/25"
+                href="/auth"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-black px-12 py-5 rounded-2xl text-xl transition-all shadow-2xl shadow-blue-600/30 active:scale-95"
               >
-                Ver Planos
-                <ChevronRight size={20} />
+                Crie uma conta gratuita
+                <ArrowRight size={20} />
               </Link>
-              <Link
-                href="#funcionalidades"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white border-2 border-slate-100 hover:border-slate-200 text-slate-900 font-bold px-10 py-5 rounded-2xl text-lg transition-all shadow-sm"
-              >
-                Explorar Ferramentas
-              </Link>
-            </div>
-
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-              {[
-                { label: "Classes Completas", value: "6" },
-                { label: "Especialidades", value: "200+" },
-                { label: "Material Oficial", value: "100%" },
-              ].map((stat, i) => (
-                <div
-                  key={i}
-                  className="bg-white border border-slate-100 rounded-[2rem] p-10 shadow-xl shadow-slate-200/20"
-                >
-                  <p className="font-bebas text-7xl md:text-8xl text-[#FDB022] mb-4">
-                    {stat.value}
-                  </p>
-                  <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">
-                    {stat.label}
-                  </p>
-                </div>
-              ))}
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* ─── DASHBOARD PREVIEW ─── */}
+      <section className="py-24 bg-[#0A0D14] relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 md:px-10">
+          <div className="relative group">
+            {/* Glow effects */}
+            <div className="absolute -inset-4 bg-gradient-to-r from-blue-600/20 to-yellow-500/20 rounded-[3rem] blur-3xl opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
+
+            <div className="relative bg-[#0D111A] border border-white/10 rounded-[2.5rem] shadow-2xl p-4 md:p-8 overflow-hidden">
+              {/* Fake Browser Top Bar */}
+              <div className="flex items-center gap-2 mb-6 px-4">
+                <div className="w-3 h-3 rounded-full bg-red-500/50" />
+                <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
+                <div className="w-3 h-3 rounded-full bg-green-500/50" />
+                <div className="ml-4 flex-1 h-8 bg-white/5 rounded-lg border border-white/5 flex items-center px-4 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                  portal.desbravatotal.com.br
+                </div>
+              </div>
+
+              {/* Mock Dashboard Layout */}
+              <div className="grid grid-cols-12 gap-6">
+                {/* Sidebar Mock */}
+                <div className="hidden md:block col-span-3 space-y-4">
+                  <div className="h-12 w-full bg-blue-600/10 rounded-xl border border-blue-500/20" />
+                  <div className="space-y-2">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <div
+                        key={i}
+                        className="h-10 w-full bg-white/5 rounded-xl transition-all hover:bg-white/10"
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Main Content Mock */}
+                <div className="col-span-12 md:col-span-9 space-y-6">
+                  {/* Stats Row */}
+                  <div className="grid grid-cols-3 gap-4">
+                    {[1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className="h-24 bg-white/5 rounded-2xl border border-white/10 p-4 space-y-2"
+                      >
+                        <div className="w-8 h-8 bg-blue-500/10 rounded-lg" />
+                        <div className="h-4 w-3/4 bg-white/10 rounded" />
+                      </div>
+                    ))}
+                  </div>
+                  {/* Center Content */}
+                  <div className="h-80 bg-gradient-to-br from-white/5 to-transparent rounded-3xl border border-white/10 p-8">
+                    <div className="flex justify-between items-start mb-12">
+                      <div className="space-y-4 w-full">
+                        <div className="h-8 w-1/3 bg-white/10 rounded-xl" />
+                        <div className="h-4 w-1/2 bg-white/5 rounded-lg" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-8">
+                      <div className="h-32 bg-white/5 rounded-2xl border border-white/5 animate-pulse" />
+                      <div className="h-32 bg-white/5 rounded-2xl border border-white/5 animate-pulse delay-75" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature Badge */}
+              <div className="absolute bottom-12 right-12 flex flex-col items-end gap-3 z-20">
+                <div className="bg-blue-600 text-white font-black px-6 py-3 rounded-2xl shadow-xl shadow-blue-600/40 text-sm uppercase tracking-widest flex items-center gap-3">
+                  <Zap size={18} fill="currentColor" />
+                  Interface 100% Responsiva
+                </div>
+                <div className="bg-yellow-500 text-slate-900 font-black px-6 py-3 rounded-2xl shadow-xl shadow-yellow-500/40 text-sm uppercase tracking-widest">
+                  Materiais Oficiais DSA
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-16 text-center">
+            <h3 className="font-bebas text-4xl md:text-5xl text-white mb-4 uppercase">
+              UMA EXPERIÊNCIA <span className="text-blue-500">DIGITAL</span>{" "}
+              COMPLETA
+            </h3>
+            <p className="text-slate-400 font-medium max-w-2xl mx-auto">
+              Desenvolvido por quem vive o clube, para quem lidera o clube. Uma
+              interface moderna que reflete a seriedade e o brilho do
+              ministério.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── IDEAIS SECTION ─── */}
+      <section className="py-24 bg-[#0D111A] border-y border-white/5">
+        <div className="max-w-7xl mx-auto px-6 md:px-10">
+          <div className="text-center mb-16">
+            <h2 className="font-bebas text-5xl md:text-6xl text-white uppercase tracking-wider">
+              Nossos <span className="text-yellow-500">Ideais</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {ideals.map((ideal, i) => (
+              <div
+                key={i}
+                className="bg-[#161C2C] border border-white/5 p-8 rounded-[2rem] hover:border-yellow-500/30 transition-all"
+              >
+                <h3 className="font-bebas text-3xl text-yellow-500 mb-4 tracking-widest">
+                  {ideal.title}
+                </h3>
+                <p className="text-slate-400 text-sm leading-relaxed font-medium">
+                  {ideal.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── CLASSES SECTION ─── */}
+      <section className="py-24 bg-[#0A0D14]">
+        <div className="max-w-7xl mx-auto px-6 md:px-10 text-center">
+          <h2 className="font-bebas text-5xl md:text-6xl text-white uppercase tracking-wider mb-16">
+            Classes <span className="text-blue-500">Oficiais</span>
+          </h2>
+          <div className="flex flex-wrap justify-center gap-4">
+            {classes.map((cls, i) => (
+              <div key={i} className="flex flex-col items-center gap-4">
+                <div
+                  className={cn(
+                    "w-20 h-20 md:w-28 md:h-28 rounded-2xl flex items-center justify-center shadow-2xl transition-transform hover:scale-110",
+                    cls.color,
+                  )}
+                >
+                  <Trophy className="text-white/80" size={40} />
+                </div>
+                <span className="font-bold text-sm text-slate-300">
+                  {cls.name}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── SPECIALTIES SECTION ─── */}
+      <section className="py-24 bg-[#0D111A] border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-6 md:px-10">
+          <div className="text-center mb-16">
+            <h2 className="font-bebas text-5xl md:text-6xl text-white uppercase tracking-wider">
+              Explore <span className="text-yellow-500">Especialidades</span>
+            </h2>
+            <p className="text-slate-400 mt-4 font-medium">
+              Mais de 200 especialidades organizadas para o crescimento do seu
+              clube.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+            {[
+              "Natureza",
+              "Artes",
+              "Saúde",
+              "Habilidades",
+              "Ciência",
+              "Ativ. Missionárias",
+              "Ativ. Agrícolas",
+              "Mestrados",
+            ].map((spec, i) => (
+              <div
+                key={i}
+                className="bg-[#111622] border border-white/5 p-4 rounded-xl text-center group hover:border-blue-500/50 transition-all cursor-default"
+              >
+                <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-blue-500/10">
+                  <BookOpen size={20} className="text-blue-400" />
+                </div>
+                <span className="text-[10px] font-black uppercase text-slate-500 group-hover:text-white transition-colors">
+                  {spec}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── LIBRARY SECTION ─── */}
+      <section className="py-24 bg-[#0A0D14] border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-6 md:px-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="order-2 lg:order-1">
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+              >
+                <h2 className="font-bebas text-5xl md:text-7xl text-white leading-none mb-8">
+                  ACERVO <br />
+                  <span className="text-yellow-500 italic">
+                    COMPLETO E INTEGRADO
+                  </span>
+                </h2>
+                <p className="text-lg text-slate-400 mb-10 leading-relaxed font-medium">
+                  Tenha acesso a todos os manuais administrativos, cartões de
+                  requisitos e orientações pedagógicas em um só lugar.
+                  Facilitamos a burocracia para você focar na missão.
+                </p>
+                <div className="space-y-6">
+                  {[
+                    {
+                      title: "Manuais Administrativos",
+                      desc: "Regulamentos e orientações oficiais",
+                    },
+                    {
+                      title: "Cartões de Classe",
+                      desc: "Acompanhamento digital de requisitos",
+                    },
+                    {
+                      title: "Gabaritos e Orientações",
+                      desc: "Suporte total para os instrutores",
+                    },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 shrink-0 border border-blue-500/20">
+                        <Check size={20} />
+                      </div>
+                      <div>
+                        <h4 className="font-black text-white text-sm uppercase tracking-wide">
+                          {item.title}
+                        </h4>
+                        <p className="text-xs text-slate-500">{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+            <div className="order-1 lg:order-2">
+              <div className="relative">
+                <div className="absolute inset-0 bg-blue-500/20 blur-[100px] rounded-full" />
+                <div className="relative bg-[#111622] rounded-[3rem] p-12 border border-white/5 shadow-2xl">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5">
+                      <BookOpen size={40} className="text-blue-400 mb-4" />
+                      <span className="text-[10px] font-black text-slate-400 uppercase">
+                        Manuais
+                      </span>
+                    </div>
+                    <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5">
+                      <Trophy size={40} className="text-yellow-500 mb-4" />
+                      <span className="text-[10px] font-black text-slate-400 uppercase">
+                        Insignias
+                      </span>
+                    </div>
+                    <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5">
+                      <Globe size={40} className="text-emerald-400 mb-4" />
+                      <span className="text-[10px] font-black text-slate-400 uppercase">
+                        Global
+                      </span>
+                    </div>
+                    <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5">
+                      <Compass size={40} className="text-red-500 mb-4" />
+                      <span className="text-[10px] font-black text-slate-400 uppercase">
+                        Explorar
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* ─── PLATFORM OFFERS ─── */}
       <section
         id="funcionalidades"
-        className="py-24 md:py-32 px-5 md:px-8 bg-white border-t border-slate-50"
+        className="py-24 md:py-32 px-6 md:px-10 bg-[#0A0D14] border-t border-white/5"
       >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 md:mb-20">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-xs font-bold mb-6">
-              <span className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 text-blue-400 text-xs font-black uppercase tracking-widest mb-6">
+              <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
               Recursos Premium
             </div>
-            <h2 className="font-bebas text-5xl sm:text-6xl md:text-7xl tracking-wide text-slate-900 mb-6 uppercase">
-              O QUE A PLATAFORMA <span className="text-[#FDB022]">OFERECE</span>
+            <h2 className="text-5xl sm:text-6xl md:text-7xl font-bebas tracking-tight text-white mb-6 uppercase">
+              O que a plataforma{" "}
+              <span className="text-yellow-500">oferece.</span>
             </h2>
-            <p className="text-lg text-slate-500 font-inter leading-relaxed">
-              Tudo que você precisa para conduzir seu clube com excelência
+            <p className="text-lg md:text-xl text-slate-400 font-medium leading-relaxed max-w-2xl mx-auto">
+              Tudo que você precisa para conduzir seu clube com excelência e
+              modernidade.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
-                title: "Classes de Amigo a Guia",
+                title: "Suporte Total",
                 desc: "Requisitos e orientações integrados para todas as etapas da jornada.",
                 icon: Globe,
-                color: "bg-blue-600",
+                color: "text-blue-500",
+                bg: "bg-blue-500/5",
               },
               {
-                title: "Vasto Acervo Acadêmico",
+                title: "Acervo Acadêmico",
                 desc: "Material estruturado em diversas áreas para expandir conhecimentos.",
                 icon: Monitor,
-                color: "bg-purple-500",
+                color: "text-purple-500",
+                bg: "bg-purple-500/5",
               },
               {
                 title: "Central de Avaliações",
                 desc: "Modelos de testes inspirados nos padrões oficiais para validar o aprendizado.",
                 icon: BrainCircuit,
-                color: "bg-green-500",
+                color: "text-emerald-500",
+                bg: "bg-emerald-500/5",
               },
               {
-                title: "Interface de Alto Nível",
+                title: "Interface Business",
                 desc: "Navegação moderna e fluida, desenhada para máxima produtividade.",
                 icon: Zap,
-                color: "bg-orange-500",
+                color: "text-orange-500",
+                bg: "bg-orange-500/5",
               },
               {
                 title: "Emissor de Certificados",
                 desc: "Gere documentos prontos para impressão com apenas um clique.",
                 icon: CheckCircle2,
-                color: "bg-primary",
+                color: "text-blue-400",
+                bg: "bg-blue-400/5",
               },
               {
                 title: "Controle Administrativo",
                 desc: "Gestão completa de membros, secretaria e progresso individual.",
                 icon: Shield,
-                color: "bg-slate-900",
-              },
-              {
-                title: "Gestão para Diretoria",
-                desc: "Recursos estratégicos exclusivos para a coordenação do Clube.",
-                icon: Shield,
-                color: "bg-blue-900",
-              },
-              {
-                title: "Suporte ao Instrutor",
-                desc: "Acompanhamento e suporte completo para o ensino de classes.",
-                icon: MessageCircle,
-                color: "bg-blue-500",
-              },
-              {
-                title: "Foco na Unidade",
-                desc: "Espaço dedicado para o acompanhamento próximo de cada unidade.",
-                icon: MessageCircle,
-                color: "bg-indigo-500",
-              },
-              {
-                title: "Orientações Pedagógicas",
-                desc: "Respostas detalhadas e guias de ensino para todos os materiais.",
-                icon: Check,
-                color: "bg-emerald-600",
-              },
-              {
-                title: "Evolução Contínua",
-                desc: "Plataforma em constante atualização com novas funções e dados.",
-                icon: ArrowRight,
-                color: "bg-emerald-500",
-              },
-              {
-                title: "Canais de Suporte",
-                desc: "Atendimento dedicado para garantir sua melhor experiência.",
-                icon: MessageCircle,
-                color: "bg-red-500",
+                color: "text-slate-300",
+                bg: "bg-slate-300/5",
               },
             ].map((feat, i) => (
               <div
                 key={i}
-                className="bg-white border border-slate-100 rounded-[2rem] p-8 shadow-sm hover:shadow-xl hover:shadow-slate-200/40 transition-all group"
+                className="bg-[#111622] border border-white/5 rounded-[2.5rem] p-10 hover:border-blue-500/30 transition-all group"
               >
                 <div
                   className={cn(
-                    "w-12 h-12 rounded-xl flex items-center justify-center mb-6 text-white shadow-lg",
+                    "w-14 h-14 rounded-2xl flex items-center justify-center mb-8 shadow-2xl",
+                    feat.bg,
                     feat.color,
                   )}
                 >
-                  <feat.icon size={24} />
+                  <feat.icon size={28} />
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">
+                <h3 className="text-xl font-bebas text-white mb-3 tracking-widest uppercase">
                   {feat.title}
                 </h3>
-                <p className="text-xs text-slate-500 leading-relaxed font-inter">
+                <p className="text-sm text-slate-400 leading-relaxed font-medium">
                   {feat.desc}
                 </p>
               </div>
@@ -420,103 +700,18 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-24 md:py-32 bg-slate-50 border-y border-slate-100">
-        <div className="max-w-7xl mx-auto px-5 md:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold mb-6 uppercase tracking-widest">
-                Gestão Moderna
-              </div>
-              <h2 className="font-bebas text-5xl md:text-7xl tracking-wide text-slate-900 mb-8 uppercase leading-[0.95]">
-                DASHBOARD <br />
-                <span className="text-primary italic">
-                  INTUITIVO E COMPLETO
-                </span>
-              </h2>
-              <p className="text-lg text-slate-500 font-inter mb-10 leading-relaxed">
-                Nossa interface foi desenhada para facilitar o dia a dia.
-                Recupere o controle sobre a burocracia e foque no
-                desenvolvimento físico, mental e espiritual de cada desbravador.
-              </p>
-
-              <div className="space-y-6 mb-10">
-                {[
-                  {
-                    title: "Automação Administrativa",
-                    desc: "Visão 360º de tudo que acontece no Clube",
-                  },
-                  {
-                    title: "Acompanhamento Acadêmico",
-                    desc: "Gestão inteligente de classes e requisitos",
-                  },
-                  {
-                    title: "Foco na Unidade",
-                    desc: "Controle simplificado para conselheiros",
-                  },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-primary shrink-0">
-                      <Zap size={20} fill="currentColor" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-slate-900">{item.title}</h4>
-                      <p className="text-sm text-slate-500">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <Link
-                href="#pricing"
-                className="inline-flex items-center gap-3 bg-primary text-white font-bold px-8 py-4 rounded-2xl hover:bg-primary/90 transition-all shadow-lg"
-              >
-                Começar agora o teste grátis
-                <ArrowRight size={18} />
-              </Link>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              className="bg-white rounded-[3rem] p-4 shadow-2xl shadow-slate-200 border border-slate-100"
-            >
-              <div className="bg-slate-900 rounded-[2.5rem] aspect-video flex items-center justify-center relative overflow-hidden">
-                {/* Dummy UI elements to represent premium dashboard */}
-                <div className="absolute inset-0 bg-gradient-to-br from-slate-800/50 to-transparent p-8 flex flex-col justify-end">
-                  <div className="w-2/3 h-4 bg-white/20 rounded-full mb-3" />
-                  <div className="w-1/2 h-4 bg-white/10 rounded-full" />
-                </div>
-                <div className="relative z-10 text-center">
-                  <div className="w-20 h-20 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-primary/30">
-                    <Zap
-                      size={40}
-                      className="text-primary"
-                      fill="currentColor"
-                    />
-                  </div>
-                  <span className="text-white font-bebas text-2xl tracking-widest">
-                    ECOSSISTEMA DIGITAL
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-      <section id="pricing" className="py-24 md:py-32 px-5 md:px-8 bg-slate-50">
+      <section
+        id="pricing"
+        className="py-24 md:py-32 px-6 md:px-10 bg-[#0A0D14] border-t border-white/5"
+      >
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16 md:mb-20">
-            <p className="text-sm font-bold text-blue-600 mb-3 uppercase tracking-widest">
+          <div className="text-center mb-20">
+            <p className="text-xs font-black text-blue-500 mb-4 uppercase tracking-[0.3em]">
               Planos e Investimento
             </p>
-            <h2 className="font-bebas text-5xl sm:text-6xl md:text-7xl tracking-wide text-slate-900 mb-6 uppercase">
-              ESCOLHA O MELHOR PARA{" "}
-              <span className="text-primary">SEU CLUBE</span>
+            <h2 className="text-5xl sm:text-6xl md:text-7xl font-bebas text-white mb-6 uppercase tracking-wider">
+              Escolha o melhor para <br />
+              <span className="text-yellow-500">seu clube.</span>
             </h2>
           </div>
 
@@ -525,33 +720,39 @@ export default function LandingPage() {
               <div
                 key={i}
                 className={cn(
-                  "bg-white rounded-[2.5rem] p-10 border border-slate-100 transition-all hover:shadow-2xl hover:shadow-slate-200/50",
-                  plan.popular &&
-                    "border-primary/20 shadow-xl shadow-primary/5 ring-1 ring-primary/10",
+                  "bg-[#111622] rounded-[3rem] p-10 border border-white/5 transition-all hover:scale-[1.02] relative overflow-hidden",
+                  plan.popular && "border-blue-500/30 bg-[#161C2C]",
                 )}
               >
-                <div className="mb-8">
-                  <h3 className="font-bebas text-3xl text-slate-900 mb-2">
+                {plan.popular && (
+                  <div className="absolute top-0 right-0 bg-blue-600 text-white text-[10px] font-black px-4 py-1 rounded-bl-xl uppercase tracking-widest">
+                    Mais Popular
+                  </div>
+                )}
+                <div className="mb-10">
+                  <h3 className="text-3xl font-bebas text-white mb-2 tracking-widest uppercase">
                     {plan.name}
                   </h3>
-                  <p className="text-sm text-slate-500 font-inter">
+                  <p className="text-sm text-slate-400 font-medium">
                     {plan.description}
                   </p>
                 </div>
 
                 <div className="flex items-baseline gap-1 mb-10">
-                  <span className="text-2xl font-bold text-slate-900">R$</span>
-                  <span className="font-bebas text-6xl text-slate-900">
+                  <span className="text-2xl font-black text-white">R$</span>
+                  <span className="text-7xl font-black text-white tracking-tighter">
                     {plan.price}
                   </span>
-                  <span className="text-slate-400 font-medium ml-2">/mês</span>
+                  <span className="text-slate-500 font-bold ml-2">/mês</span>
                 </div>
 
-                <div className="space-y-4 mb-10">
-                  {plan.features.map((feat, j) => (
-                    <div key={j} className="flex items-center gap-3">
-                      <Check size={18} className="text-green-500" />
-                      <span className="text-sm text-slate-600 font-medium">
+                <div className="space-y-5 mb-12">
+                  {plan.features.slice(0, 6).map((feat, j) => (
+                    <div key={j} className="flex items-center gap-4">
+                      <div className="w-5 h-5 rounded-full bg-blue-500/10 flex items-center justify-center">
+                        <Check size={14} className="text-blue-500" />
+                      </div>
+                      <span className="text-sm text-slate-300 font-bold">
                         {feat}
                       </span>
                     </div>
@@ -561,17 +762,14 @@ export default function LandingPage() {
                 <Link
                   href={plan.link}
                   className={cn(
-                    "block w-full text-center py-5 rounded-2xl font-bold uppercase tracking-widest text-sm transition-all shadow-lg",
+                    "block w-full text-center py-5 rounded-2xl font-black uppercase tracking-widest text-sm transition-all",
                     plan.popular
-                      ? "bg-primary text-white hover:bg-red-700 shadow-primary/20"
-                      : "bg-slate-900 text-white hover:bg-slate-800 shadow-slate-900/10",
+                      ? "bg-blue-600 text-white hover:bg-blue-500 shadow-xl shadow-blue-600/20"
+                      : "bg-white/5 text-white hover:bg-white/10 border border-white/10",
                   )}
                 >
-                  Escolher Plano
+                  Selecionar
                 </Link>
-                <p className="text-center text-[10px] text-slate-400 mt-4 font-medium uppercase tracking-widest">
-                  Garantia de 7 dias • Pagamento Seguro
-                </p>
               </div>
             ))}
           </div>
@@ -579,30 +777,31 @@ export default function LandingPage() {
       </section>
 
       {/* ─── FINAL CTA ─── */}
-      <section className="py-20 bg-primary">
-        <div className="max-w-4xl mx-auto text-center px-5">
-          <h2 className="font-bebas text-4xl md:text-6xl text-white mb-8">
-            PRONTO PARA REVOLUCIONAR O SEU CLUBE?
+      <section className="py-24 bg-blue-600 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-700 to-blue-500 opacity-50" />
+        <div className="max-w-4xl mx-auto text-center px-6 relative z-10">
+          <h2 className="text-5xl md:text-7xl font-bebas text-white mb-10 tracking-tight uppercase">
+            Pronto para revolucionar o seu clube?
           </h2>
           <Link
-            href="#pricing"
-            className="inline-flex items-center gap-3 bg-white text-primary font-bold px-12 py-6 rounded-2xl text-xl hover:bg-slate-50 transition-all shadow-2xl"
+            href="/auth"
+            className="inline-flex items-center gap-4 bg-blue-600 hover:bg-blue-500 text-white font-black px-14 py-6 rounded-2xl text-2xl transition-all shadow-2xl active:scale-95"
           >
             QUERO ACESSAR AGORA
-            <ArrowRight size={24} />
+            <ArrowRight size={28} />
           </Link>
-          <p className="text-white/80 text-sm mt-6 font-medium">
-            Junte-se a mais de 1.200 clubes em todo o Brasil.
+          <p className="text-blue-100 text-sm mt-8 font-black uppercase tracking-widest opacity-80">
+            Junte-se a centenas de clubes em todo o Brasil.
           </p>
         </div>
       </section>
 
       {/* ─── FAQ ─── */}
-      <section id="faq" className="py-24 md:py-32 px-5 md:px-8 bg-white">
+      <section id="faq" className="py-24 md:py-32 px-6 md:px-10 bg-[#0A0D14]">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-bebas text-5xl sm:text-6xl tracking-wide text-slate-900 uppercase">
-              PERGUNTAS <span className="text-primary">FREQUENTES</span>
+            <h2 className="text-5xl font-bebas text-white uppercase tracking-wider">
+              Perguntas <span className="text-yellow-500">frequentes.</span>
             </h2>
           </div>
 
@@ -610,18 +809,18 @@ export default function LandingPage() {
             {faqItems.map((item, i) => (
               <div
                 key={i}
-                className="border border-slate-100 rounded-3xl overflow-hidden"
+                className="bg-[#111622] border border-white/5 rounded-[2rem] overflow-hidden"
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between p-7 text-left hover:bg-slate-50 transition-colors"
+                  className="w-full flex items-center justify-between p-8 text-left hover:bg-white/5 transition-colors"
                 >
-                  <span className="font-bold text-slate-900">{item.q}</span>
+                  <span className="font-bold text-lg text-white">{item.q}</span>
                   <ChevronDown
-                    size={20}
+                    size={24}
                     className={cn(
-                      "transition-transform",
-                      openFaq === i && "rotate-180",
+                      "text-slate-500 transition-transform",
+                      openFaq === i && "rotate-180 text-blue-500",
                     )}
                   />
                 </button>
@@ -631,9 +830,8 @@ export default function LandingPage() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      className="bg-slate-50/50"
                     >
-                      <p className="p-7 pt-0 text-slate-600 leading-relaxed">
+                      <p className="p-8 pt-0 text-slate-400 font-medium leading-relaxed">
                         {item.a}
                       </p>
                     </motion.div>
@@ -653,7 +851,7 @@ export default function LandingPage() {
               <Zap size={24} fill="currentColor" />
             </div>
             <span className="font-bebas text-3xl tracking-wide">
-              DESBRAVA <span className="text-primary">TOTAL</span>
+              DESBRAVA <span className="text-yellow-500">TOTAL</span>
             </span>
           </div>
 
@@ -769,7 +967,7 @@ function AIChatBot() {
                   className={cn(
                     "max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed",
                     msg.isBot
-                      ? "bg-white border border-slate-100 text-slate-700 rounded-tl-none shadow-sm"
+                      ? "bg-white border border-slate-100 text-slate-900 rounded-tl-none shadow-sm"
                       : "bg-primary text-white ml-auto rounded-tr-none shadow-md",
                   )}
                 >
@@ -792,7 +990,7 @@ function AIChatBot() {
                   <button
                     key={opt.action}
                     onClick={() => handleAction(opt.action, opt.label)}
-                    className="text-xs font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:border-primary hover:text-primary transition-all bg-slate-50"
+                    className="text-xs font-bold px-4 py-2 rounded-lg border border-slate-200 text-slate-700 hover:border-yellow-500 hover:text-yellow-600 transition-all bg-slate-50 shadow-sm"
                   >
                     {opt.label}
                   </button>

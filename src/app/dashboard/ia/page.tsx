@@ -217,7 +217,7 @@ export default function AIHelperPage() {
             </motion.span>
             Super <span className="text-primary italic">IA</span> do Clube
           </h1>
-          <p className="text-slate-500 font-medium text-lg">
+          <p className="text-slate-700 font-medium text-lg">
             Aumente a produtividade do seu clube com inteligência avançada.
           </p>
         </div>
@@ -242,7 +242,7 @@ export default function AIHelperPage() {
               }}
               className="group text-left"
             >
-              <Card className="h-full bg-white border-slate-100 hover:border-primary/20 shadow-sm hover:shadow-2xl transition-all !p-10 rounded-[2.5rem] relative overflow-hidden">
+              <Card className="h-full bg-white border-slate-100 hover:border-primary/20 shadow-sm hover:shadow-2xl transition-all p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] relative overflow-hidden">
                 <div
                   className={cn(
                     "w-16 h-16 rounded-2xl flex items-center justify-center mb-8 transition-transform group-hover:scale-110 duration-300",
@@ -254,7 +254,7 @@ export default function AIHelperPage() {
                 <h3 className="text-2xl font-black text-slate-900 mb-3 group-hover:text-primary transition-colors uppercase tracking-tighter">
                   {tool.title}
                 </h3>
-                <p className="text-slate-400 font-bold text-sm leading-relaxed mb-8">
+                <p className="text-slate-500 font-bold text-sm leading-relaxed mb-8">
                   {tool.desc}
                 </p>
                 <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest pt-4 border-t border-slate-50">
@@ -278,7 +278,7 @@ export default function AIHelperPage() {
             >
               <X size={16} /> Voltar para ferramentas
             </button>
-            <Card className="bg-white border-slate-100 shadow-2xl shadow-slate-900/5 !p-12 rounded-[3rem]">
+            <Card className="bg-white border-slate-100 shadow-2xl shadow-slate-900/5 p-6 md:p-12 rounded-[2rem] md:rounded-[3rem]">
               <div
                 className={cn(
                   "w-14 h-14 rounded-2xl flex items-center justify-center mb-6",
@@ -290,7 +290,7 @@ export default function AIHelperPage() {
               <h2 className="text-3xl font-black text-slate-900 mb-2 uppercase tracking-tighter">
                 {activeTool.title}
               </h2>
-              <p className="text-slate-500 font-medium mb-10">
+              <p className="text-slate-700 font-medium mb-10">
                 {activeTool.desc}
               </p>
 
@@ -298,7 +298,7 @@ export default function AIHelperPage() {
                 {activeTool.id === "planner" && (
                   <>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                      <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest ml-1">
                         Tema da Reunião
                       </label>
                       <Input
@@ -311,7 +311,7 @@ export default function AIHelperPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                      <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest ml-1">
                         Idade do Público
                       </label>
                       <Input
@@ -329,7 +329,7 @@ export default function AIHelperPage() {
 
                 {activeTool.id === "kits" && (
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest ml-1">
                       Tema ou Especialidade
                     </label>
                     <Input
@@ -462,8 +462,8 @@ export default function AIHelperPage() {
                   <div className="space-y-4">
                     <div className="h-[260px] overflow-y-auto space-y-3 bg-slate-50 rounded-3xl p-4 border border-slate-100">
                       {chatHistory.length === 0 ? (
-                        <div className="h-full flex flex-col items-center justify-center text-center opacity-40 gap-3">
-                          <Bot size={36} className="text-slate-400" />
+                        <div className="h-full flex flex-col items-center justify-center text-center gap-3 py-10">
+                          <Bot size={36} className="text-slate-300" />
                           <p className="text-xs font-black text-slate-400 uppercase tracking-widest">
                             Faça uma pergunta ao assistente
                           </p>
@@ -520,7 +520,7 @@ export default function AIHelperPage() {
                     onClick={handleGenerate}
                     disabled={loading}
                     className={cn(
-                      "w-full h-16 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl transition-all",
+                      "w-full h-14 md:h-16 rounded-xl md:rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl transition-all",
                       activeTool.gradient,
                     )}
                   >
@@ -541,12 +541,15 @@ export default function AIHelperPage() {
                 Resultado da Geração
               </h3>
               {result && (
-                <button className="text-[10px] font-black text-primary uppercase tracking-widest flex items-center gap-2 hover:bg-primary/5 px-4 py-2 rounded-lg transition-all">
+                <button
+                  onClick={() => window.print()}
+                  className="text-[10px] font-black text-primary uppercase tracking-widest flex items-center gap-2 hover:bg-primary/5 px-4 py-2 rounded-lg transition-all"
+                >
                   <Printer size={14} /> Imprimir
                 </button>
               )}
             </div>
-            <Card className="flex-1 min-h-[600px] bg-slate-900 shadow-2xl shadow-slate-900/20 !p-12 rounded-[3.5rem] relative overflow-hidden group">
+            <Card className="flex-1 min-h-[500px] md:min-h-[600px] bg-slate-900 shadow-2xl shadow-slate-900/20 p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] relative overflow-hidden group">
               {/* Decorative elements */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 blur-[100px] rounded-full -mr-32 -mt-32"></div>
               <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full -ml-32 -mb-32"></div>
@@ -564,7 +567,7 @@ export default function AIHelperPage() {
                       <p className="text-sm font-black text-white uppercase tracking-[0.2em]">
                         Consultando o Oráculo
                       </p>
-                      <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">
+                      <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">
                         Isso pode levar alguns segundos...
                       </p>
                     </div>
@@ -585,6 +588,7 @@ export default function AIHelperPage() {
                       </Button>
                       <Button
                         variant="outline"
+                        onClick={() => window.print()}
                         className="flex-1 h-14 border-white/10 text-white hover:bg-white/5 font-black uppercase tracking-widest gap-2"
                       >
                         <Printer size={18} /> Imprimir
@@ -613,9 +617,9 @@ export default function AIHelperPage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
-                    <Bot size={64} className="mb-6 text-slate-600" />
-                    <p className="text-xs font-black uppercase tracking-[0.3em] max-w-[200px]">
+                  <div className="h-full flex flex-col items-center justify-center text-center gap-6">
+                    <Bot size={64} className="mb-6 text-slate-700" />
+                    <p className="text-xs font-black text-slate-500 uppercase tracking-[0.3em] max-w-[200px] leading-relaxed">
                       Aguardando informações para processar...
                     </p>
                   </div>

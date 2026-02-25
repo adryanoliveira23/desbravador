@@ -11,8 +11,9 @@ import {
   CheckCircle2,
   XCircle,
   Loader2,
-  Eye,
   Trash2,
+  Settings,
+  Crown,
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -43,6 +44,7 @@ interface AdminUser {
   credits?: number;
   whatsapp?: string;
   createdAt?: string;
+  ministry?: string;
 }
 
 export default function AdminPanel() {
@@ -53,11 +55,21 @@ export default function AdminPanel() {
   const [showModal, setShowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Creation State
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newRole, setNewRole] = useState("diretor");
   const [isCreating, setIsCreating] = useState(false);
+
+  // Edit State
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
+  const [editFullName, setEditFullName] = useState("");
+  const [editPlan, setEditPlan] = useState("");
+  const [editMinistry, setEditMinistry] = useState("");
+  const [editCredits, setEditCredits] = useState(0);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -66,7 +78,7 @@ export default function AdminPanel() {
         const uList = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-        }));
+        })) as AdminUser[];
         setUsers(uList);
         setLoading(false);
       });
@@ -106,6 +118,36 @@ export default function AdminPanel() {
     }
   };
 
+  const handleEditClick = (user: AdminUser) => {
+    setEditingUser(user);
+    setEditFullName(user.fullName || "");
+    setEditPlan(user.plan || "free");
+    setEditMinistry(user.ministry || "desbravador");
+    setEditCredits(user.credits || 0);
+    setShowEditModal(true);
+  };
+
+  const handleUpdateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUser) return;
+    setIsUpdating(true);
+    try {
+      await updateDoc(doc(db, "users", editingUser.id), {
+        fullName: editFullName,
+        plan: editPlan,
+        ministry: editMinistry,
+        credits: Number(editCredits),
+      });
+      setShowEditModal(false);
+      alert("Usuário atualizado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao atualizar usuário:", error);
+      alert("Erro ao atualizar usuário.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsCreating(true);
@@ -125,6 +167,7 @@ export default function AdminPanel() {
         createdAt: new Date().toISOString(),
         plan: "free",
         credits: 10,
+        ministry: "desbravador",
       });
 
       setShowModal(false);
@@ -185,11 +228,12 @@ export default function AdminPanel() {
   const filteredUsers = users.filter(
     (u) =>
       u.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.clubName?.toLowerCase().includes(searchTerm.toLowerCase()),
+      u.clubName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      u.fullName?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
-    <div className="min-h-screen bg-[#0c111d] text-white p-8 lg:p-12">
+    <div className="min-h-screen bg-[#0c111d] text-white p-8 lg:p-12 overflow-x-hidden">
       <div className="max-w-7xl mx-auto space-y-10">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -234,11 +278,15 @@ export default function AdminPanel() {
               bg: "bg-green-400/10",
             },
             {
-              label: "Casos Pendentes",
-              value: "0",
-              icon: ShieldAlert,
-              color: "text-red-400",
-              bg: "bg-red-400/10",
+              label: "Total Premium",
+              value: users
+                .filter(
+                  (u) => u.plan === "premium" || u.plan === "desbrava_total",
+                )
+                .length.toString(),
+              icon: Crown,
+              color: "text-amber-400",
+              bg: "bg-amber-400/10",
             },
           ].map((stat, i) => (
             <Card
@@ -274,7 +322,7 @@ export default function AdminPanel() {
                 placeholder="Buscar clube ou diretor..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full h-12 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all font-medium"
+                className="w-full h-12 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all font-medium placeholder:text-white/20"
               />
             </div>
           </div>
@@ -286,10 +334,10 @@ export default function AdminPanel() {
                     Clube / Diretor
                   </th>
                   <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-white/30">
-                    Plano
+                    Plano / Ministério
                   </th>
                   <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-white/30">
-                    Status
+                    Status / Créditos
                   </th>
                   <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-white/30 text-right">
                     Ações
@@ -317,7 +365,10 @@ export default function AdminPanel() {
                   </tr>
                 ) : (
                   filteredUsers.map((u, i) => (
-                    <tr key={i}>
+                    <tr
+                      key={i}
+                      className="hover:bg-white/[0.01] transition-colors group"
+                    >
                       <td className="px-8 py-5">
                         <div className="font-bold text-white text-md">
                           {u.fullName || u.clubName || "Usuário Sem Nome"}
@@ -327,51 +378,65 @@ export default function AdminPanel() {
                         </div>
                       </td>
                       <td className="px-8 py-5">
-                        <span
-                          className={cn(
-                            "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
-                            u.plan === "premium"
-                              ? "bg-primary/10 border-primary/20 text-primary"
-                              : "bg-white/5 border-white/10 text-white/40",
-                          )}
-                        >
-                          {u.plan?.toUpperCase() || "FREE"}
-                        </span>
-                      </td>
-                      <td className="px-8 py-5">
-                        <button
-                          onClick={() =>
-                            handleToggleStatus(u.id, u.status || "ativo")
-                          }
-                          className="flex items-center gap-2 group"
-                        >
-                          {u.status === "ativo" ? (
-                            <CheckCircle2
-                              size={18}
-                              className="text-green-500"
-                            />
-                          ) : (
-                            <XCircle size={18} className="text-red-500" />
-                          )}
+                        <div className="flex flex-col gap-1.5">
                           <span
                             className={cn(
-                              "text-xs font-bold uppercase tracking-widest transition-opacity group-hover:opacity-100",
-                              u.status === "ativo"
-                                ? "text-green-500/60"
-                                : "text-red-500/60",
+                              "px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border w-fit",
+                              u.plan === "premium" ||
+                                u.plan === "desbrava_total"
+                                ? "bg-primary/10 border-primary/20 text-primary"
+                                : "bg-white/5 border-white/10 text-white/40",
                             )}
                           >
-                            {u.status || "ativo"}
+                            {u.plan === "desbrava_total"
+                              ? "DESBRAVA TOTAL"
+                              : u.plan?.toUpperCase() || "FREE"}
                           </span>
-                        </button>
+                          <span className="text-[9px] font-bold text-white/30 uppercase tracking-widest">
+                            {u.ministry || "desbravador"}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-8 py-5">
+                        <div className="space-y-1.5">
+                          <button
+                            onClick={() =>
+                              handleToggleStatus(u.id, u.status || "ativo")
+                            }
+                            className="flex items-center gap-2"
+                          >
+                            {u.status === "ativo" ? (
+                              <CheckCircle2
+                                size={14}
+                                className="text-green-500"
+                              />
+                            ) : (
+                              <XCircle size={14} className="text-red-500" />
+                            )}
+                            <span
+                              className={cn(
+                                "text-[10px] font-bold uppercase tracking-widest",
+                                u.status === "ativo"
+                                  ? "text-green-500/60"
+                                  : "text-red-500/60",
+                              )}
+                            >
+                              {u.status || "ativo"}
+                            </span>
+                          </button>
+                          <div className="text-[10px] font-bold text-white/20 uppercase tracking-widest">
+                            {u.credits || 0} Créditos IA
+                          </div>
+                        </div>
                       </td>
                       <td className="px-8 py-5 text-right">
-                        <div className="flex justify-end gap-3">
+                        <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button
+                            onClick={() => handleEditClick(u)}
                             className="p-2 text-white/20 hover:text-white hover:bg-white/5 rounded-lg transition-all"
-                            title="Ver Detalhes"
+                            title="Editar Usuário"
                           >
-                            <Eye size={20} />
+                            <Settings size={20} />
                           </button>
                           <button
                             onClick={() => handleDeleteUser(u.id)}
@@ -403,43 +468,43 @@ export default function AdminPanel() {
               className="absolute inset-0 bg-black/80 backdrop-blur-sm"
             />
             <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 50 }}
-              className="relative w-full max-w-lg glass border-white/10 !p-10 rounded-[2.5rem] shadow-2xl overflow-hidden"
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-lg glass-card border-white/10 !p-10 rounded-[2.5rem] shadow-2xl overflow-hidden"
             >
               <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-orange-500"></div>
               <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-tight">
-                Configurar Nova Conta
+                Nova <span className="text-primary italic">Conta</span>
               </h2>
               <p className="text-white/40 mb-8 text-sm font-medium">
-                Informe os dados básicos para o registro inicial do clube.
+                Informe os dados básicos para o registro inicial.
               </p>
 
               <form onSubmit={handleCreateUser} className="space-y-6">
                 <div>
                   <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 block pl-1">
-                    Nome Completo do Diretor
+                    Nome do Diretor
                   </label>
                   <Input
                     type="text"
                     placeholder="Ex: Adryan dos Santos"
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
-                    className="h-14 bg-white/5 border-white/10 text-white"
+                    className="h-14 bg-white/5 border-white/10 text-white px-6 font-bold"
                     required
                   />
                 </div>
                 <div>
                   <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 block pl-1">
-                    E-mail da Conta
+                    E-mail
                   </label>
                   <Input
                     type="email"
                     placeholder="exemplo@gmail.com"
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
-                    className="h-14 bg-white/5 border-white/10 text-white"
+                    className="h-14 bg-white/5 border-white/10 text-white px-6 font-bold"
                     required
                   />
                 </div>
@@ -452,7 +517,7 @@ export default function AdminPanel() {
                     placeholder="Min. 8 caracteres"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="h-14 bg-white/5 border-white/10 text-white"
+                    className="h-14 bg-white/5 border-white/10 text-white px-6 font-bold"
                     required
                   />
                 </div>
@@ -460,7 +525,7 @@ export default function AdminPanel() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 block pl-1">
-                      Permissão (Role)
+                      Role
                     </label>
                     <select
                       value={newRole}
@@ -470,30 +535,27 @@ export default function AdminPanel() {
                       <option value="diretor" className="bg-[#0c111d]">
                         DIRETOR
                       </option>
-                      <option value="distrital" className="bg-[#0c111d]">
-                        DISTRITAL
-                      </option>
-                      <option value="regional" className="bg-[#0c111d]">
-                        REGIONAL
-                      </option>
                       <option value="admin" className="bg-[#0c111d]">
-                        MASTER ADMIN
+                        ADMIN
+                      </option>
+                      <option value="master_admin" className="bg-[#0c111d]">
+                        MASTER
                       </option>
                     </select>
                   </div>
                   <div>
                     <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-2 block pl-1">
-                      Créditos de IA
+                      IA Créditos
                     </label>
                     <Input
                       type="number"
-                      defaultValue="12"
-                      className="h-14 bg-white/5 border-white/10 text-white"
+                      defaultValue="10"
+                      className="h-14 bg-white/5 border-white/10 text-white px-6 font-bold"
                     />
                   </div>
                 </div>
 
-                <div className="pt-4 flex gap-3">
+                <div className="pt-4 flex gap-4">
                   <Button
                     type="button"
                     variant="ghost"
@@ -510,7 +572,120 @@ export default function AdminPanel() {
                     {isCreating ? (
                       <Loader2 className="animate-spin" />
                     ) : (
-                      "Confirmar Registro"
+                      "Registrar"
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Edit User Modal */}
+      <AnimatePresence>
+        {showEditModal && editingUser && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-6 text-white">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowEditModal(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-lg glass-card border-white/10 !p-10 rounded-[2.5rem] shadow-2xl z-50"
+            >
+              <div className="absolute top-0 left-0 w-full h-2 bg-primary"></div>
+              <h2 className="text-2xl font-black text-white mb-6 uppercase tracking-tight">
+                Editar <span className="text-primary italic">Acesso</span>
+              </h2>
+
+              <form onSubmit={handleUpdateUser} className="space-y-6">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] pl-1">
+                    Nome do Usuário
+                  </label>
+                  <Input
+                    value={editFullName}
+                    onChange={(e) => setEditFullName(e.target.value)}
+                    className="h-12 bg-white/5 border-white/10 text-white px-4 font-bold"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] pl-1">
+                      Plano
+                    </label>
+                    <select
+                      value={editPlan}
+                      onChange={(e) => setEditPlan(e.target.value)}
+                      className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-xs font-bold text-white focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none"
+                    >
+                      <option value="free" className="bg-[#0c111d]">
+                        FREE
+                      </option>
+                      <option value="desbrava_total" className="bg-[#0c111d]">
+                        DESBRAVA TOTAL
+                      </option>
+                      <option value="premium" className="bg-[#0c111d]">
+                        PREMIUM (Legacy)
+                      </option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] pl-1">
+                      Ministério
+                    </label>
+                    <select
+                      value={editMinistry}
+                      onChange={(e) => setEditMinistry(e.target.value)}
+                      className="w-full h-12 bg-white/5 border border-white/10 rounded-xl px-4 text-xs font-bold text-white focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none"
+                    >
+                      <option value="desbravador" className="bg-[#0c111d]">
+                        DESBRAVADOR
+                      </option>
+                      <option value="aventureiro" className="bg-[#0c111d]">
+                        AVENTUREIRO
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] pl-1">
+                    Créditos de IA Disponíveis
+                  </label>
+                  <Input
+                    type="number"
+                    value={editCredits}
+                    onChange={(e) => setEditCredits(Number(e.target.value))}
+                    className="h-12 bg-white/5 border-white/10 text-white px-4 font-bold"
+                  />
+                </div>
+
+                <div className="pt-6 flex gap-4">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setShowEditModal(false)}
+                    className="flex-1 h-14 text-white/40 hover:text-white"
+                  >
+                    Descartar
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isUpdating}
+                    className="flex-[2] h-14 font-black uppercase tracking-widest shadow-xl shadow-primary/20"
+                  >
+                    {isUpdating ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      "Salvar Mudanças"
                     )}
                   </Button>
                 </div>
