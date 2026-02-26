@@ -1,6 +1,11 @@
 import * as admin from "firebase-admin";
 
-if (!admin.apps.length) {
+if (
+  !admin.apps.length &&
+  process.env.FIREBASE_ADMIN_PROJECT_ID &&
+  process.env.FIREBASE_ADMIN_CLIENT_EMAIL &&
+  process.env.FIREBASE_ADMIN_PRIVATE_KEY
+) {
   const serviceAccount = {
     projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
     clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
