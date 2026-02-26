@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   X,
   Menu,
@@ -11,23 +12,19 @@ import {
   Globe,
   CheckCircle2,
   ArrowRight,
-  ChevronDown,
   Zap,
-  Bot,
-  Check,
-  Compass,
   Tent,
   BookOpen,
   Trophy,
-  Star,
-  Heart,
   Users2,
-  ArrowUpRight,
-  Package,
   Award,
-  Calendar,
+  Check,
+  Compass,
+  ChevronDown,
+  Bot,
+  Heart,
+  Home,
   TrendingUp,
-  Sparkles,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -70,16 +67,16 @@ const classes = [
 
 const plans = [
   {
-    name: "Bom Aventureiro",
+    name: "Aventureiro",
     price: "24,90",
-    description: "Ideal para novos clubes de 6-9 anos",
+    description: "Para Clubes de Aventureiros (6-9 anos)",
     theme: "orange",
     features: [
       "Fichas de Acompanhamento Kids",
       "Manual do Conselheiro Lúdico",
       "Especialidades em Áudio e Vídeo",
-      "Acesso completo e vitalício",
-      "Suporte exclusivo",
+      "Gestão de Classes e Caderno de Requisitos",
+      "Suporte exclusivo do Ministério",
       "Garantia de 7 dias",
     ],
     gradient: "from-orange-600 to-red-600",
@@ -88,16 +85,16 @@ const plans = [
     link: process.env.NEXT_PUBLIC_CAKTO_BOM_AVENTUREIRO || "#",
   },
   {
-    name: "Só Desbravador",
+    name: "Desbravador",
     price: "25,90",
-    description: "O favorito dos diretores de 10-15 anos",
+    description: "Para Clubes de Desbravadores (10-15 anos)",
     theme: "blue",
     features: [
-      "Gestão de Classes Regulares",
-      "Banco de +200 Especialidades",
-      "Sistema de Pontos de Unidades",
-      "Acesso completo e vitalício",
-      "Suporte exclusivo",
+      "Gestão de Classes Regulares e Avançadas",
+      "Banco Oficial de +200 Especialidades",
+      "Sistema de Pontuação da Secretaria",
+      "Relatórios Mensais Pré-preenchidos",
+      "Suporte exclusivo direto",
       "Garantia de 7 dias",
     ],
     gradient: "from-blue-600 to-indigo-600",
@@ -108,15 +105,15 @@ const plans = [
   {
     name: "Desbrava Total",
     price: "32,90",
-    description: "Experiência completa e ilimitada",
+    description: "A solução oficial completa",
     theme: "gold",
     features: [
-      "Tudo do Aventureiro + Desbravador",
-      "Cantinho da IA (Roteiros & Provas)",
-      "Emissor de Certificados Ilimitado",
-      "PWA - Funciona sem Internet",
-      "Analytics de Retenção",
-      "Exportação Direta SGC",
+      "Acesso Total: Aventureiro + Desbravador",
+      "Cantinho da IA (Roteiros & Provas em segundos)",
+      "Emissor de Certificados Ilimitados",
+      "PWA - Funciona em acampamentos (Offline)",
+      "Analytics de Retenção e Crescimento",
+      "Integração de Dados e Exportação SGC",
     ],
     gradient: "from-yellow-500 via-orange-500 to-purple-600",
     glow: "rgba(245, 158, 11, 0.2)",
@@ -149,11 +146,14 @@ const faqItems = [
    DEMO TABS DATA
    ============================================================ */
 
+/* ============================================================
+   DEMO TABS DATA
+   ============================================================ */
+
 interface DemoTool {
   title: string;
   icon: React.ElementType;
   color: string;
-  premium: boolean;
 }
 
 interface DemoTab {
@@ -162,142 +162,64 @@ interface DemoTab {
   title: string;
   subtitle: string;
   color: string;
-  gradient: string;
   icon: React.ElementType;
-  label_tag: string;
-  popular?: boolean;
   features: string[];
-  accent: string;
   tools: DemoTool[];
-  stats: { label: string; value: string; icon: React.ElementType }[];
 }
 
 const demoTabs: DemoTab[] = [
   {
     id: "aventureiro",
     label: "Aventureiro",
-    title: "Bom Aventureiro",
-    subtitle:
-      "Interface lúdica e completa para o Clube de Aventureiros. Gestão de classes, manuais e especialidades kids.",
-    color: "orange",
-    gradient: "from-orange-600 to-red-700",
-    icon: Zap,
-    label_tag: "Aventureiros",
+    title: "Portal do Crescimento",
+    subtitle: "Ideal para o Ministério da Criança e clubes de Aventureiros.",
+    color: "blue",
+    icon: Compass,
     features: [
-      "Fichas de Acompanhamento Kids",
-      "Manual do Conselheiro Lúdico",
-      "Especialidades em Áudio e Vídeo",
+      "Álbuns de Atividades Digitais",
+      "Manual do Conselheiro Mirim",
+      "Fichas Lúdicas PDF",
     ],
-    accent: "bg-orange-600",
     tools: [
-      {
-        title: "Gestão de Classes",
-        icon: BookOpen,
-        color: "bg-orange-600",
-        premium: false,
-      },
-      {
-        title: "Manual do Castor",
-        icon: BookOpen,
-        color: "bg-red-600",
-        premium: false,
-      },
-      {
-        title: "Kits de Atividades",
-        icon: Package,
-        color: "bg-orange-500",
-        premium: false,
-      },
-    ],
-    stats: [
-      { label: "Aventureiros", value: "24", icon: Heart },
-      { label: "Espec. Concluídas", value: "156", icon: Star },
-      { label: "Presença", value: "98%", icon: Users2 },
+      { title: "Atividades", icon: BookOpen, color: "text-blue-500" },
+      { title: "Infantil", icon: Heart, color: "text-rose-500" },
+      { title: "Manual", icon: Shield, color: "text-emerald-500" },
     ],
   },
   {
     id: "desbravador",
     label: "Desbravador",
-    title: "Só Desbravador",
-    subtitle:
-      "A central definitiva para o Clube de Desbravadores. Foco em requisitos, especialidades e civismo.",
-    color: "blue",
-    gradient: "from-blue-700 to-blue-900",
-    icon: Zap,
-    label_tag: "Desbravadores",
+    title: "Gestão de Unidade Pro",
+    subtitle: "A ferramenta definitiva para o conselheiro e o instrutor.",
+    color: "orange",
+    icon: Tent,
     features: [
-      "Gestão de Classes Regulares",
-      "Banco de +200 Especialidades",
-      "Sistema de Pontuação de Unidades",
+      "Acompanhamento de Classes",
+      "Provas de Especialidades Online",
+      "Check-list de Atividades",
     ],
-    accent: "bg-blue-700",
     tools: [
-      {
-        title: "Gestão de Classes",
-        icon: BookOpen,
-        color: "bg-blue-700",
-        premium: false,
-      },
-      {
-        title: "Especialidades",
-        icon: Award,
-        color: "bg-emerald-600",
-        premium: false,
-      },
-      {
-        title: "Planejador Anual",
-        icon: Calendar,
-        color: "bg-amber-500",
-        premium: false,
-      },
-    ],
-    stats: [
-      { label: "Desbravadores", value: "42", icon: Users2 },
-      { label: "Membros Ativos", value: "48", icon: TrendingUp },
-      { label: "Espec. Concluídas", value: "142", icon: Award },
+      { title: "Classes", icon: Trophy, color: "text-orange-500" },
+      { title: "Unidades", icon: Users2, color: "text-blue-500" },
+      { title: "Cartões", icon: Award, color: "text-yellow-500" },
     ],
   },
   {
     id: "total",
     label: "Desbrava Total",
-    title: "Desbrava Total",
-    subtitle:
-      "A experiência máxima com Inteligência Artificial. Roteiros automáticos e analytics avançado para todo o clube.",
-    color: "primary",
-    gradient: "from-primary to-orange-600",
-    icon: Sparkles,
-    label_tag: "Master & IA",
-    popular: true,
+    title: "Inteligência & Estratégia",
+    subtitle: "O poder da IA e do Analytics para a diretoria do clube.",
+    color: "yellow",
+    icon: Zap,
     features: [
-      "IA para Criação de Materiais",
-      "Analytics de Retenção",
-      "Exportação de Dados SGC",
+      "IA para Roteiros e Provas",
+      "Exportação Direta para o SGC",
+      "Dashboard de Retenção",
     ],
-    accent: "bg-primary",
     tools: [
-      {
-        title: "Cantinho da IA",
-        icon: Sparkles,
-        color: "bg-primary",
-        premium: true,
-      },
-      {
-        title: "Gerador de Provas",
-        icon: Award,
-        color: "bg-red-600",
-        premium: false,
-      },
-      {
-        title: "Emissor de Certificados",
-        icon: Award,
-        color: "bg-rose-700",
-        premium: false,
-      },
-    ],
-    stats: [
-      { label: "Total de Membros", value: "128", icon: Globe },
-      { label: "Uso da IA", value: "Alta", icon: Zap },
-      { label: "Tempo Salvo", value: "12h/sem", icon: BrainCircuit },
+      { title: "IA Assist", icon: Bot, color: "text-yellow-500" },
+      { title: "Analytics", icon: BrainCircuit, color: "text-purple-500" },
+      { title: "SGC Sync", icon: Globe, color: "text-blue-500" },
     ],
   },
 ];
@@ -310,7 +232,7 @@ export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [mobileMenu, setMobileMenu] = useState(false);
-  const [activeTab, setActiveTab] = useState(demoTabs[1].id); // Default to Desbravador
+  const [activeTab, setActiveTab] = useState("total");
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -319,7 +241,8 @@ export default function LandingPage() {
   }, []);
 
   const navLinks = [
-    { label: "Funcionalidades", href: "#funcionalidades" },
+    { label: "Soluções", href: "#solucoes" },
+    { label: "Recursos", href: "#recursos" },
     { label: "Preços", href: "#pricing" },
     { label: "FAQ", href: "#faq" },
   ];
@@ -432,452 +355,609 @@ export default function LandingPage() {
 
       {/* ─── HERO ─── */}
       <section className="relative pt-44 pb-24 md:pt-60 md:pb-40 px-6 md:px-10 overflow-hidden">
-        {/* Abstract Background Decor */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] pointer-events-none opacity-40">
-          <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-blue-600/20 blur-[140px] rounded-full" />
+        {/* Abstract Background Decor - Lighter Ambient */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] pointer-events-none opacity-60">
+          <div className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-blue-500/10 blur-[140px] rounded-full" />
         </div>
 
-        <div className="max-w-5xl mx-auto text-center relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          >
-            {/* Notion-style floating icons placeholder logic */}
-            <div className="relative mb-14 inline-block">
-              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-[11px] font-black text-yellow-500 uppercase tracking-[0.2em] mb-4">
-                <span className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
-                O Primeiro com IA Integrada
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* LEFT SIDE: Content & Focus */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="text-left"
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-[11px] font-black text-blue-400 uppercase tracking-widest mb-8">
+                <Shield size={14} className="text-blue-500" />
+                Liderança Oficial e Padronizada
               </div>
-            </div>
 
-            <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-[102px] font-bebas tracking-wide leading-[0.85] text-white mb-10 uppercase">
-              CHEGOU NOVO APLICATIVO <br />
-              <span className="text-yellow-500">
-                COM INTELIGÊNCIA ARTIFICIAL.
-              </span>
-            </h1>
+              <h1 className="text-5xl md:text-7xl lg:text-8xl xl:text-[85px] font-bebas tracking-tight leading-[0.85] text-white mb-8 uppercase">
+                GERE SEU CLUBE <br />
+                <span className="text-yellow-500">DE FORMA OFICIAL.</span>
+              </h1>
 
-            <p className="text-lg sm:text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto mb-16 leading-relaxed font-medium">
-              Além de ter um banco de matérias, agora você conta com uma{" "}
-              <span className="text-white font-bold underline decoration-yellow-500/50 decoration-4 underline-offset-8">
-                Inteligência Artificial que cria o que você quiser para você.
-              </span>
-            </p>
+              <p className="text-lg md:text-xl text-slate-300 mb-10 leading-relaxed font-semibold max-w-xl">
+                Organize todo o seu clube em um único sistema. Ganhe tempo para
+                o que realmente importa:{" "}
+                <span className="text-white italic">
+                  investir na vida dos seus juvenis.
+                </span>
+              </p>
 
-            <div className="flex flex-col sm:flex-row gap-5 justify-center items-center mb-32">
-              <Link
-                href="/auth"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-4 bg-blue-600 hover:bg-blue-500 text-white font-black px-14 py-6 rounded-2xl text-2xl transition-all shadow-2xl shadow-blue-600/30 active:scale-95 group"
-              >
-                QUERO ACESSAR AGORA
-                <ArrowRight
-                  size={24}
-                  className="group-hover:translate-x-1 transition-transform"
-                />
-              </Link>
-            </div>
-
-            {/* NEW: AI Feature Spread Visual */}
-            <div className="relative max-w-4xl mx-auto h-[400px] md:h-[500px]">
-              {/* Central IA Glow */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-500/20 blur-[100px] rounded-full animate-pulse" />
-
-              <div className="relative z-10 w-full h-full">
-                {/* AI Script Card */}
-                <motion.div
-                  initial={{ opacity: 0, x: -50, y: 20 }}
-                  animate={{ opacity: 1, x: 0, y: 0 }}
-                  transition={{ delay: 0.5, duration: 0.8 }}
-                  className="absolute top-0 left-4 md:left-20 w-48 md:w-64 bg-[#111622]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-2xl rotate-[-6deg] hover:rotate-0 transition-transform duration-500"
+              <div className="flex flex-col sm:flex-row gap-5 items-start">
+                <Link
+                  href="/auth"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-4 bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black px-10 py-5 rounded-2xl text-xl transition-all shadow-xl shadow-yellow-500/10 active:scale-95 group uppercase"
                 >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
-                      <Sparkles size={18} />
-                    </div>
-                    <span className="text-[10px] font-black uppercase text-slate-400">
-                      Roteiro IA
-                    </span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="h-2 w-full bg-white/10 rounded" />
-                    <div className="h-2 w-5/6 bg-white/5 rounded" />
-                    <div className="h-2 w-4/6 bg-white/5 rounded" />
-                    <div className="h-6 w-1/2 bg-blue-500/20 rounded mt-4 border border-blue-500/30 animate-pulse" />
-                  </div>
-                </motion.div>
-
-                {/* Certificate Mockup */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.8, duration: 1 }}
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 md:w-72 bg-white rounded-3xl p-8 shadow-[0_32px_64px_-12px_rgba(255,255,255,0.1)] border border-slate-200 z-20 group"
+                  Criar Meu Clube
+                  <ArrowRight
+                    size={22}
+                    className="group-hover:translate-x-1 transition-transform"
+                  />
+                </Link>
+                <Link
+                  href="#funcionalidades"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-4 bg-white/5 hover:bg-white/10 text-white font-black px-10 py-5 rounded-2xl text-xl transition-all border border-white/10 active:scale-95 group uppercase"
                 >
-                  <div className="w-full aspect-[4/3] bg-slate-50 rounded-xl border-4 border-slate-100 flex flex-col items-center justify-center relative overflow-hidden">
-                    <div className="absolute top-4 left-4 w-8 h-8 bg-slate-200 rounded-full" />
-                    <Award
-                      size={40}
-                      className="text-yellow-500 mb-2 group-hover:scale-110 transition-transform"
-                    />
-                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest text-center px-4">
-                      Certificado de Especialidade
-                    </p>
-                    <div className="absolute bottom-4 right-4 w-12 h-4 bg-slate-200 rounded" />
-                  </div>
-                  <div className="mt-4 flex flex-col items-center">
-                    <div className="h-1.5 w-24 bg-slate-100 rounded-full mb-1" />
-                    <div className="h-1 w-16 bg-slate-50 rounded-full" />
-                  </div>
-                </motion.div>
+                  Ver Demonstração
+                </Link>
+              </div>
 
-                {/* Class Progress Card */}
-                <motion.div
-                  initial={{ opacity: 0, x: 50, y: -20 }}
-                  animate={{ opacity: 1, x: 0, y: 0 }}
-                  transition={{ delay: 0.6, duration: 0.8 }}
-                  className="absolute bottom-10 right-4 md:right-20 w-48 md:w-64 bg-[#111622]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl rotate-[6deg] hover:rotate-0 transition-transform duration-500"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-[10px] font-black uppercase text-slate-400">
-                      Progresso
-                    </span>
-                    <TrendingUp size={14} className="text-green-500" />
-                  </div>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[xs] font-bold">Amigo</span>
-                      <span className="text-[xs] text-blue-500 font-black">
-                        95%
-                      </span>
-                    </div>
-                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: "95%" }}
-                        transition={{ delay: 1.5, duration: 1 }}
-                        className="h-full bg-blue-500 shadow-[0_0_10px_#3b82f6]"
+              <div className="mt-12 flex items-center gap-6">
+                <div className="flex items-center gap-3">
+                  <div className="flex -space-x-3 overflow-hidden">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div
+                        key={i}
+                        className="inline-block h-10 w-10 rounded-full ring-2 ring-[#0A0D14] bg-slate-800 border-2 border-blue-500/30"
                       />
-                    </div>
+                    ))}
                   </div>
-                </motion.div>
-
-                {/* IA Floating Chips */}
-                <motion.div
-                  animate={{ y: [0, -15, 0] }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="absolute top-20 right-10 md:right-40 px-4 py-2 bg-yellow-500 text-slate-900 rounded-full text-[9px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2"
-                >
-                  <Zap size={12} fill="currentColor" />
-                  Gerador Automático
-                </motion.div>
-
-                <motion.div
-                  animate={{ y: [0, 15, 0] }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 1,
-                  }}
-                  className="absolute bottom-20 left-10 md:left-40 px-4 py-2 bg-blue-600 text-white rounded-full text-[9px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2"
-                >
-                  <Bot size={12} fill="currentColor" />
-                  Assistente 24h
-                </motion.div>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">
+                    +500 Clubes <br />
+                    <span className="text-blue-500">Oficiais Conectados</span>
+                  </p>
+                </div>
+                <div className="h-10 w-[1px] bg-white/10" />
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 size={16} className="text-emerald-500" />
+                  <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
+                    Padrão DSA
+                  </span>
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+
+            {/* RIGHT SIDE: Product Showcase (Realistic Mockup) */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8 }}
+              className="relative hidden lg:block"
+            >
+              <div className="relative group">
+                <div className="absolute -inset-4 rounded-[3rem] bg-blue-600/20 blur-3xl opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
+                <div className="relative bg-[#0A0D14] rounded-[2.5rem] border border-white/10 p-4 shadow-2xl overflow-hidden shadow-blue-900/40">
+                  <Image
+                    src="/dashboard_mockup.png"
+                    alt="Desbrava Total Dashboard"
+                    width={1200}
+                    height={800}
+                    className="w-full h-auto rounded-3xl"
+                  />
+                </div>
+
+                {/* Overlaid labels for official elements */}
+                <div className="absolute top-1/2 -left-8 -translate-y-1/2 flex flex-col gap-4">
+                  <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl shadow-2xl">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                      Oficial
+                    </p>
+                    <p className="text-xs font-bold text-white">
+                      Classes Regulares
+                    </p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl shadow-2xl translate-x-4">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                      Integrado
+                    </p>
+                    <p className="text-xs font-bold text-white">
+                      SGC Exportação
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* ─── DASHBOARD PREVIEWS ─── */}
-      <section className="py-24 bg-[#0A0D14] relative overflow-hidden">
+      {/* ─── CORE BENEFITS: THE FOUR PILLARS ─── */}
+      <section id="recursos" className="py-24 bg-white text-slate-900">
         <div className="max-w-7xl mx-auto px-6 md:px-10">
           <div className="text-center mb-16">
-            <h2 className="font-bebas text-5xl md:text-6xl text-white uppercase tracking-wider mb-6">
-              Experiência <span className="text-blue-500">Personalizada</span>
+            <h2 className="font-bebas text-5xl md:text-7xl text-slate-900 uppercase tracking-tight mb-4">
+              A Ferramenta <span className="text-blue-600">Completa</span> para
+              seu Clube
             </h2>
-            <p className="text-slate-400 font-medium max-w-2xl mx-auto mb-12">
-              Escolha o plano que melhor se adapta ao seu clube e veja como a
-              plataforma se transforma para você.
+            <p className="text-xl text-slate-500 font-medium max-w-2xl mx-auto">
+              Tudo o que você precisa para uma gestão padronizada, eficiente e
+              100% digital.
             </p>
-
-            {/* Tab Selectors */}
-            <div className="inline-flex bg-white/5 p-1.5 rounded-[2rem] border border-white/10 mb-16">
-              {demoTabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={cn(
-                    "px-8 py-4 rounded-[1.5rem] text-sm font-black uppercase tracking-widest transition-all duration-300 relative",
-                    activeTab === tab.id
-                      ? "bg-blue-600 text-white shadow-xl shadow-blue-600/30"
-                      : "text-slate-400 hover:text-white",
-                  )}
-                >
-                  {tab.label}
-                  {tab.popular && (
-                    <span className="absolute -top-2 -right-2 bg-yellow-500 text-[8px] text-slate-900 px-2 py-0.5 rounded-full font-black">
-                      HOT
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
           </div>
 
-          <AnimatePresence mode="wait">
-            {demoTabs.map(
-              (tab) =>
-                tab.id === activeTab && (
-                  <motion.div
-                    key={tab.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.5 }}
-                    className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
-                  >
-                    {/* Text Content */}
-                    <div className="lg:col-span-5 space-y-8">
-                      <div className="space-y-4">
-                        <h3 className="text-4xl md:text-5xl font-bebas text-white uppercase tracking-tight">
-                          {tab.title}
-                        </h3>
-                        <p className="text-lg text-slate-400 font-medium leading-relaxed">
-                          {tab.subtitle}
-                        </p>
-                      </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                title: "Classes Completas",
+                desc: "Requisitos de todas as classes com acompanhamento em tempo real.",
+                icon: BookOpen,
+                color: "bg-blue-600",
+              },
+              {
+                title: "Especialidades",
+                desc: "Processo automatizado de provas, correção e entrega de insígnias.",
+                icon: Award,
+                color: "bg-yellow-500",
+              },
+              {
+                title: "Cartões Digitais",
+                desc: "Substitua o papel pelo acompanhamento digital oficial e seguro.",
+                icon: Shield,
+                color: "bg-emerald-600",
+              },
+              {
+                title: "Sistema da Diretoria",
+                desc: "Relatórios mensais e gestão de secretaria em um só lugar.",
+                icon: Users2,
+                color: "bg-slate-800",
+              },
+            ].map((benefit, i) => (
+              <div
+                key={i}
+                className="group p-8 rounded-[2rem] bg-slate-50 border border-slate-100 hover:border-blue-200 hover:bg-white hover:shadow-2xl transition-all duration-300"
+              >
+                <div
+                  className={cn(
+                    "w-14 h-14 rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all",
+                    benefit.color,
+                  )}
+                >
+                  <benefit.icon size={28} />
+                </div>
+                <h3 className="text-xl font-bold mb-3 uppercase tracking-tight">
+                  {benefit.title}
+                </h3>
+                <p className="text-slate-500 text-sm font-medium leading-relaxed">
+                  {benefit.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-                      <div className="space-y-4">
-                        {tab.features.map((feat, i) => (
-                          <div key={i} className="flex items-center gap-4">
-                            <div
-                              className={cn(
-                                "w-6 h-6 rounded-full flex items-center justify-center",
-                                tab.color === "blue"
-                                  ? "bg-blue-500/10 text-blue-500"
-                                  : tab.color === "primary"
-                                    ? "bg-primary/10 text-primary"
-                                    : "bg-orange-500/10 text-orange-500",
-                              )}
-                            >
-                              <CheckCircle2 size={16} />
-                            </div>
-                            <span className="text-slate-300 font-bold text-sm tracking-wide uppercase italic">
-                              {feat}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
+      {/* ─── INTERACTIVE DASHBOARD DEMOS (REAL APP STYLE) ─── */}
+      <section className="py-24 bg-white overflow-hidden relative border-y border-slate-100">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.03),transparent)] pointer-events-none" />
 
-                      <Link
-                        href="#pricing"
-                        className={cn(
-                          "inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-sm transition-all shadow-2xl",
-                          tab.color === "blue"
-                            ? "bg-blue-600 shadow-blue-600/20"
-                            : tab.color === "primary"
-                              ? "bg-primary shadow-primary/20"
-                              : "bg-orange-600 shadow-orange-600/20",
-                        )}
-                      >
-                        Ver Planos <ArrowRight size={18} />
-                      </Link>
+        <div className="max-w-7xl mx-auto px-6 md:px-10 relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="font-bebas text-5xl md:text-7xl text-slate-900 uppercase tracking-tight mb-4">
+              Explore o <span className="text-blue-600">Dashboard Real</span>
+            </h2>
+            <p className="text-xl text-slate-500 font-medium max-w-2xl mx-auto">
+              Veja exatamente como é a interface que você e sua diretoria usarão
+              todos os dias.
+            </p>
+          </div>
+
+          {/* Tab Selection (Institutional Buttons) */}
+          <div className="flex overflow-x-auto pb-6 mb-12 scrollbar-hide md:justify-center gap-4">
+            {demoTabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  "px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all whitespace-nowrap border-2 flex items-center gap-3",
+                  activeTab === tab.id
+                    ? "bg-slate-900 border-slate-900 text-white shadow-xl shadow-slate-900/20 scale-105"
+                    : "bg-slate-100 border-slate-100 text-slate-500 hover:bg-slate-200",
+                )}
+              >
+                <tab.icon size={18} />
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Interactive Preview Area */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+            {/* Left: Content Description */}
+            <div className="lg:col-span-4 space-y-10">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeTab}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  className="space-y-8"
+                >
+                  <div className="bg-slate-50 rounded-[2rem] p-8 border border-slate-100 shadow-sm">
+                    <div
+                      className={cn(
+                        "w-12 h-12 rounded-xl flex items-center justify-center text-white mb-6 shadow-lg",
+                        activeTab === "aventureiro"
+                          ? "bg-orange-500"
+                          : "bg-blue-600",
+                      )}
+                    >
+                      <Zap size={24} />
                     </div>
+                    <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tighter mb-4">
+                      {demoTabs.find((t) => t.id === activeTab)?.title}
+                    </h3>
+                    <p className="text-base text-slate-500 font-medium leading-relaxed mb-6">
+                      {demoTabs.find((t) => t.id === activeTab)?.subtitle}
+                    </p>
 
-                    {/* Dashboard Mockup */}
-                    <div className="lg:col-span-7 relative">
-                      <div className="relative group">
+                    <ul className="space-y-4">
+                      {demoTabs
+                        .find((t) => t.id === activeTab)
+                        ?.features.map((feat, i) => (
+                          <li
+                            key={i}
+                            className="flex items-center gap-3 text-slate-700 text-sm"
+                          >
+                            <div className="w-5 h-5 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
+                              <Check size={12} className="text-emerald-600" />
+                            </div>
+                            <span className="font-bold">{feat}</span>
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-3">
+                    {demoTabs
+                      .find((t) => t.id === activeTab)
+                      ?.tools.map((tool, i) => (
+                        <div
+                          key={i}
+                          className="p-4 rounded-xl bg-white border border-slate-100 text-center group hover:border-blue-200 hover:shadow-lg transition-all"
+                        >
+                          <tool.icon
+                            size={20}
+                            className={cn(
+                              "mx-auto mb-2 transition-transform group-hover:scale-110",
+                              tool.color,
+                            )}
+                          />
+                          <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest whitespace-nowrap">
+                            {tool.title}
+                          </p>
+                        </div>
+                      ))}
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Right: Real Mockup Preview */}
+            <div className="lg:col-span-8">
+              <div className="relative group">
+                <div
+                  className={cn(
+                    "absolute -inset-10 blur-[100px] opacity-10 pointer-events-none transition-colors duration-1000",
+                    activeTab === "aventureiro"
+                      ? "bg-orange-500"
+                      : "bg-blue-500",
+                  )}
+                />
+
+                {/* Browser Frame */}
+                <div className="relative bg-white rounded-[2rem] border border-slate-200 shadow-2xl overflow-hidden">
+                  {/* Browser Header */}
+                  <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                    <div className="flex gap-1.5">
+                      <div className="w-3 h-3 rounded-full bg-slate-200" />
+                      <div className="w-3 h-3 rounded-full bg-slate-200" />
+                      <div className="w-3 h-3 rounded-full bg-slate-200" />
+                    </div>
+                    <div className="flex-1 max-w-md mx-auto h-8 bg-white border border-slate-200 rounded-lg flex items-center justify-center">
+                      <span className="text-[10px] font-bold text-slate-400 tracking-widest uppercase">
+                        app.desbravatotal.com.br
+                      </span>
+                    </div>
+                    <div className="w-12 h-3 bg-slate-200 rounded-full" />
+                  </div>
+
+                  {/* Real App HUD Simulation */}
+                  <div className="bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center">
+                        <Menu size={20} className="text-slate-400" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">
+                          <Home size={10} /> /{" "}
+                          <span className="text-slate-600">Dashboard</span>
+                        </div>
+                        <h4 className="text-sm font-black text-slate-800 uppercase tracking-tight">
+                          Portal{" "}
+                          <span
+                            className={cn(
+                              "italic",
+                              activeTab === "aventureiro"
+                                ? "text-orange-600"
+                                : "text-blue-700",
+                            )}
+                          >
+                            {activeTab === "aventureiro"
+                              ? "Aventureiros"
+                              : "Desbravadores"}
+                          </span>
+                        </h4>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="hidden sm:flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-100" />
+                        <div className="w-8 h-8 rounded-lg bg-orange-50 border border-orange-100" />
+                      </div>
+                      <div className="w-10 h-10 rounded-full bg-slate-100 overflow-hidden border border-slate-200">
+                        <Image
+                          src={`https://ui-avatars.com/api/?name=Lider&background=${activeTab === "aventureiro" ? "ea580c" : "1d4ed8"}&color=fff&bold=true`}
+                          alt="User"
+                          width={40}
+                          height={40}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* App Content Area */}
+                  <div className="bg-slate-50/50 p-6 md:p-8 aspect-[16/10] md:aspect-[16/9] relative lg:h-[500px] overflow-hidden">
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={activeTab}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="h-full space-y-6"
+                      >
+                        {/* Welcome Banner Simulation */}
                         <div
                           className={cn(
-                            "absolute -inset-4 rounded-[3rem] blur-3xl opacity-30 transition-opacity duration-700",
-                            tab.id === "aventureiro"
-                              ? "bg-orange-500/40"
-                              : tab.id === "desbravador"
-                                ? "bg-blue-500/40"
-                                : "bg-primary/40",
+                            "rounded-3xl p-6 md:p-10 text-white relative overflow-hidden shadow-lg min-h-[160px] md:min-h-[200px] flex flex-col justify-center",
+                            activeTab === "aventureiro"
+                              ? "bg-gradient-to-br from-orange-600 to-red-600"
+                              : "bg-gradient-to-br from-blue-700 to-blue-900",
                           )}
-                        />
-
-                        <div className="relative bg-[#F8FAFC] border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden min-h-[500px] flex flex-col">
-                          {/* Dashboard Sidebar + Header Simulation */}
-                          <div className="h-14 bg-white border-b border-slate-100 flex items-center justify-between px-6">
-                            <div className="flex items-center gap-4">
-                              <div className="flex items-center gap-1.5">
-                                <div className="w-2.5 h-2.5 rounded-full bg-slate-200" />
-                                <div className="w-2.5 h-2.5 rounded-full bg-slate-200" />
-                                <div className="w-2.5 h-2.5 rounded-full bg-slate-200" />
-                              </div>
-                              <div className="h-4 w-24 bg-slate-100 rounded-full" />
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-full bg-slate-100" />
-                            </div>
+                        >
+                          <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rotate-45 translate-x-1/2 -translate-y-1/2 blur-2xl" />
+                          <div className="relative z-10">
+                            <h5 className="text-2xl md:text-4xl font-black uppercase tracking-tighter mb-2 italic">
+                              {activeTab === "aventureiro"
+                                ? "Grande Líder!"
+                                : "Bem-vindo ao Portal!"}
+                            </h5>
+                            <p className="text-xs md:text-sm font-medium text-white/80 max-w-md">
+                              {activeTab === "total"
+                                ? "O poder da IA e do Analytics para a diretoria do seu clube em tempo real."
+                                : activeTab === "desbravador"
+                                  ? "Gestão eficiente de classes e unidades com controle total de requisitos."
+                                  : "Ministério da criança digital: gestão lúdica e organizada para aventureiros."}
+                            </p>
                           </div>
+                          {activeTab === "total" && (
+                            <div className="absolute top-6 right-6 px-3 py-1 bg-yellow-400 text-slate-900 rounded-full text-[9px] font-black uppercase tracking-widest shadow-lg animate-pulse">
+                              Desbrava Total
+                            </div>
+                          )}
+                        </div>
 
-                          {/* Dashboard Content Mock */}
-                          <div className="flex-1 p-6 md:p-8 space-y-6 overflow-y-auto max-h-[600px] bg-slate-50/50">
-                            {/* Welcome Banner Mock */}
+                        {/* Stats Simulation */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          {[
+                            {
+                              label: "Ativos",
+                              val: "48",
+                              ic: TrendingUp,
+                              col: "bg-blue-50 text-blue-600",
+                            },
+                            {
+                              label: "Classes",
+                              val: "85%",
+                              ic: BookOpen,
+                              col: "bg-green-50 text-green-600",
+                            },
+                            {
+                              label: "Espec.",
+                              val: "142",
+                              ic: Award,
+                              col: "bg-orange-50 text-orange-600",
+                            },
+                            {
+                              label: "Status",
+                              val: "SGC",
+                              ic: Globe,
+                              col: "bg-purple-50 text-purple-600",
+                            },
+                          ].map((s, i) => (
                             <div
-                              className={cn(
-                                "relative overflow-hidden rounded-[1.5rem] p-6 text-white shadow-lg min-h-[160px] flex flex-col justify-center bg-gradient-to-br",
-                                tab.gradient,
-                              )}
+                              key={i}
+                              className="bg-white p-4 rounded-2xl border border-slate-100 flex items-center justify-between shadow-sm"
                             >
-                              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rotate-45 translate-x-1/2 -translate-y-1/2 blur-2xl pointer-events-none"></div>
-                              <div className="relative z-10">
-                                <div className="flex items-center gap-2 mb-3">
-                                  <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center p-1.5 shadow-md">
-                                    <tab.icon
-                                      size={18}
-                                      className={cn(
-                                        "fill-current",
-                                        tab.id === "aventureiro"
-                                          ? "text-orange-600"
-                                          : tab.id === "desbravador"
-                                            ? "text-blue-700"
-                                            : "text-primary",
-                                      )}
-                                    />
-                                  </div>
-                                  <div className="flex flex-col">
-                                    <span className="text-[7px] font-black uppercase tracking-[0.2em] text-white/80">
-                                      Portal de Liderança
-                                    </span>
-                                    <span className="text-[7px] font-bold text-white/60 uppercase">
-                                      Contexto: {tab.label_tag}
-                                    </span>
-                                  </div>
-                                </div>
-                                <h4 className="text-2xl font-black mb-1 uppercase tracking-tighter">
-                                  {tab.id === "aventureiro"
-                                    ? "Grande Líder!"
-                                    : "Bem-vindo!"}
-                                </h4>
-                                <p className="text-[10px] text-white/90 font-medium">
-                                  Gestão inteligente para o seu clube.
+                              <div>
+                                <p className="text-[8px] font-bold text-slate-400 uppercase mb-1">
+                                  {s.label}
+                                </p>
+                                <p className="text-lg font-black text-slate-800 tracking-tighter">
+                                  {s.val}
                                 </p>
                               </div>
-                            </div>
-
-                            {/* Stats Row Mock */}
-                            <div className="grid grid-cols-3 gap-3">
-                              {tab.stats.map((stat, i) => (
-                                <div
-                                  key={i}
-                                  className="bg-white border border-slate-100 rounded-xl p-3 flex items-center justify-between shadow-sm"
-                                >
-                                  <div>
-                                    <p className="text-[7px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">
-                                      {stat.label}
-                                    </p>
-                                    <p className="text-lg font-black text-slate-900 tracking-tighter leading-none">
-                                      {stat.value}
-                                    </p>
-                                  </div>
-                                  <div
-                                    className={cn(
-                                      "p-2 rounded-lg bg-slate-50",
-                                      tab.id === "aventureiro"
-                                        ? "text-orange-600"
-                                        : tab.id === "desbravador"
-                                          ? "text-blue-700"
-                                          : "text-primary",
-                                    )}
-                                  >
-                                    <stat.icon size={14} />
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-
-                            {/* Tools Section Mock */}
-                            <div className="space-y-4">
-                              <h5 className="text-[8px] font-black text-slate-800 uppercase tracking-tight flex items-center gap-1.5 px-1">
-                                <ArrowUpRight
-                                  size={10}
-                                  className="text-primary"
-                                />{" "}
-                                Ferramentas do Clube
-                              </h5>
-                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                                {tab.tools.map((tool, i) => (
-                                  <div
-                                    key={i}
-                                    className="bg-white border border-slate-100 rounded-xl p-3 flex items-center gap-3 shadow-sm hover:border-primary/20 transition-all cursor-default relative overflow-hidden"
-                                  >
-                                    {tool.premium && (
-                                      <div className="absolute top-0 right-0 bg-primary/10 px-1.5 py-0.5 rounded-bl-lg text-[6px] font-black text-primary uppercase">
-                                        IA
-                                      </div>
-                                    )}
-                                    <div
-                                      className={cn(
-                                        "w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm shrink-0",
-                                        tool.color,
-                                      )}
-                                    >
-                                      <tool.icon size={16} />
-                                    </div>
-                                    <div className="min-w-0">
-                                      <h6 className="font-black text-slate-900 text-[9px] truncate">
-                                        {tool.title}
-                                      </h6>
-                                      <div className="h-1 w-8 bg-slate-100 rounded-full mt-1" />
-                                    </div>
-                                  </div>
-                                ))}
+                              <div
+                                className={cn(
+                                  "w-8 h-8 rounded-lg flex items-center justify-center",
+                                  s.col,
+                                )}
+                              >
+                                <s.ic size={12} />
                               </div>
                             </div>
+                          ))}
+                        </div>
 
-                            {/* Recent Activity Mock */}
-                            <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
-                              <div className="flex items-center justify-between border-b border-slate-50 pb-2 mb-2">
-                                <p className="text-[8px] font-black text-slate-800 uppercase">
-                                  Atividades Recentes
-                                </p>
-                                <div className="h-3 w-10 bg-slate-50 rounded-full" />
-                              </div>
-                              {[1, 2].map((i) => (
-                                <div
-                                  key={i}
-                                  className="flex items-center gap-3"
-                                >
-                                  <div
-                                    className={cn(
-                                      "w-1 h-6 rounded-full",
-                                      tab.id === "aventureiro"
-                                        ? "bg-orange-500"
-                                        : "bg-blue-600",
-                                    )}
-                                  />
-                                  <div className="space-y-1 flex-1">
-                                    <div className="h-2 w-3/4 bg-slate-100 rounded" />
-                                    <div className="h-1.5 w-1/3 bg-slate-50 rounded" />
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
+                        {/* Recent Activity Card Simulation */}
+                        <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hidden md:block">
+                          <div className="flex items-center justify-between mb-4">
+                            <h6 className="text-[10px] font-black uppercase tracking-widest text-slate-900">
+                              Atividades Recentes
+                            </h6>
+                            <div className="w-16 h-2 bg-slate-100 rounded-full" />
                           </div>
-
-                          {/* Floating Indicator */}
-                          <div className="bg-slate-900 text-white text-[8px] font-black uppercase tracking-widest px-4 py-2 absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full shadow-2xl flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                            Live Interface Sync
+                          <div className="space-y-3">
+                            {[1, 2].map((n) => (
+                              <div
+                                key={n}
+                                className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className="w-1 h-6 rounded-full bg-blue-500" />
+                                  <div className="h-3 w-32 bg-slate-100 rounded-full" />
+                                </div>
+                                <div className="h-2 w-12 bg-slate-50 rounded-full" />
+                              </div>
+                            ))}
                           </div>
                         </div>
-                      </div>
+
+                        {/* Floating elements based on activeTab */}
+                        {activeTab === "total" && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="absolute bottom-6 right-6 bg-yellow-400 p-4 rounded-2xl shadow-xl z-20"
+                          >
+                            <Bot size={24} className="text-slate-900" />
+                          </motion.div>
+                        )}
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+                </div>
+
+                {/* Overlaid Label */}
+                <div className="absolute -bottom-6 -right-6 bg-slate-900 text-white px-6 py-3 rounded-2xl shadow-2xl z-30 font-black text-[10px] uppercase tracking-[0.2em]">
+                  Interface Oficial v2.0
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── ROLE-BASED SOLUTIONS (PARA QUEM É?) ─── */}
+      <section
+        id="solucoes"
+        className="py-24 bg-[#0A0D14] relative overflow-hidden"
+      >
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-blue-500/5 blur-[120px] rounded-full" />
+
+        <div className="max-w-7xl mx-auto px-6 md:px-10 relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="font-bebas text-5xl md:text-7xl text-white uppercase tracking-wider mb-6">
+              Soluções Sob <span className="text-yellow-500">Medida</span>
+            </h2>
+            <p className="text-slate-400 font-medium max-w-2xl mx-auto">
+              Desenvolvemos ferramentas específicas para cada nível de liderança
+              do seu clube.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {[
+              {
+                role: "Para Líderes",
+                title: "Gestão de Unidade",
+                desc: "Controle de presença, pontuação e progresso de cada desbravador na palma da mão.",
+                features: [
+                  "Presença Digital",
+                  "Pontuação da Unidade",
+                  "Chat com os Pais",
+                ],
+                icon: Tent,
+                color: "blue",
+              },
+              {
+                role: "Para Instrutores",
+                title: "Poder de Ensino",
+                desc: "Acesse materiais, envie provas e valide requisitos em segundos com ajuda da IA.",
+                features: [
+                  "Gabaritos Oficiais",
+                  "Gerador de Provas",
+                  "Checklist de Requisitos",
+                ],
+                icon: BrainCircuit,
+                color: "gold",
+              },
+              {
+                role: "Para a Diretoria",
+                title: "Visão Estratégica",
+                desc: "Relatórios automáticos para o SGC, gestão financeira e analytics de retenção.",
+                features: [
+                  "Exportação SGC",
+                  "Relatório Mensal",
+                  "Controle Financeiro",
+                ],
+                icon: Shield,
+                color: "emerald",
+              },
+            ].map((sol, i) => (
+              <div
+                key={i}
+                className="bg-white/5 border border-white/10 rounded-[2.5rem] p-10 hover:bg-white/[0.08] transition-all group"
+              >
+                <div className="flex items-center gap-3 mb-6">
+                  <div
+                    className={cn(
+                      "w-10 h-10 rounded-xl flex items-center justify-center text-white",
+                      sol.color === "blue"
+                        ? "bg-blue-600"
+                        : sol.color === "gold"
+                          ? "bg-yellow-600"
+                          : "bg-emerald-600",
+                    )}
+                  >
+                    <sol.icon size={20} />
+                  </div>
+                  <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">
+                    {sol.role}
+                  </span>
+                </div>
+                <h3 className="text-3xl font-bebas text-white mb-4 uppercase tracking-wider">
+                  {sol.title}
+                </h3>
+                <p className="text-slate-400 text-sm mb-8 leading-relaxed font-medium">
+                  {sol.desc}
+                </p>
+                <div className="space-y-3 pt-6 border-t border-white/5">
+                  {sol.features.map((f, j) => (
+                    <div key={j} className="flex items-center gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                      <span className="text-[10px] font-bold text-white uppercase tracking-widest">
+                        {f}
+                      </span>
                     </div>
-                  </motion.div>
-                ),
-            )}
-          </AnimatePresence>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -934,46 +1014,126 @@ export default function LandingPage() {
       </section>
 
       {/* ─── SPECIALTIES SECTION ─── */}
-      <section className="py-24 bg-[#0D111A] border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
+      <section className="py-24 bg-[#11141D] relative overflow-hidden border-t border-white/5">
+        {/* Subtle Background Glows */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none">
+          <div className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-blue-500/10 blur-[130px] rounded-full animate-pulse" />
+          <div className="absolute bottom-20 right-1/4 w-[500px] h-[500px] bg-purple-500/10 blur-[130px] rounded-full animate-pulse [animation-delay:1s]" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 md:px-10 relative z-10">
           <div className="text-center mb-16">
             <h2 className="font-bebas text-5xl md:text-6xl text-white uppercase tracking-wider">
               Explore <span className="text-yellow-500">Especialidades</span>
             </h2>
-            <p className="text-slate-400 mt-4 font-medium">
+            <p className="text-slate-400 mt-4 font-medium italic">
               Mais de 200 especialidades organizadas para o crescimento do seu
               clube.
             </p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
             {[
-              "Natureza",
-              "Artes",
-              "Saúde",
-              "Habilidades",
-              "Ciência",
-              "Ativ. Missionárias",
-              "Ativ. Agrícolas",
-              "Mestrados",
+              {
+                name: "Natureza",
+                color: "text-orange-400",
+                bg: "bg-orange-500/15",
+                border: "hover:border-orange-500/40 shadow-orange-500/5",
+              },
+              {
+                name: "Artes",
+                color: "text-pink-400",
+                bg: "bg-pink-500/15",
+                border: "hover:border-pink-500/40 shadow-pink-500/5",
+              },
+              {
+                name: "Saúde",
+                color: "text-red-400",
+                bg: "bg-red-500/15",
+                border: "hover:border-red-500/40 shadow-red-500/5",
+              },
+              {
+                name: "Habilidades",
+                color: "text-yellow-400",
+                bg: "bg-yellow-500/15",
+                border: "hover:border-yellow-500/40 shadow-yellow-500/5",
+              },
+              {
+                name: "Ciência",
+                color: "text-blue-400",
+                bg: "bg-blue-500/15",
+                border: "hover:border-blue-500/40 shadow-blue-500/5",
+              },
+              {
+                name: "Ativ. Missionárias",
+                color: "text-blue-300",
+                bg: "bg-blue-400/15",
+                border: "hover:border-blue-400/40 shadow-blue-400/5",
+              },
+              {
+                name: "Ativ. Agrícolas",
+                color: "text-emerald-400",
+                bg: "bg-emerald-500/15",
+                border: "hover:border-emerald-500/40 shadow-emerald-500/5",
+              },
+              {
+                name: "Mestrados",
+                color: "text-purple-400",
+                bg: "bg-purple-500/15",
+                border: "hover:border-purple-500/40 shadow-purple-500/5",
+              },
             ].map((spec, i) => (
-              <div
+              <motion.div
                 key={i}
-                className="bg-[#111622] border border-white/5 p-4 rounded-xl text-center group hover:border-blue-500/50 transition-all cursor-default"
+                whileHover={{ y: -8, scale: 1.02 }}
+                className={cn(
+                  "bg-white/[0.03] backdrop-blur-xl border border-white/10 p-6 rounded-[2rem] text-center group transition-all cursor-default relative overflow-hidden flex flex-col items-center justify-between min-h-[160px]",
+                  spec.border,
+                  "hover:bg-white/[0.07] hover:shadow-2xl",
+                )}
               >
-                <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-blue-500/10">
-                  <BookOpen size={20} className="text-blue-400" />
+                {/* Dynamic Inner Glow */}
+                <div
+                  className={cn(
+                    "absolute -inset-10 opacity-0 group-hover:opacity-10 blur-3xl transition-opacity pointer-events-none",
+                    spec.bg,
+                  )}
+                />
+
+                <div
+                  className={cn(
+                    "w-16 h-16 rounded-2xl flex items-center justify-center mb-4 group-hover:rotate-6 transition-transform relative z-10",
+                    spec.bg,
+                  )}
+                >
+                  <BookOpen size={28} className={spec.color} />
                 </div>
-                <span className="text-[10px] font-black uppercase text-slate-500 group-hover:text-white transition-colors">
-                  {spec}
+
+                <span
+                  className={cn(
+                    "text-[10px] font-black uppercase tracking-[0.1em] transition-colors relative z-10 leading-tight h-8 flex items-center justify-center",
+                    "text-slate-400 group-hover:text-white",
+                  )}
+                >
+                  {spec.name}
                 </span>
-              </div>
+
+                {/* Micro-interaction line */}
+                <motion.div
+                  initial={{ width: 0 }}
+                  whileHover={{ width: "100%" }}
+                  className={cn(
+                    "h-[1px] absolute bottom-0 left-0 opacity-40",
+                    spec.bg,
+                  )}
+                />
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
       {/* ─── LIBRARY SECTION ─── */}
-      <section className="py-24 bg-[#0A0D14] border-t border-white/5">
+      <section className="py-24 bg-[#11141D] border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 md:px-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="order-2 lg:order-1">
@@ -1025,8 +1185,9 @@ export default function LandingPage() {
             </div>
             <div className="order-1 lg:order-2">
               <div className="relative">
-                <div className="absolute inset-0 bg-blue-500/20 blur-[100px] rounded-full" />
-                <div className="relative bg-[#111622] rounded-[3rem] p-12 border border-white/5 shadow-2xl">
+                <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-[3rem] p-12 border border-white/10 shadow-2xl overflow-hidden">
+                  <div className="absolute -top-24 -right-24 w-80 h-80 bg-blue-500/10 blur-3xl rounded-full pointer-events-none" />
+
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5">
                       <BookOpen size={40} className="text-blue-400 mb-4" />
@@ -1060,11 +1221,12 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── PLATFORM OFFERS ─── */}
       <section
         id="funcionalidades"
-        className="py-24 md:py-32 px-6 md:px-10 bg-[#0A0D14] border-t border-white/5"
+        className="py-24 md:py-32 px-6 md:px-10 bg-[#11141D] border-t border-white/5 relative overflow-hidden"
       >
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
+
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 md:mb-20">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 text-blue-400 text-xs font-black uppercase tracking-widest mb-6">
@@ -1126,24 +1288,120 @@ export default function LandingPage() {
                 bg: "bg-slate-300/5",
               },
             ].map((feat, i) => (
-              <div
+              <motion.div
                 key={i}
-                className="bg-[#111622] border border-white/5 rounded-[2.5rem] p-10 hover:border-blue-500/30 transition-all group"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -10, scale: 1.05 }}
+                transition={{ duration: 0.3 }}
+                className={cn(
+                  "bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-10 transition-all group relative overflow-hidden",
+                  "hover:border-white/20 hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)]",
+                  feat.title === "Suporte Total" && "hover:shadow-blue-500/20",
+                  feat.title === "Acervo Acadêmico" &&
+                    "hover:shadow-purple-500/20",
+                  feat.title === "Central de Avaliações" &&
+                    "hover:shadow-emerald-500/20",
+                  feat.title === "Interface Business" &&
+                    "hover:shadow-orange-500/20",
+                  feat.title === "Emissor de Certificados" &&
+                    "hover:shadow-blue-400/20",
+                  feat.title === "Controle Administrativo" &&
+                    "hover:shadow-slate-300/20",
+                )}
               >
                 <div
                   className={cn(
-                    "w-14 h-14 rounded-2xl flex items-center justify-center mb-8 shadow-2xl",
+                    "absolute -inset-10 opacity-0 group-hover:opacity-20 blur-3xl transition-opacity pointer-events-none",
+                    feat.bg,
+                  )}
+                />
+
+                <motion.div
+                  whileHover={{ rotate: 12, scale: 1.1 }}
+                  className={cn(
+                    "w-14 h-14 rounded-2xl flex items-center justify-center mb-8 shadow-2xl relative z-10",
                     feat.bg,
                     feat.color,
                   )}
                 >
                   <feat.icon size={28} />
-                </div>
-                <h3 className="text-xl font-bebas text-white mb-3 tracking-widest uppercase">
+                </motion.div>
+                <h3 className="text-xl font-bebas text-white mb-3 tracking-widest uppercase relative z-10">
                   {feat.title}
                 </h3>
-                <p className="text-sm text-slate-400 leading-relaxed font-medium">
+                <p className="text-sm text-slate-400 leading-relaxed font-medium relative z-10">
                   {feat.desc}
+                </p>
+
+                {/* Visual indicator at bottom */}
+                <motion.div
+                  initial={{ width: 0 }}
+                  whileHover={{ width: "100%" }}
+                  className={cn(
+                    "h-[2px] absolute bottom-0 left-0",
+                    feat.bg,
+                    "opacity-40",
+                  )}
+                />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── TESTIMONIALS SECTION ─── */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6 md:px-10">
+          <div className="text-center mb-16 font-bebas">
+            <h2 className="text-5xl md:text-7xl text-slate-900 uppercase tracking-tight mb-4">
+              Quem <span className="text-blue-600">Lidera</span>, Confia
+            </h2>
+            <p className="font-inter text-xl text-slate-500 font-medium max-w-2xl mx-auto">
+              Junte-se a centenas de diretores que transformaram a gestão de
+              seus clubes com o Desbrava Total.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                name: "Pr. Marcos Silva",
+                role: "Regional - 4ª Região",
+                text: "A facilidade de exportar dados para o SGC e o controle de classes digitais economiza pelo menos 10 horas de trabalho burocrático por mês.",
+                avatar: "MS",
+              },
+              {
+                name: "Luciana Oliveira",
+                role: "Diretora de Aventureiros",
+                text: "O material para o Ministério da Criança e as fichas lúdicas são encantadores. Meus aventureiros amam as especialidades em áudio!",
+                avatar: "LO",
+              },
+              {
+                name: "Ricardo Santos",
+                role: "Diretor de Desbravadores",
+                text: "O Cantinho da IA é surreal. Gerar roteiros de acampamento e provas de especialidade em segundos mudou nosso patamar de organização.",
+                avatar: "RS",
+              },
+            ].map((testi, i) => (
+              <div
+                key={i}
+                className="p-10 rounded-[2.5rem] bg-slate-50 border border-slate-100 hover:shadow-xl transition-all"
+              >
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-black">
+                    {testi.avatar}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-900">{testi.name}</h4>
+                    <p className="text-xs text-slate-500 font-medium uppercase tracking-widest">
+                      {testi.role}
+                    </p>
+                  </div>
+                </div>
+                <p className="text-slate-600 leading-relaxed italic font-medium">
+                  &quot;{testi.text}&quot;
                 </p>
               </div>
             ))}
@@ -1151,139 +1409,76 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ─── PRICING SECTION (Padronizado) ─── */}
       <section
         id="pricing"
-        className="py-24 md:py-32 px-6 md:px-10 bg-[#0A0D14] border-t border-white/5"
+        className="py-24 bg-[#0A0D14] relative overflow-hidden"
       >
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-20">
-            <p className="text-xs font-black text-blue-500 mb-4 uppercase tracking-[0.3em]">
-              Planos e Investimento
-            </p>
-            <h2 className="text-5xl sm:text-6xl md:text-7xl font-bebas text-white mb-6 uppercase tracking-wider">
-              Escolha o melhor para <br />
-              <span className="text-yellow-500">seu clube.</span>
+        <div className="max-w-7xl mx-auto px-6 md:px-10 relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="font-bebas text-5xl md:text-7xl text-white uppercase tracking-wider mb-6">
+              Invista no Seu <span className="text-yellow-500">Clube</span>
             </h2>
+            <p className="text-slate-400 font-medium max-w-2xl mx-auto">
+              Planos acessíveis para clubes de todos os tamanhos. Sem contratos,
+              cancele quando quiser.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
             {plans.map((plan, i) => (
               <div
                 key={i}
                 className={cn(
-                  "relative group rounded-[3rem] p-10 transition-all duration-500 hover:scale-[1.02] overflow-hidden flex flex-col h-full",
+                  "relative p-10 rounded-[3rem] border transition-all duration-500 flex flex-col h-full",
                   plan.popular
-                    ? "bg-[#161C2C] border-2 border-yellow-500/50 shadow-2xl shadow-yellow-500/10"
-                    : cn(
-                        "bg-[#111622] border transition-colors duration-300",
-                        plan.theme === "orange"
-                          ? "border-orange-500/30 bg-orange-500/[0.02] hover:border-orange-500/50"
-                          : "border-blue-500/30 bg-blue-500/[0.02] hover:border-blue-500/50",
-                      ),
+                    ? "bg-white/10 border-blue-500/50 shadow-2xl shadow-blue-500/10 scale-105 z-10"
+                    : "bg-white/5 border-white/10 hover:border-white/20",
                 )}
-                style={{
-                  boxShadow: plan.popular
-                    ? `0 20px 50px -12px ${plan.glow}`
-                    : undefined,
-                }}
               >
-                {/* Background Glow */}
-                <div
-                  className="absolute -top-24 -right-24 w-80 h-80 blur-3xl rounded-full opacity-30 pointer-events-none transition-transform duration-700 group-hover:scale-150"
-                  style={{ backgroundColor: plan.glow }}
-                />
-
                 {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-gradient-to-r from-yellow-500 to-orange-500 text-slate-900 text-[10px] font-black px-6 py-1.5 rounded-bl-2xl uppercase tracking-[0.2em] shadow-lg">
+                  <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-6 py-2 rounded-full text-xs font-black uppercase tracking-[0.2em] shadow-lg">
                     Recomendado
                   </div>
                 )}
-
-                <div className="mb-10 relative z-10">
-                  <div
-                    className={cn(
-                      "w-12 h-12 rounded-2xl flex items-center justify-center mb-6 shadow-lg bg-white/5",
-                      plan.iconColor,
-                    )}
-                  >
-                    {plan.theme === "orange" ? (
-                      <Compass size={24} />
-                    ) : plan.theme === "blue" ? (
-                      <Tent size={24} />
-                    ) : (
-                      <Zap size={24} fill="currentColor" />
-                    )}
-                  </div>
-                  <h3
-                    className={cn(
-                      "text-3xl font-bebas mb-2 tracking-widest uppercase transition-colors",
-                      plan.theme === "orange"
-                        ? "text-orange-500"
-                        : plan.theme === "blue"
-                          ? "text-blue-500"
-                          : "text-yellow-500",
-                    )}
-                  >
+                <div className="mb-8">
+                  <h3 className="text-2xl font-black text-white mb-2 uppercase tracking-tighter">
                     {plan.name}
                   </h3>
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-widest opacity-80">
+                  <p className="text-slate-400 text-sm font-medium">
                     {plan.description}
                   </p>
                 </div>
-
-                <div className="flex items-baseline gap-1 mb-10 relative z-10">
-                  <span className="text-2xl font-black text-white/50">R$</span>
-                  <span
-                    className={cn(
-                      "text-7xl font-black tracking-tighter",
-                      plan.popular ? "text-white" : "text-white/90",
-                    )}
-                  >
+                <div className="mb-8 flex items-baseline gap-1">
+                  <span className="text-slate-400 font-bold">R$</span>
+                  <span className="text-5xl font-black text-white tracking-tighter">
                     {plan.price}
                   </span>
-                  <span className="text-slate-500 font-bold ml-2 uppercase text-[10px] tracking-widest">
-                    /mês
-                  </span>
+                  <span className="text-slate-500 text-sm font-bold">/mês</span>
                 </div>
-
-                <div className="space-y-4 mb-12 flex-1 relative z-10">
-                  {plan.features.map((feat, j) => (
-                    <div key={j} className="flex items-start gap-3">
-                      <div
-                        className={cn(
-                          "mt-1 w-4 h-4 rounded-full flex items-center justify-center shrink-0",
-                          plan.popular ? "bg-yellow-500/20" : "bg-white/5",
-                        )}
-                      >
-                        <Check
-                          size={10}
-                          className={
-                            plan.popular ? "text-yellow-500" : "text-slate-400"
-                          }
-                        />
-                      </div>
-                      <span className="text-[11px] text-slate-300 font-bold leading-tight">
-                        {feat}
+                <div className="space-y-4 mb-10 border-t border-white/5 pt-8 flex-grow">
+                  {plan.features.map((feature, j) => (
+                    <div key={j} className="flex items-center gap-3">
+                      <CheckCircle2
+                        size={18}
+                        className="text-emerald-500 shrink-0"
+                      />
+                      <span className="text-slate-300 text-sm font-medium">
+                        {feature}
                       </span>
                     </div>
                   ))}
                 </div>
-
                 <Link
                   href={plan.link}
                   className={cn(
-                    "relative z-10 block w-full text-center py-5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all active:scale-95 shadow-lg",
+                    "w-full py-5 rounded-2xl font-black uppercase tracking-widest text-center transition-all active:scale-95",
                     plan.popular
-                      ? "bg-gradient-to-r from-yellow-500 to-orange-500 text-slate-900 hover:shadow-yellow-500/20"
-                      : cn(
-                          "text-white transition-all border",
-                          plan.theme === "orange"
-                            ? "bg-orange-600/10 border-orange-500/20 hover:bg-orange-500 hover:text-white"
-                            : "bg-blue-600/10 border-blue-500/20 hover:bg-blue-500 hover:text-white",
-                        ),
+                      ? "bg-blue-600 hover:bg-blue-500 text-white shadow-xl shadow-blue-600/20"
+                      : "bg-white/10 hover:bg-white/20 text-white",
                   )}
                 >
-                  Garantir Acesso
+                  {plan.popular ? "Acessar Agora" : "Assinar Plano"}
                 </Link>
               </div>
             ))}
@@ -1291,28 +1486,35 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── FINAL CTA ─── */}
+      {/* ─── FINAL CTA SECTION ─── */}
       <section className="py-24 bg-blue-600 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-700 to-blue-500 opacity-50" />
-        <div className="max-w-4xl mx-auto text-center px-6 relative z-10">
-          <h2 className="text-5xl md:text-7xl font-bebas text-white mb-10 tracking-tight uppercase">
-            Pronto para revolucionar o seu clube?
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
+        </div>
+        <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
+          <h2 className="font-bebas text-5xl md:text-8xl text-white mb-8 leading-none tracking-tight uppercase">
+            NÃO PERCA MAIS TEMPO COM <br />
+            <span className="text-slate-900">PAPELADAS E PLANILHAS.</span>
           </h2>
+          <p className="text-xl md:text-2xl text-blue-100 mb-12 font-medium">
+            Seja um líder transformador. Foque nas pessoas, deixe o sistema
+            cuidar da burocracia.
+          </p>
           <Link
             href="/auth"
-            className="inline-flex items-center gap-4 bg-blue-600 hover:bg-blue-500 text-white font-black px-14 py-6 rounded-2xl text-2xl transition-all shadow-2xl active:scale-95"
+            className="inline-flex items-center justify-center gap-4 bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black px-12 py-6 rounded-[2.5rem] text-2xl transition-all shadow-2xl active:scale-95 group uppercase"
           >
-            QUERO ACESSAR AGORA
-            <ArrowRight size={28} />
+            Começar Meu Clube Agora
+            <ArrowRight
+              size={28}
+              className="group-hover:translate-x-2 transition-transform"
+            />
           </Link>
-          <p className="text-blue-100 text-sm mt-8 font-black uppercase tracking-widest opacity-80">
-            Junte-se a centenas de clubes em todo o Brasil.
-          </p>
         </div>
       </section>
 
       {/* ─── FAQ ─── */}
-      <section id="faq" className="py-24 md:py-32 px-6 md:px-10 bg-[#0A0D14]">
+      <section id="faq" className="py-24 md:py-32 px-6 md:px-10 bg-[#11141D]">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-bebas text-white uppercase tracking-wider">
