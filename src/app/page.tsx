@@ -8,7 +8,6 @@ import {
   Monitor,
   BrainCircuit,
   Shield,
-  MessageCircle,
   Globe,
   CheckCircle2,
   ArrowRight,
