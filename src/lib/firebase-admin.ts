@@ -38,16 +38,20 @@ const getAdminDb = () => {
 export const adminAuth = new Proxy({} as admin.auth.Auth, {
   get: (target, prop) => {
     const instance = getAdminAuth();
-    const value = (instance as any)[prop];
-    return typeof value === "function" ? value.bind(instance) : value;
+    const value = instance[prop as keyof admin.auth.Auth];
+    return typeof value === "function"
+      ? (value as (...args: unknown[]) => unknown).bind(instance)
+      : value;
   },
 });
 
 export const adminDb = new Proxy({} as admin.firestore.Firestore, {
   get: (target, prop) => {
     const instance = getAdminDb();
-    const value = (instance as any)[prop];
-    return typeof value === "function" ? value.bind(instance) : value;
+    const value = instance[prop as keyof admin.firestore.Firestore];
+    return typeof value === "function"
+      ? (value as (...args: unknown[]) => unknown).bind(instance)
+      : value;
   },
 });
 
