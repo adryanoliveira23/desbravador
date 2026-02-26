@@ -9,6 +9,7 @@ import {
   setPersistence,
   browserLocalPersistence,
   browserSessionPersistence,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
@@ -33,7 +34,25 @@ export default function AuthPage() {
   const [name, setName] = useState("");
   const [clubName, setClubName] = useState("");
   const [error, setError] = useState("");
+  const [showReset, setShowReset] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetSuccess, setResetSuccess] = useState(false);
   const router = useRouter();
+
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetLoading(true);
+    setError("");
+    try {
+      await sendPasswordResetEmail(auth, resetEmail);
+      setResetSuccess(true);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Erro ao enviar o e-mail.");
+    } finally {
+      setResetLoading(false);
+    }
+  };
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -420,6 +439,130 @@ export default function AuthPage() {
               )}
             </button>
           </form>
+
+          {/* Forgot Password */}
+          <AnimatePresence>
+            {isLogin && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-4 overflow-hidden"
+              >
+                {!showReset ? (
+                  <p className="text-center text-white/30 text-sm font-medium">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowReset(true);
+                        setResetSuccess(false);
+                        setError("");
+                        setResetEmail(email);
+                      }}
+                      className="font-black transition-colors hover:text-white/60"
+                      style={{ color: "rgba(255,255,255,0.35)" }}
+                    >
+                      Esqueci minha senha
+                    </button>
+                  </p>
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-5 rounded-2xl border space-y-4"
+                    style={{
+                      background: "rgba(255,255,255,0.03)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                    }}
+                  >
+                    {resetSuccess ? (
+                      <div className="text-center space-y-2">
+                        <p className="text-sm font-black text-green-400">
+                          Link enviado com sucesso!
+                        </p>
+                        <p className="text-xs text-white/40 font-medium">
+                          Verifique sua caixa de entrada e siga as instruções
+                          para redefinir sua senha.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowReset(false);
+                            setResetSuccess(false);
+                          }}
+                          className="text-xs font-black mt-2 transition-colors hover:text-white"
+                          style={{ color: "#D92D20" }}
+                        >
+                          Voltar ao login
+                        </button>
+                      </div>
+                    ) : (
+                      <form
+                        onSubmit={handlePasswordReset}
+                        className="space-y-3"
+                      >
+                        <p className="text-[10px] font-black text-white/30 uppercase tracking-widest">
+                          Redefinir senha
+                        </p>
+                        <div className="relative">
+                          <Mail
+                            size={14}
+                            className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30"
+                          />
+                          <input
+                            type="email"
+                            value={resetEmail}
+                            onChange={(e) => setResetEmail(e.target.value)}
+                            required
+                            placeholder="seu@email.com"
+                            className="w-full h-12 pl-10 pr-4 rounded-xl text-sm font-bold text-white placeholder-white/20 outline-none transition-all"
+                            style={{
+                              background: "rgba(255,255,255,0.05)",
+                              border: "1px solid rgba(255,255,255,0.1)",
+                            }}
+                          />
+                        </div>
+                        {error && (
+                          <p
+                            className="text-xs font-bold"
+                            style={{ color: "#ff6b6b" }}
+                          >
+                            {error}
+                          </p>
+                        )}
+                        <div className="flex gap-3">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowReset(false);
+                              setError("");
+                            }}
+                            className="flex-1 h-10 rounded-xl text-xs font-black text-white/30 hover:text-white/60 transition-colors border"
+                            style={{
+                              border: "1px solid rgba(255,255,255,0.08)",
+                            }}
+                          >
+                            Cancelar
+                          </button>
+                          <button
+                            type="submit"
+                            disabled={resetLoading}
+                            className="flex-1 h-10 rounded-xl text-xs font-black text-white transition-all hover:opacity-90 disabled:opacity-50"
+                            style={{
+                              background:
+                                "linear-gradient(135deg, #D92D20, #ff4d1c)",
+                            }}
+                          >
+                            {resetLoading ? "Enviando..." : "Enviar link"}
+                          </button>
+                        </div>
+                      </form>
+                    )}
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Toggle */}
           <p className="text-center mt-8 text-white/30 text-sm font-medium">

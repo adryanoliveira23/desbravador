@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/Input";
 
 interface Member {
   id: string;
-  displayName: string;
+  fullName: string;
   email: string;
   activeClass: string;
   role: string;
@@ -120,7 +120,7 @@ export default function ClassesPage() {
     setIsSubmitting(true);
     try {
       await addDoc(collection(db, "users"), {
-        displayName: newUserName,
+        fullName: newUserName,
         email: newUserEmail,
         activeClass: newUserClass,
         role: "desbravador",
@@ -408,11 +408,11 @@ export default function ClassesPage() {
                     >
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs uppercase">
-                          {member.displayName?.charAt(0) || "D"}
+                          {member.fullName?.charAt(0) || "D"}
                         </div>
                         <div>
                           <p className="font-bold text-slate-900">
-                            {member.displayName}
+                            {member.fullName}
                           </p>
                           <p className="text-[10px] text-slate-500 font-medium">
                             {member.email}

@@ -20,6 +20,15 @@ import {
   Tent,
   BookOpen,
   Trophy,
+  Star,
+  Heart,
+  Users2,
+  ArrowUpRight,
+  Package,
+  Award,
+  Calendar,
+  TrendingUp,
+  Sparkles,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -64,56 +73,55 @@ const plans = [
   {
     name: "Bom Aventureiro",
     price: "24,90",
-    description: "Ideal para novos clubes",
+    description: "Ideal para novos clubes de 6-9 anos",
+    theme: "orange",
     features: [
-      "Materiais completos",
-      "Acesso vitalício",
-      "Atualizações futuras incluídas",
-      "Suporte prioritário",
-      "Garantia 7 dias",
-      "Pagamento 100% seguro",
+      "Fichas de Acompanhamento Kids",
+      "Manual do Conselheiro Lúdico",
+      "Especialidades em Áudio e Vídeo",
+      "Acesso completo e vitalício",
+      "Suporte exclusivo",
+      "Garantia de 7 dias",
     ],
-    gradient: "from-blue-500 to-cyan-400",
-    iconBg: "bg-blue-500/10",
-    iconColor: "text-blue-500",
+    gradient: "from-orange-600 to-red-600",
+    glow: "rgba(234, 88, 12, 0.15)",
+    iconColor: "text-orange-500",
     link: process.env.NEXT_PUBLIC_CAKTO_BOM_AVENTUREIRO || "#",
   },
   {
     name: "Só Desbravador",
     price: "25,90",
-    description: "O favorito dos diretores",
+    description: "O favorito dos diretores de 10-15 anos",
+    theme: "blue",
     features: [
-      "Especialidades (+200)",
-      "Materiais de apoio",
-      "Acesso vitalício",
-      "Dashboard estilo Netflix",
-      "Gabaritos oficiais",
-      "Garantia 7 dias",
+      "Gestão de Classes Regulares",
+      "Banco de +200 Especialidades",
+      "Sistema de Pontos de Unidades",
+      "Acesso completo e vitalício",
+      "Suporte exclusivo",
+      "Garantia de 7 dias",
     ],
-    gradient: "from-primary to-orange-500",
-    iconBg: "bg-primary/10",
-    iconColor: "text-primary",
+    gradient: "from-blue-600 to-indigo-600",
+    glow: "rgba(37, 99, 235, 0.15)",
+    iconColor: "text-blue-500",
     link: process.env.NEXT_PUBLIC_CAKTO_SO_DESBRAVADOR || "#",
   },
   {
     name: "Desbrava Total",
     price: "32,90",
     description: "Experiência completa e ilimitada",
+    theme: "gold",
     features: [
-      "TODAS as 6 classes completas",
-      "TODAS as especialidades (+200)",
-      "Materiais completos",
-      "Banco completo de provas",
-      "Gabaritos oficiais",
-      "Certificados automáticos",
-      "Sistema completo de gestão",
-      "Ferramentas Diretor/Líder",
-      "Atualizações inclusas",
-      "Suporte prioritário",
+      "Tudo do Aventureiro + Desbravador",
+      "Cantinho da IA (Roteiros & Provas)",
+      "Emissor de Certificados Ilimitado",
+      "PWA - Funciona sem Internet",
+      "Analytics de Retenção",
+      "Exportação Direta SGC",
     ],
-    gradient: "from-orange-500 to-yellow-400",
-    iconBg: "bg-orange-500/10",
-    iconColor: "text-orange-500",
+    gradient: "from-yellow-500 via-orange-500 to-purple-600",
+    glow: "rgba(245, 158, 11, 0.2)",
+    iconColor: "text-yellow-500",
     popular: true,
     link: process.env.NEXT_PUBLIC_CAKTO_DESBRAVA_TOTAL || "#",
   },
@@ -142,6 +150,159 @@ const faqItems = [
    DEMO TABS DATA
    ============================================================ */
 
+interface DemoTool {
+  title: string;
+  icon: React.ElementType;
+  color: string;
+  premium: boolean;
+}
+
+interface DemoTab {
+  id: string;
+  label: string;
+  title: string;
+  subtitle: string;
+  color: string;
+  gradient: string;
+  icon: React.ElementType;
+  label_tag: string;
+  popular?: boolean;
+  features: string[];
+  accent: string;
+  tools: DemoTool[];
+  stats: { label: string; value: string; icon: React.ElementType }[];
+}
+
+const demoTabs: DemoTab[] = [
+  {
+    id: "aventureiro",
+    label: "Aventureiro",
+    title: "Bom Aventureiro",
+    subtitle:
+      "Interface lúdica e completa para o Clube de Aventureiros. Gestão de classes, manuais e especialidades kids.",
+    color: "orange",
+    gradient: "from-orange-600 to-red-700",
+    icon: Zap,
+    label_tag: "Aventureiros",
+    features: [
+      "Fichas de Acompanhamento Kids",
+      "Manual do Conselheiro Lúdico",
+      "Especialidades em Áudio e Vídeo",
+    ],
+    accent: "bg-orange-600",
+    tools: [
+      {
+        title: "Gestão de Classes",
+        icon: BookOpen,
+        color: "bg-orange-600",
+        premium: false,
+      },
+      {
+        title: "Manual do Castor",
+        icon: BookOpen,
+        color: "bg-red-600",
+        premium: false,
+      },
+      {
+        title: "Kits de Atividades",
+        icon: Package,
+        color: "bg-orange-500",
+        premium: false,
+      },
+    ],
+    stats: [
+      { label: "Aventureiros", value: "24", icon: Heart },
+      { label: "Espec. Concluídas", value: "156", icon: Star },
+      { label: "Presença", value: "98%", icon: Users2 },
+    ],
+  },
+  {
+    id: "desbravador",
+    label: "Desbravador",
+    title: "Só Desbravador",
+    subtitle:
+      "A central definitiva para o Clube de Desbravadores. Foco em requisitos, especialidades e civismo.",
+    color: "blue",
+    gradient: "from-blue-700 to-blue-900",
+    icon: Zap,
+    label_tag: "Desbravadores",
+    features: [
+      "Gestão de Classes Regulares",
+      "Banco de +200 Especialidades",
+      "Sistema de Pontuação de Unidades",
+    ],
+    accent: "bg-blue-700",
+    tools: [
+      {
+        title: "Gestão de Classes",
+        icon: BookOpen,
+        color: "bg-blue-700",
+        premium: false,
+      },
+      {
+        title: "Especialidades",
+        icon: Award,
+        color: "bg-emerald-600",
+        premium: false,
+      },
+      {
+        title: "Planejador Anual",
+        icon: Calendar,
+        color: "bg-amber-500",
+        premium: false,
+      },
+    ],
+    stats: [
+      { label: "Desbravadores", value: "42", icon: Users2 },
+      { label: "Membros Ativos", value: "48", icon: TrendingUp },
+      { label: "Espec. Concluídas", value: "142", icon: Award },
+    ],
+  },
+  {
+    id: "total",
+    label: "Desbrava Total",
+    title: "Desbrava Total",
+    subtitle:
+      "A experiência máxima com Inteligência Artificial. Roteiros automáticos e analytics avançado para todo o clube.",
+    color: "primary",
+    gradient: "from-primary to-orange-600",
+    icon: Sparkles,
+    label_tag: "Master & IA",
+    popular: true,
+    features: [
+      "IA para Criação de Materiais",
+      "Analytics de Retenção",
+      "Exportação de Dados SGC",
+    ],
+    accent: "bg-primary",
+    tools: [
+      {
+        title: "Cantinho da IA",
+        icon: Sparkles,
+        color: "bg-primary",
+        premium: true,
+      },
+      {
+        title: "Gerador de Provas",
+        icon: Award,
+        color: "bg-red-600",
+        premium: false,
+      },
+      {
+        title: "Emissor de Certificados",
+        icon: Award,
+        color: "bg-rose-700",
+        premium: false,
+      },
+    ],
+    stats: [
+      { label: "Total de Membros", value: "128", icon: Globe },
+      { label: "Uso da IA", value: "Alta", icon: Zap },
+      { label: "Tempo Salvo", value: "12h/sem", icon: BrainCircuit },
+    ],
+  },
+];
+
 /* ============================================================
    MAIN COMPONENT
    ============================================================ */
@@ -150,6 +311,7 @@ export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [mobileMenu, setMobileMenu] = useState(false);
+  const [activeTab, setActiveTab] = useState(demoTabs[1].id); // Default to Desbravador
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -284,149 +446,439 @@ export default function LandingPage() {
           >
             {/* Notion-style floating icons placeholder logic */}
             <div className="relative mb-14 inline-block">
-              <motion.div
-                animate={{ y: [0, -10, 0] }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-                className="absolute -top-16 -left-20 w-16 h-16 bg-[#1A1F2B] rounded-2xl flex items-center justify-center p-3 border border-white/5 shadow-2xl rotate-[-12deg]"
-              >
-                <Compass className="text-yellow-500" size={32} />
-              </motion.div>
-              <motion.div
-                animate={{ y: [0, 10, 0] }}
-                transition={{
-                  duration: 5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 0.5,
-                }}
-                className="absolute -top-12 -right-20 w-14 h-14 bg-[#1A1F2B] rounded-2xl flex items-center justify-center p-3 border border-white/5 shadow-2xl rotate-[12deg]"
-              >
-                <Tent className="text-blue-500" size={28} />
-              </motion.div>
-
               <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-[11px] font-black text-yellow-500 uppercase tracking-[0.2em] mb-4">
                 <span className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
-                Plataforma oficial para desbravadores
+                O Primeiro com IA Integrada
               </div>
             </div>
 
-            <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-[92px] font-bebas tracking-wide leading-[0.9] text-white mb-10 uppercase">
-              Gerencie seu Clube <br />
-              <span className="text-yellow-500">com excelência.</span>
+            <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-[102px] font-bebas tracking-wide leading-[0.85] text-white mb-10 uppercase">
+              CHEGOU NOVO APLICATIVO <br />
+              <span className="text-yellow-500">
+                COM INTELIGÊNCIA ARTIFICIAL.
+              </span>
             </h1>
 
             <p className="text-lg sm:text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto mb-16 leading-relaxed font-medium">
-              A plataforma Desbrava Total une tecnologia e materiais oficiais
-              para você focar no que realmente importa:{" "}
-              <span className="text-white font-bold">
-                Salvar do Pecado e Guiar no Serviço.
+              Além de ter um banco de matérias, agora você conta com uma{" "}
+              <span className="text-white font-bold underline decoration-yellow-500/50 decoration-4 underline-offset-8">
+                Inteligência Artificial que cria o que você quiser para você.
               </span>
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-5 justify-center items-center mb-28">
+            <div className="flex flex-col sm:flex-row gap-5 justify-center items-center mb-32">
               <Link
                 href="/auth"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-black px-12 py-5 rounded-2xl text-xl transition-all shadow-2xl shadow-blue-600/30 active:scale-95"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-4 bg-blue-600 hover:bg-blue-500 text-white font-black px-14 py-6 rounded-2xl text-2xl transition-all shadow-2xl shadow-blue-600/30 active:scale-95 group"
               >
-                Crie uma conta gratuita
-                <ArrowRight size={20} />
+                QUERO ACESSAR AGORA
+                <ArrowRight
+                  size={24}
+                  className="group-hover:translate-x-1 transition-transform"
+                />
               </Link>
+            </div>
+
+            {/* NEW: AI Feature Spread Visual */}
+            <div className="relative max-w-4xl mx-auto h-[400px] md:h-[500px]">
+              {/* Central IA Glow */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-500/20 blur-[100px] rounded-full animate-pulse" />
+
+              <div className="relative z-10 w-full h-full">
+                {/* AI Script Card */}
+                <motion.div
+                  initial={{ opacity: 0, x: -50, y: 20 }}
+                  animate={{ opacity: 1, x: 0, y: 0 }}
+                  transition={{ delay: 0.5, duration: 0.8 }}
+                  className="absolute top-0 left-4 md:left-20 w-48 md:w-64 bg-[#111622]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-2xl rotate-[-6deg] hover:rotate-0 transition-transform duration-500"
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+                      <Sparkles size={18} />
+                    </div>
+                    <span className="text-[10px] font-black uppercase text-slate-400">
+                      Roteiro IA
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="h-2 w-full bg-white/10 rounded" />
+                    <div className="h-2 w-5/6 bg-white/5 rounded" />
+                    <div className="h-2 w-4/6 bg-white/5 rounded" />
+                    <div className="h-6 w-1/2 bg-blue-500/20 rounded mt-4 border border-blue-500/30 animate-pulse" />
+                  </div>
+                </motion.div>
+
+                {/* Certificate Mockup */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.8, duration: 1 }}
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 md:w-72 bg-white rounded-3xl p-8 shadow-[0_32px_64px_-12px_rgba(255,255,255,0.1)] border border-slate-200 z-20 group"
+                >
+                  <div className="w-full aspect-[4/3] bg-slate-50 rounded-xl border-4 border-slate-100 flex flex-col items-center justify-center relative overflow-hidden">
+                    <div className="absolute top-4 left-4 w-8 h-8 bg-slate-200 rounded-full" />
+                    <Award
+                      size={40}
+                      className="text-yellow-500 mb-2 group-hover:scale-110 transition-transform"
+                    />
+                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest text-center px-4">
+                      Certificado de Especialidade
+                    </p>
+                    <div className="absolute bottom-4 right-4 w-12 h-4 bg-slate-200 rounded" />
+                  </div>
+                  <div className="mt-4 flex flex-col items-center">
+                    <div className="h-1.5 w-24 bg-slate-100 rounded-full mb-1" />
+                    <div className="h-1 w-16 bg-slate-50 rounded-full" />
+                  </div>
+                </motion.div>
+
+                {/* Class Progress Card */}
+                <motion.div
+                  initial={{ opacity: 0, x: 50, y: -20 }}
+                  animate={{ opacity: 1, x: 0, y: 0 }}
+                  transition={{ delay: 0.6, duration: 0.8 }}
+                  className="absolute bottom-10 right-4 md:right-20 w-48 md:w-64 bg-[#111622]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl rotate-[6deg] hover:rotate-0 transition-transform duration-500"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[10px] font-black uppercase text-slate-400">
+                      Progresso
+                    </span>
+                    <TrendingUp size={14} className="text-green-500" />
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[xs] font-bold">Amigo</span>
+                      <span className="text-[xs] text-blue-500 font-black">
+                        95%
+                      </span>
+                    </div>
+                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: "95%" }}
+                        transition={{ delay: 1.5, duration: 1 }}
+                        className="h-full bg-blue-500 shadow-[0_0_10px_#3b82f6]"
+                      />
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* IA Floating Chips */}
+                <motion.div
+                  animate={{ y: [0, -15, 0] }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="absolute top-20 right-10 md:right-40 px-4 py-2 bg-yellow-500 text-slate-900 rounded-full text-[9px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2"
+                >
+                  <Zap size={12} fill="currentColor" />
+                  Gerador Automático
+                </motion.div>
+
+                <motion.div
+                  animate={{ y: [0, 15, 0] }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 1,
+                  }}
+                  className="absolute bottom-20 left-10 md:left-40 px-4 py-2 bg-blue-600 text-white rounded-full text-[9px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2"
+                >
+                  <Bot size={12} fill="currentColor" />
+                  Assistente 24h
+                </motion.div>
+              </div>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* ─── DASHBOARD PREVIEW ─── */}
+      {/* ─── DASHBOARD PREVIEWS ─── */}
       <section className="py-24 bg-[#0A0D14] relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <div className="relative group">
-            {/* Glow effects */}
-            <div className="absolute -inset-4 bg-gradient-to-r from-blue-600/20 to-yellow-500/20 rounded-[3rem] blur-3xl opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
+          <div className="text-center mb-16">
+            <h2 className="font-bebas text-5xl md:text-6xl text-white uppercase tracking-wider mb-6">
+              Experiência <span className="text-blue-500">Personalizada</span>
+            </h2>
+            <p className="text-slate-400 font-medium max-w-2xl mx-auto mb-12">
+              Escolha o plano que melhor se adapta ao seu clube e veja como a
+              plataforma se transforma para você.
+            </p>
 
-            <div className="relative bg-[#0D111A] border border-white/10 rounded-[2.5rem] shadow-2xl p-4 md:p-8 overflow-hidden">
-              {/* Fake Browser Top Bar */}
-              <div className="flex items-center gap-2 mb-6 px-4">
-                <div className="w-3 h-3 rounded-full bg-red-500/50" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
-                <div className="w-3 h-3 rounded-full bg-green-500/50" />
-                <div className="ml-4 flex-1 h-8 bg-white/5 rounded-lg border border-white/5 flex items-center px-4 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                  portal.desbravatotal.com.br
-                </div>
-              </div>
-
-              {/* Mock Dashboard Layout */}
-              <div className="grid grid-cols-12 gap-6">
-                {/* Sidebar Mock */}
-                <div className="hidden md:block col-span-3 space-y-4">
-                  <div className="h-12 w-full bg-blue-600/10 rounded-xl border border-blue-500/20" />
-                  <div className="space-y-2">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <div
-                        key={i}
-                        className="h-10 w-full bg-white/5 rounded-xl transition-all hover:bg-white/10"
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Main Content Mock */}
-                <div className="col-span-12 md:col-span-9 space-y-6">
-                  {/* Stats Row */}
-                  <div className="grid grid-cols-3 gap-4">
-                    {[1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className="h-24 bg-white/5 rounded-2xl border border-white/10 p-4 space-y-2"
-                      >
-                        <div className="w-8 h-8 bg-blue-500/10 rounded-lg" />
-                        <div className="h-4 w-3/4 bg-white/10 rounded" />
-                      </div>
-                    ))}
-                  </div>
-                  {/* Center Content */}
-                  <div className="h-80 bg-gradient-to-br from-white/5 to-transparent rounded-3xl border border-white/10 p-8">
-                    <div className="flex justify-between items-start mb-12">
-                      <div className="space-y-4 w-full">
-                        <div className="h-8 w-1/3 bg-white/10 rounded-xl" />
-                        <div className="h-4 w-1/2 bg-white/5 rounded-lg" />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-8">
-                      <div className="h-32 bg-white/5 rounded-2xl border border-white/5 animate-pulse" />
-                      <div className="h-32 bg-white/5 rounded-2xl border border-white/5 animate-pulse delay-75" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Feature Badge */}
-              <div className="absolute bottom-12 right-12 flex flex-col items-end gap-3 z-20">
-                <div className="bg-blue-600 text-white font-black px-6 py-3 rounded-2xl shadow-xl shadow-blue-600/40 text-sm uppercase tracking-widest flex items-center gap-3">
-                  <Zap size={18} fill="currentColor" />
-                  Interface 100% Responsiva
-                </div>
-                <div className="bg-yellow-500 text-slate-900 font-black px-6 py-3 rounded-2xl shadow-xl shadow-yellow-500/40 text-sm uppercase tracking-widest">
-                  Materiais Oficiais DSA
-                </div>
-              </div>
+            {/* Tab Selectors */}
+            <div className="inline-flex bg-white/5 p-1.5 rounded-[2rem] border border-white/10 mb-16">
+              {demoTabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={cn(
+                    "px-8 py-4 rounded-[1.5rem] text-sm font-black uppercase tracking-widest transition-all duration-300 relative",
+                    activeTab === tab.id
+                      ? "bg-blue-600 text-white shadow-xl shadow-blue-600/30"
+                      : "text-slate-400 hover:text-white",
+                  )}
+                >
+                  {tab.label}
+                  {tab.popular && (
+                    <span className="absolute -top-2 -right-2 bg-yellow-500 text-[8px] text-slate-900 px-2 py-0.5 rounded-full font-black">
+                      HOT
+                    </span>
+                  )}
+                </button>
+              ))}
             </div>
           </div>
 
-          <div className="mt-16 text-center">
-            <h3 className="font-bebas text-4xl md:text-5xl text-white mb-4 uppercase">
-              UMA EXPERIÊNCIA <span className="text-blue-500">DIGITAL</span>{" "}
-              COMPLETA
-            </h3>
-            <p className="text-slate-400 font-medium max-w-2xl mx-auto">
-              Desenvolvido por quem vive o clube, para quem lidera o clube. Uma
-              interface moderna que reflete a seriedade e o brilho do
-              ministério.
-            </p>
-          </div>
+          <AnimatePresence mode="wait">
+            {demoTabs.map(
+              (tab) =>
+                tab.id === activeTab && (
+                  <motion.div
+                    key={tab.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.5 }}
+                    className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
+                  >
+                    {/* Text Content */}
+                    <div className="lg:col-span-5 space-y-8">
+                      <div className="space-y-4">
+                        <h3 className="text-4xl md:text-5xl font-bebas text-white uppercase tracking-tight">
+                          {tab.title}
+                        </h3>
+                        <p className="text-lg text-slate-400 font-medium leading-relaxed">
+                          {tab.subtitle}
+                        </p>
+                      </div>
+
+                      <div className="space-y-4">
+                        {tab.features.map((feat, i) => (
+                          <div key={i} className="flex items-center gap-4">
+                            <div
+                              className={cn(
+                                "w-6 h-6 rounded-full flex items-center justify-center",
+                                tab.color === "blue"
+                                  ? "bg-blue-500/10 text-blue-500"
+                                  : tab.color === "primary"
+                                    ? "bg-primary/10 text-primary"
+                                    : "bg-orange-500/10 text-orange-500",
+                              )}
+                            >
+                              <CheckCircle2 size={16} />
+                            </div>
+                            <span className="text-slate-300 font-bold text-sm tracking-wide uppercase italic">
+                              {feat}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <Link
+                        href="#pricing"
+                        className={cn(
+                          "inline-flex items-center gap-3 px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-sm transition-all shadow-2xl",
+                          tab.color === "blue"
+                            ? "bg-blue-600 shadow-blue-600/20"
+                            : tab.color === "primary"
+                              ? "bg-primary shadow-primary/20"
+                              : "bg-orange-600 shadow-orange-600/20",
+                        )}
+                      >
+                        Ver Planos <ArrowRight size={18} />
+                      </Link>
+                    </div>
+
+                    {/* Dashboard Mockup */}
+                    <div className="lg:col-span-7 relative">
+                      <div className="relative group">
+                        <div
+                          className={cn(
+                            "absolute -inset-4 rounded-[3rem] blur-3xl opacity-30 transition-opacity duration-700",
+                            tab.id === "aventureiro"
+                              ? "bg-orange-500/40"
+                              : tab.id === "desbravador"
+                                ? "bg-blue-500/40"
+                                : "bg-primary/40",
+                          )}
+                        />
+
+                        <div className="relative bg-[#F8FAFC] border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden min-h-[500px] flex flex-col">
+                          {/* Dashboard Sidebar + Header Simulation */}
+                          <div className="h-14 bg-white border-b border-slate-100 flex items-center justify-between px-6">
+                            <div className="flex items-center gap-4">
+                              <div className="flex items-center gap-1.5">
+                                <div className="w-2.5 h-2.5 rounded-full bg-slate-200" />
+                                <div className="w-2.5 h-2.5 rounded-full bg-slate-200" />
+                                <div className="w-2.5 h-2.5 rounded-full bg-slate-200" />
+                              </div>
+                              <div className="h-4 w-24 bg-slate-100 rounded-full" />
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-slate-100" />
+                            </div>
+                          </div>
+
+                          {/* Dashboard Content Mock */}
+                          <div className="flex-1 p-6 md:p-8 space-y-6 overflow-y-auto max-h-[600px] bg-slate-50/50">
+                            {/* Welcome Banner Mock */}
+                            <div
+                              className={cn(
+                                "relative overflow-hidden rounded-[1.5rem] p-6 text-white shadow-lg min-h-[160px] flex flex-col justify-center bg-gradient-to-br",
+                                tab.gradient,
+                              )}
+                            >
+                              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rotate-45 translate-x-1/2 -translate-y-1/2 blur-2xl pointer-events-none"></div>
+                              <div className="relative z-10">
+                                <div className="flex items-center gap-2 mb-3">
+                                  <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center p-1.5 shadow-md">
+                                    <tab.icon
+                                      size={18}
+                                      className={cn(
+                                        "fill-current",
+                                        tab.id === "aventureiro"
+                                          ? "text-orange-600"
+                                          : tab.id === "desbravador"
+                                            ? "text-blue-700"
+                                            : "text-primary",
+                                      )}
+                                    />
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <span className="text-[7px] font-black uppercase tracking-[0.2em] text-white/80">
+                                      Portal de Liderança
+                                    </span>
+                                    <span className="text-[7px] font-bold text-white/60 uppercase">
+                                      Contexto: {tab.label_tag}
+                                    </span>
+                                  </div>
+                                </div>
+                                <h4 className="text-2xl font-black mb-1 uppercase tracking-tighter">
+                                  {tab.id === "aventureiro"
+                                    ? "Grande Líder!"
+                                    : "Bem-vindo!"}
+                                </h4>
+                                <p className="text-[10px] text-white/90 font-medium">
+                                  Gestão inteligente para o seu clube.
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Stats Row Mock */}
+                            <div className="grid grid-cols-3 gap-3">
+                              {tab.stats.map((stat, i) => (
+                                <div
+                                  key={i}
+                                  className="bg-white border border-slate-100 rounded-xl p-3 flex items-center justify-between shadow-sm"
+                                >
+                                  <div>
+                                    <p className="text-[7px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">
+                                      {stat.label}
+                                    </p>
+                                    <p className="text-lg font-black text-slate-900 tracking-tighter leading-none">
+                                      {stat.value}
+                                    </p>
+                                  </div>
+                                  <div
+                                    className={cn(
+                                      "p-2 rounded-lg bg-slate-50",
+                                      tab.id === "aventureiro"
+                                        ? "text-orange-600"
+                                        : tab.id === "desbravador"
+                                          ? "text-blue-700"
+                                          : "text-primary",
+                                    )}
+                                  >
+                                    <stat.icon size={14} />
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Tools Section Mock */}
+                            <div className="space-y-4">
+                              <h5 className="text-[8px] font-black text-slate-800 uppercase tracking-tight flex items-center gap-1.5 px-1">
+                                <ArrowUpRight
+                                  size={10}
+                                  className="text-primary"
+                                />{" "}
+                                Ferramentas do Clube
+                              </h5>
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                {tab.tools.map((tool, i) => (
+                                  <div
+                                    key={i}
+                                    className="bg-white border border-slate-100 rounded-xl p-3 flex items-center gap-3 shadow-sm hover:border-primary/20 transition-all cursor-default relative overflow-hidden"
+                                  >
+                                    {tool.premium && (
+                                      <div className="absolute top-0 right-0 bg-primary/10 px-1.5 py-0.5 rounded-bl-lg text-[6px] font-black text-primary uppercase">
+                                        IA
+                                      </div>
+                                    )}
+                                    <div
+                                      className={cn(
+                                        "w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm shrink-0",
+                                        tool.color,
+                                      )}
+                                    >
+                                      <tool.icon size={16} />
+                                    </div>
+                                    <div className="min-w-0">
+                                      <h6 className="font-black text-slate-900 text-[9px] truncate">
+                                        {tool.title}
+                                      </h6>
+                                      <div className="h-1 w-8 bg-slate-100 rounded-full mt-1" />
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Recent Activity Mock */}
+                            <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
+                              <div className="flex items-center justify-between border-b border-slate-50 pb-2 mb-2">
+                                <p className="text-[8px] font-black text-slate-800 uppercase">
+                                  Atividades Recentes
+                                </p>
+                                <div className="h-3 w-10 bg-slate-50 rounded-full" />
+                              </div>
+                              {[1, 2].map((i) => (
+                                <div
+                                  key={i}
+                                  className="flex items-center gap-3"
+                                >
+                                  <div
+                                    className={cn(
+                                      "w-1 h-6 rounded-full",
+                                      tab.id === "aventureiro"
+                                        ? "bg-orange-500"
+                                        : "bg-blue-600",
+                                    )}
+                                  />
+                                  <div className="space-y-1 flex-1">
+                                    <div className="h-2 w-3/4 bg-slate-100 rounded" />
+                                    <div className="h-1.5 w-1/3 bg-slate-50 rounded" />
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Floating Indicator */}
+                          <div className="bg-slate-900 text-white text-[8px] font-black uppercase tracking-widest px-4 py-2 absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full shadow-2xl flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                            Live Interface Sync
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ),
+            )}
+          </AnimatePresence>
         </div>
       </section>
 
@@ -720,39 +1172,98 @@ export default function LandingPage() {
               <div
                 key={i}
                 className={cn(
-                  "bg-[#111622] rounded-[3rem] p-10 border border-white/5 transition-all hover:scale-[1.02] relative overflow-hidden",
-                  plan.popular && "border-blue-500/30 bg-[#161C2C]",
+                  "relative group rounded-[3rem] p-10 transition-all duration-500 hover:scale-[1.02] overflow-hidden flex flex-col h-full",
+                  plan.popular
+                    ? "bg-[#161C2C] border-2 border-yellow-500/50 shadow-2xl shadow-yellow-500/10"
+                    : cn(
+                        "bg-[#111622] border transition-colors duration-300",
+                        plan.theme === "orange"
+                          ? "border-orange-500/30 bg-orange-500/[0.02] hover:border-orange-500/50"
+                          : "border-blue-500/30 bg-blue-500/[0.02] hover:border-blue-500/50",
+                      ),
                 )}
+                style={{
+                  boxShadow: plan.popular
+                    ? `0 20px 50px -12px ${plan.glow}`
+                    : undefined,
+                }}
               >
+                {/* Background Glow */}
+                <div
+                  className="absolute -top-24 -right-24 w-80 h-80 blur-3xl rounded-full opacity-30 pointer-events-none transition-transform duration-700 group-hover:scale-150"
+                  style={{ backgroundColor: plan.glow }}
+                />
+
                 {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-blue-600 text-white text-[10px] font-black px-4 py-1 rounded-bl-xl uppercase tracking-widest">
-                    Mais Popular
+                  <div className="absolute top-0 right-0 bg-gradient-to-r from-yellow-500 to-orange-500 text-slate-900 text-[10px] font-black px-6 py-1.5 rounded-bl-2xl uppercase tracking-[0.2em] shadow-lg">
+                    Recomendado
                   </div>
                 )}
-                <div className="mb-10">
-                  <h3 className="text-3xl font-bebas text-white mb-2 tracking-widest uppercase">
+
+                <div className="mb-10 relative z-10">
+                  <div
+                    className={cn(
+                      "w-12 h-12 rounded-2xl flex items-center justify-center mb-6 shadow-lg bg-white/5",
+                      plan.iconColor,
+                    )}
+                  >
+                    {plan.theme === "orange" ? (
+                      <Compass size={24} />
+                    ) : plan.theme === "blue" ? (
+                      <Tent size={24} />
+                    ) : (
+                      <Zap size={24} fill="currentColor" />
+                    )}
+                  </div>
+                  <h3
+                    className={cn(
+                      "text-3xl font-bebas mb-2 tracking-widest uppercase transition-colors",
+                      plan.theme === "orange"
+                        ? "text-orange-500"
+                        : plan.theme === "blue"
+                          ? "text-blue-500"
+                          : "text-yellow-500",
+                    )}
+                  >
                     {plan.name}
                   </h3>
-                  <p className="text-sm text-slate-400 font-medium">
+                  <p className="text-xs text-slate-400 font-bold uppercase tracking-widest opacity-80">
                     {plan.description}
                   </p>
                 </div>
 
-                <div className="flex items-baseline gap-1 mb-10">
-                  <span className="text-2xl font-black text-white">R$</span>
-                  <span className="text-7xl font-black text-white tracking-tighter">
+                <div className="flex items-baseline gap-1 mb-10 relative z-10">
+                  <span className="text-2xl font-black text-white/50">R$</span>
+                  <span
+                    className={cn(
+                      "text-7xl font-black tracking-tighter",
+                      plan.popular ? "text-white" : "text-white/90",
+                    )}
+                  >
                     {plan.price}
                   </span>
-                  <span className="text-slate-500 font-bold ml-2">/mês</span>
+                  <span className="text-slate-500 font-bold ml-2 uppercase text-[10px] tracking-widest">
+                    /mês
+                  </span>
                 </div>
 
-                <div className="space-y-5 mb-12">
-                  {plan.features.slice(0, 6).map((feat, j) => (
-                    <div key={j} className="flex items-center gap-4">
-                      <div className="w-5 h-5 rounded-full bg-blue-500/10 flex items-center justify-center">
-                        <Check size={14} className="text-blue-500" />
+                <div className="space-y-4 mb-12 flex-1 relative z-10">
+                  {plan.features.map((feat, j) => (
+                    <div key={j} className="flex items-start gap-3">
+                      <div
+                        className={cn(
+                          "mt-1 w-4 h-4 rounded-full flex items-center justify-center shrink-0",
+                          plan.popular ? "bg-yellow-500/20" : "bg-white/5",
+                        )}
+                      >
+                        <Check
+                          size={10}
+                          className={
+                            plan.popular ? "text-yellow-500" : "text-slate-400"
+                          }
+                        />
                       </div>
-                      <span className="text-sm text-slate-300 font-bold">
+                      <span className="text-[11px] text-slate-300 font-bold leading-tight">
                         {feat}
                       </span>
                     </div>
@@ -762,13 +1273,18 @@ export default function LandingPage() {
                 <Link
                   href={plan.link}
                   className={cn(
-                    "block w-full text-center py-5 rounded-2xl font-black uppercase tracking-widest text-sm transition-all",
+                    "relative z-10 block w-full text-center py-5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all active:scale-95 shadow-lg",
                     plan.popular
-                      ? "bg-blue-600 text-white hover:bg-blue-500 shadow-xl shadow-blue-600/20"
-                      : "bg-white/5 text-white hover:bg-white/10 border border-white/10",
+                      ? "bg-gradient-to-r from-yellow-500 to-orange-500 text-slate-900 hover:shadow-yellow-500/20"
+                      : cn(
+                          "text-white transition-all border",
+                          plan.theme === "orange"
+                            ? "bg-orange-600/10 border-orange-500/20 hover:bg-orange-500 hover:text-white"
+                            : "bg-blue-600/10 border-blue-500/20 hover:bg-blue-500 hover:text-white",
+                        ),
                   )}
                 >
-                  Selecionar
+                  Garantir Acesso
                 </Link>
               </div>
             ))}
@@ -874,55 +1390,154 @@ export default function LandingPage() {
 
 function AIChatBot() {
   const [isOpen, setIsOpen] = useState(false);
+  const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState([
     {
-      text: "Olá! Sou o assistente do Desbrava Total. Como posso ajudar você hoje?",
+      text: "Olá! Sou o assistente do Desbrava Total. Como posso ajudar seu clube hoje?",
       isBot: true,
     },
   ]);
   const [isTyping, setIsTyping] = useState(false);
+  const [currentNamespace, setCurrentNamespace] = useState("start");
 
-  const options = [
-    { label: "Ver Planos", action: "pricing" },
-    { label: "Dúvidas sobre IA", action: "ia" },
-    { label: "Falar no WhatsApp", action: "whatsapp" },
-  ];
+  const chatContainerRef = React.useRef<HTMLDivElement>(null);
 
-  const handleAction = (action: string, label: string) => {
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages, isTyping]);
+
+  const botBrain: Record<
+    string,
+    {
+      options: { label: string; action: string; next?: string }[];
+      response: string;
+    }
+  > = {
+    start: {
+      response:
+        "Olá! Sou o assistente do Desbrava Total. Como posso ajudar seu clube hoje?",
+      options: [
+        { label: "Ver Planos", action: "pricing", next: "pricing_node" },
+        { label: "Dúvidas sobre IA", action: "ia", next: "ia_node" },
+        {
+          label: "Recursos do Sistema",
+          action: "features",
+          next: "features_node",
+        },
+      ],
+    },
+    pricing_node: {
+      response:
+        "Temos 3 planos ideais: Bom Aventureiro (R$ 24,90), Só Desbravador (R$ 25,90) e o Desbrava Total (R$ 32,90) com IA ilimitada. Qual você quer conhecer melhor?",
+      options: [
+        {
+          label: "Bom Aventureiro",
+          action: "info_aventureiro",
+          next: "cta_node",
+        },
+        {
+          label: "Só Desbravador",
+          action: "info_desbravador",
+          next: "cta_node",
+        },
+        { label: "Desbrava Total", action: "info_total", next: "cta_node" },
+        { label: "Voltar", action: "back", next: "start" },
+      ],
+    },
+    ia_node: {
+      response:
+        "Minha Inteligência Artificial cria roteiros, provas e especialidades em segundos, poupando horas de trabalho do líder. O que deseja saber?",
+      options: [
+        {
+          label: "Como criar roteiros?",
+          action: "ia_roteiros",
+          next: "ia_node",
+        },
+        { label: "Gerador de Provas", action: "ia_provas", next: "ia_node" },
+        { label: "Como falar com a IA?", action: "ia_how", next: "ia_node" },
+        { label: "Voltar", action: "back", next: "start" },
+      ],
+    },
+    features_node: {
+      response:
+        "Além de IA, temos PWA (funciona sem internet), emissor de certificados e gestão completa de classes. Qual recurso te interessa?",
+      options: [
+        {
+          label: "Funciona Offline?",
+          action: "off_pwa",
+          next: "features_node",
+        },
+        { label: "SGC Integração", action: "sgc", next: "features_node" },
+        { label: "Certificados", action: "certs", next: "features_node" },
+        { label: "Voltar", action: "back", next: "start" },
+      ],
+    },
+    cta_node: {
+      response:
+        "Excelente escolha! Quer garantir seu acesso agora com desconto ou prefere tirar mais dúvidas no WhatsApp?",
+      options: [
+        { label: "Garantir Acesso", action: "go_pricing" },
+        { label: "Chamar no WhatsApp", action: "whatsapp" },
+        { label: "Voltar ao Início", action: "back", next: "start" },
+      ],
+    },
+  };
+
+  const handleAction = (action: string, label: string, next?: string) => {
     setMessages((prev) => [...prev, { text: label, isBot: false }]);
     setIsTyping(true);
 
     setTimeout(() => {
       setIsTyping(false);
-      if (action === "pricing") {
-        setMessages((prev) => [
-          ...prev,
-          {
-            text: "Temos 3 planos ideais para o seu clube. O Plano Desbrava Total está com uma oferta especial de R$ 32,90/mês! Deseja ver os detalhes?",
-            isBot: true,
-          },
-        ]);
-      } else if (action === "ia") {
-        setMessages((prev) => [
-          ...prev,
-          {
-            text: "Nossa IA é baseada nos manuais oficiais da DSA. Ela ajuda a criar roteiros, classes e especialidades em segundos.",
-            isBot: true,
-          },
-        ]);
-      } else if (action === "whatsapp") {
-        setMessages((prev) => [
-          ...prev,
-          {
-            text: "Perfeito! Vou te direcionar agora para o nosso WhatsApp oficial. Um segundo...",
-            isBot: true,
-          },
-        ]);
-        setTimeout(() => {
-          window.open("https://wa.me/556699762785", "_blank");
-        }, 1500);
+
+      let botResponse = "";
+      if (next && botBrain[next]) {
+        botResponse = botBrain[next].response;
+        setCurrentNamespace(next);
+      } else {
+        // Simple action handling
+        if (action === "whatsapp") {
+          botResponse =
+            "Perfeito! Vou te direcionar agora para o nosso WhatsApp oficial. Um segundo...";
+          setTimeout(
+            () => window.open("https://wa.me/556699762785", "_blank"),
+            1500,
+          );
+        } else if (action === "go_pricing") {
+          botResponse =
+            "Ótimo! Role um pouco para baixo ou clique no botão 'Preços' no menu superior.";
+        } else {
+          botResponse = "Entendi! Como posso te ajudar mais?";
+        }
       }
-    }, 1000);
+
+      setMessages((prev) => [...prev, { text: botResponse, isBot: true }]);
+    }, 800);
+  };
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputValue.trim()) return;
+
+    const userText = inputValue;
+    setInputValue("");
+    setMessages((prev) => [...prev, { text: userText, isBot: false }]);
+    setIsTyping(true);
+
+    setTimeout(() => {
+      setIsTyping(false);
+      setMessages((prev) => [
+        ...prev,
+        {
+          text: `Ótima pergunta sobre "${userText}"! Minha IA está analisando os manuais da DSA para te dar a melhor resposta. Enquanto isso, posso te ajudar com os atalhos abaixo ou te direcionar para um consultor no WhatsApp?`,
+          isBot: true,
+        },
+      ]);
+      setCurrentNamespace("cta_node"); // Drive towards conversion
+    }, 1500);
   };
 
   return (
@@ -933,78 +1548,98 @@ function AIChatBot() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="absolute bottom-20 right-0 w-[320px] sm:w-[380px] bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden mb-2"
+            className="absolute bottom-20 right-0 w-[320px] sm:w-[400px] bg-white border border-slate-200 rounded-[2.5rem] shadow-2xl overflow-hidden mb-2 flex flex-col"
           >
             {/* Header */}
-            <div className="bg-slate-900 p-5 text-white flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary to-orange-500 rounded-xl flex items-center justify-center">
-                  <Bot size={20} className="text-white" />
+            <div className="bg-slate-900 p-6 text-white flex items-center justify-between shadow-lg">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <Bot size={24} className="text-white" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm">Suporte Desbrava</h4>
-                  <p className="text-[10px] text-slate-400 flex items-center gap-1">
+                  <h4 className="font-black text-sm uppercase tracking-widest">
+                    Suporte IA
+                  </h4>
+                  <p className="text-[10px] text-blue-400 font-bold flex items-center gap-1 uppercase">
                     <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                    Online agora
+                    Agente Inteligente
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-slate-400 hover:text-white transition-colors"
+                className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
               >
                 <X size={20} />
               </button>
             </div>
 
-            {/* Content */}
-            <div className="h-[350px] overflow-y-auto p-5 space-y-4 bg-slate-50/50 custom-scrollbar">
+            {/* Content Area */}
+            <div
+              ref={chatContainerRef}
+              className="h-[400px] overflow-y-auto p-6 space-y-5 bg-slate-50/50 custom-scrollbar scroll-smooth"
+            >
               {messages.map((msg, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, x: msg.isBot ? -10 : 10 }}
-                  animate={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
                   className={cn(
-                    "max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed",
+                    "max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm",
                     msg.isBot
-                      ? "bg-white border border-slate-100 text-slate-900 rounded-tl-none shadow-sm"
-                      : "bg-primary text-white ml-auto rounded-tr-none shadow-md",
+                      ? "bg-white border border-slate-100 text-slate-800 rounded-tl-none"
+                      : "bg-blue-600 text-white ml-auto rounded-tr-none",
                   )}
                 >
                   {msg.text}
                 </motion.div>
               ))}
               {isTyping && (
-                <div className="bg-white border border-slate-100 p-3 rounded-2xl rounded-tl-none w-16 shadow-sm flex gap-1 justify-center">
-                  <span className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce" />
-                  <span className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce [animation-delay:0.2s]" />
-                  <span className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce [animation-delay:0.4s]" />
+                <div className="bg-white border border-slate-100 p-4 rounded-2xl rounded-tl-none w-16 shadow-sm flex gap-1.5 justify-center">
+                  <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" />
+                  <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce [animation-delay:0.2s]" />
+                  <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce [animation-delay:0.4s]" />
                 </div>
               )}
             </div>
 
-            {/* Footer / Options */}
-            <div className="p-4 border-t border-slate-100 bg-white">
-              <div className="flex flex-wrap gap-2 mb-3">
-                {options.map((opt) => (
+            {/* Interaction Footer */}
+            <div className="p-5 border-t border-slate-100 bg-white">
+              {/* Quick Options */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                {botBrain[currentNamespace]?.options.map((opt, idx) => (
                   <button
-                    key={opt.action}
-                    onClick={() => handleAction(opt.action, opt.label)}
-                    className="text-xs font-bold px-4 py-2 rounded-lg border border-slate-200 text-slate-700 hover:border-yellow-500 hover:text-yellow-600 transition-all bg-slate-50 shadow-sm"
+                    key={idx}
+                    onClick={() =>
+                      handleAction(opt.action, opt.label, opt.next)
+                    }
+                    className="text-[10px] font-black tracking-widest uppercase px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:border-blue-500 hover:text-blue-600 transition-all bg-slate-50 group shadow-sm active:scale-95"
                   >
                     {opt.label}
                   </button>
                 ))}
               </div>
-              <a
-                href="https://wa.me/556699762785"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl text-sm font-bold transition-all shadow-lg shadow-green-500/20"
+
+              {/* Chat Input */}
+              <form
+                onSubmit={handleSendMessage}
+                className="relative flex items-center gap-2"
               >
-                <MessageCircle size={18} />
-                Chamar no WhatsApp
-              </a>
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder="Digite sua dúvida aqui..."
+                  className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 text-xs font-medium focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all pr-12"
+                />
+                <button
+                  type="submit"
+                  disabled={!inputValue.trim()}
+                  className="absolute right-2 w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg disabled:opacity-50 transition-all hover:bg-blue-700 active:scale-95"
+                >
+                  <ArrowRight size={18} />
+                </button>
+              </form>
             </div>
           </motion.div>
         )}
@@ -1015,14 +1650,19 @@ function AIChatBot() {
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "w-16 h-16 rounded-2xl flex items-center justify-center shadow-2xl transition-all duration-300",
-          isOpen ? "bg-slate-900 rotate-90" : "bg-primary shadow-primary/30",
+          "w-16 h-16 rounded-2xl flex items-center justify-center shadow-[0_20px_50px_rgba(37,99,235,0.3)] transition-all duration-300",
+          isOpen ? "bg-slate-900 rotate-90" : "bg-blue-600",
         )}
       >
         {isOpen ? (
           <X className="text-white" size={28} />
         ) : (
-          <Bot className="text-white" size={28} />
+          <div className="relative">
+            <Bot className="text-white" size={28} />
+            <span className="absolute -top-4 -right-4 w-5 h-5 bg-yellow-500 border-2 border-blue-600 rounded-full flex items-center justify-center text-[10px] font-black text-slate-900">
+              1
+            </span>
+          </div>
         )}
       </motion.button>
     </div>
