@@ -357,14 +357,11 @@ export default function LandingPage() {
               </h1>
 
               <p className="text-lg md:text-xl text-slate-300 mb-10 leading-relaxed font-semibold max-w-xl mx-auto lg:mx-0">
-                Organize seu clube em um único sistema com o poder da{" "}
+                Além de ter um banco de materiais, agora você conta com uma{" "}
                 <span className="text-yellow-400 italic">
                   Inteligência Artificial
-                </span>
-                . Ganhe tempo para o que realmente importa:{" "}
-                <span className="text-white italic">
-                  investir na vida dos seus juvenis.
-                </span>
+                </span>{" "}
+                que cria o que você quiser para você.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-5 items-center lg:items-start justify-center lg:justify-start">
