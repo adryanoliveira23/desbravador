@@ -24,7 +24,6 @@ import {
   Bot,
   Heart,
   Home,
-  TrendingUp,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -32,29 +31,6 @@ import { cn } from "@/lib/utils";
 /* ============================================================
    DATA
    ============================================================ */
-
-const ideals = [
-  {
-    title: "Voto",
-    text: "Pela graça de Deus, serei puro, bondoso e leal; guardarei a lei do Desbravador, serei servo de Deus e amigo de todos.",
-    color: "from-blue-600 to-blue-400",
-  },
-  {
-    title: "Lei",
-    text: "A Lei do Desbravador ordena-me: Observar a devoção matinal; Cumprir com fidelidade a parte que me corresponde...",
-    color: "from-yellow-600 to-yellow-400",
-  },
-  {
-    title: "Alvo",
-    text: "A mensagem do advento a todo o mundo em minha geração.",
-    color: "from-red-600 to-red-400",
-  },
-  {
-    title: "Lema",
-    text: "O amor de Cristo me motiva.",
-    color: "from-emerald-600 to-emerald-400",
-  },
-];
 
 const classes = [
   { name: "Amigo", color: "bg-blue-600" },
@@ -248,7 +224,7 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0A0D14] text-white font-inter selection:bg-blue-500/30 overflow-x-hidden">
+    <div className="min-h-screen bg-[#0A0D14] text-white font-inter selection:bg-blue-500/30 overflow-x-hidden w-full max-w-[100vw]">
       {/* ─── NAVIGATION ─── */}
       <nav
         className={cn(
@@ -367,27 +343,31 @@ export default function LandingPage() {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="text-left"
+              className="text-center lg:text-left"
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-[11px] font-black text-blue-400 uppercase tracking-widest mb-8">
-                <Shield size={14} className="text-blue-500" />
                 Liderança Oficial e Padronizada
               </div>
 
               <h1 className="text-5xl md:text-7xl lg:text-8xl xl:text-[85px] font-bebas tracking-tight leading-[0.85] text-white mb-8 uppercase">
-                GERE SEU CLUBE <br />
-                <span className="text-yellow-500">DE FORMA OFICIAL.</span>
+                GERENCIE SEU CLUBE <br />
+                <span className="text-yellow-500">
+                  COM INTELIGÊNCIA ARTIFICIAL
+                </span>
               </h1>
 
-              <p className="text-lg md:text-xl text-slate-300 mb-10 leading-relaxed font-semibold max-w-xl">
-                Organize todo o seu clube em um único sistema. Ganhe tempo para
-                o que realmente importa:{" "}
+              <p className="text-lg md:text-xl text-slate-300 mb-10 leading-relaxed font-semibold max-w-xl mx-auto lg:mx-0">
+                Organize seu clube em um único sistema com o poder da{" "}
+                <span className="text-yellow-400 italic">
+                  Inteligência Artificial
+                </span>
+                . Ganhe tempo para o que realmente importa:{" "}
                 <span className="text-white italic">
                   investir na vida dos seus juvenis.
                 </span>
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-5 items-start">
+              <div className="flex flex-col sm:flex-row gap-5 items-center lg:items-start justify-center lg:justify-start">
                 <Link
                   href="/auth"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-4 bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black px-10 py-5 rounded-2xl text-xl transition-all shadow-xl shadow-yellow-500/10 active:scale-95 group uppercase"
@@ -399,14 +379,14 @@ export default function LandingPage() {
                   />
                 </Link>
                 <Link
-                  href="#funcionalidades"
+                  href="#demo"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-4 bg-white/5 hover:bg-white/10 text-white font-black px-10 py-5 rounded-2xl text-xl transition-all border border-white/10 active:scale-95 group uppercase"
                 >
                   Ver Demonstração
                 </Link>
               </div>
 
-              <div className="mt-12 flex items-center gap-6">
+              <div className="mt-12 flex items-center gap-6 justify-center lg:justify-start">
                 <div className="flex items-center gap-3">
                   <div className="flex -space-x-3 overflow-hidden">
                     {[1, 2, 3, 4].map((i) => (
@@ -541,7 +521,10 @@ export default function LandingPage() {
       </section>
 
       {/* ─── INTERACTIVE DASHBOARD DEMOS (REAL APP STYLE) ─── */}
-      <section className="py-24 bg-white overflow-hidden relative border-y border-slate-100">
+      <section
+        id="demo"
+        className="py-24 bg-white overflow-hidden relative border-y border-slate-100"
+      >
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.03),transparent)] pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-6 md:px-10 relative z-10">
@@ -719,135 +702,363 @@ export default function LandingPage() {
                     </div>
                   </div>
 
-                  {/* App Content Area */}
-                  <div className="bg-slate-50/50 p-6 md:p-8 aspect-[16/10] md:aspect-[16/9] relative lg:h-[500px] overflow-hidden">
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={activeTab}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="h-full space-y-6"
-                      >
-                        {/* Welcome Banner Simulation */}
+                  {/* App Content Area: Real dashboard layout */}
+                  <div className="flex h-[520px] overflow-hidden">
+                    {/* Sidebar */}
+                    <div className="hidden md:flex flex-col w-[180px] bg-slate-50 border-r border-slate-100 p-3 gap-1 shrink-0">
+                      {[
+                        { icon: Home, label: "Início", active: false },
+                        { icon: Users2, label: "Membros", active: false },
+                        {
+                          icon: BookOpen,
+                          label: "Classes",
+                          active:
+                            activeTab === "desbravador" ||
+                            activeTab === "aventureiro",
+                        },
+                        { icon: Award, label: "Especialidades", active: false },
+                        {
+                          icon: Bot,
+                          label: "IA Cantinho",
+                          active: activeTab === "total",
+                        },
+                        { icon: Globe, label: "SGC Sync", active: false },
+                      ].map((item, i) => (
                         <div
+                          key={i}
                           className={cn(
-                            "rounded-3xl p-6 md:p-10 text-white relative overflow-hidden shadow-lg min-h-[160px] md:min-h-[200px] flex flex-col justify-center",
-                            activeTab === "aventureiro"
-                              ? "bg-gradient-to-br from-orange-600 to-red-600"
-                              : "bg-gradient-to-br from-blue-700 to-blue-900",
+                            "flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all cursor-default",
+                            item.active
+                              ? activeTab === "aventureiro"
+                                ? "bg-orange-50 text-orange-600 border border-orange-100"
+                                : activeTab === "total"
+                                  ? "bg-yellow-50 text-yellow-700 border border-yellow-100"
+                                  : "bg-blue-50 text-blue-700 border border-blue-100"
+                              : "text-slate-400 hover:bg-slate-100",
                           )}
                         >
-                          <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rotate-45 translate-x-1/2 -translate-y-1/2 blur-2xl" />
-                          <div className="relative z-10">
-                            <h5 className="text-2xl md:text-4xl font-black uppercase tracking-tighter mb-2 italic">
-                              {activeTab === "aventureiro"
-                                ? "Grande Líder!"
-                                : "Bem-vindo ao Portal!"}
-                            </h5>
-                            <p className="text-xs md:text-sm font-medium text-white/80 max-w-md">
-                              {activeTab === "total"
-                                ? "O poder da IA e do Analytics para a diretoria do seu clube em tempo real."
-                                : activeTab === "desbravador"
-                                  ? "Gestão eficiente de classes e unidades com controle total de requisitos."
-                                  : "Ministério da criança digital: gestão lúdica e organizada para aventureiros."}
-                            </p>
-                          </div>
-                          {activeTab === "total" && (
-                            <div className="absolute top-6 right-6 px-3 py-1 bg-yellow-400 text-slate-900 rounded-full text-[9px] font-black uppercase tracking-widest shadow-lg animate-pulse">
-                              Desbrava Total
-                            </div>
-                          )}
+                          <item.icon size={14} />
+                          {item.label}
                         </div>
+                      ))}
+                    </div>
 
-                        {/* Stats Simulation */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          {[
-                            {
-                              label: "Ativos",
-                              val: "48",
-                              ic: TrendingUp,
-                              col: "bg-blue-50 text-blue-600",
-                            },
-                            {
-                              label: "Classes",
-                              val: "85%",
-                              ic: BookOpen,
-                              col: "bg-green-50 text-green-600",
-                            },
-                            {
-                              label: "Espec.",
-                              val: "142",
-                              ic: Award,
-                              col: "bg-orange-50 text-orange-600",
-                            },
-                            {
-                              label: "Status",
-                              val: "SGC",
-                              ic: Globe,
-                              col: "bg-purple-50 text-purple-600",
-                            },
-                          ].map((s, i) => (
-                            <div
-                              key={i}
-                              className="bg-white p-4 rounded-2xl border border-slate-100 flex items-center justify-between shadow-sm"
-                            >
-                              <div>
-                                <p className="text-[8px] font-bold text-slate-400 uppercase mb-1">
-                                  {s.label}
-                                </p>
-                                <p className="text-lg font-black text-slate-800 tracking-tighter">
-                                  {s.val}
-                                </p>
-                              </div>
-                              <div
+                    {/* Main content */}
+                    <div className="flex-1 overflow-y-auto bg-slate-50/60 p-5">
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={activeTab}
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -8 }}
+                          transition={{ duration: 0.25 }}
+                          className="space-y-4"
+                        >
+                          {/* Page title row */}
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h5 className="text-base font-black text-slate-900">
+                                {activeTab === "aventureiro"
+                                  ? "Ministério Aventureiros"
+                                  : activeTab === "desbravador"
+                                    ? "Gestão de Classes"
+                                    : "Cantinho da IA ✨"}
+                              </h5>
+                              <p
                                 className={cn(
-                                  "w-8 h-8 rounded-lg flex items-center justify-center",
-                                  s.col,
+                                  "text-[10px] font-bold uppercase tracking-widest",
+                                  activeTab === "aventureiro"
+                                    ? "text-orange-500"
+                                    : activeTab === "total"
+                                      ? "text-yellow-600"
+                                      : "text-blue-500",
                                 )}
                               >
-                                <s.ic size={12} />
+                                {activeTab === "aventureiro"
+                                  ? "Portal do Crescimento"
+                                  : activeTab === "desbravador"
+                                    ? "Classes Regulares e Avançadas"
+                                    : "Plano Desbrava Total"}
+                              </p>
+                            </div>
+                            <div
+                              className={cn(
+                                "px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest",
+                                activeTab === "aventureiro"
+                                  ? "bg-orange-100 text-orange-700"
+                                  : activeTab === "total"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : "bg-blue-100 text-blue-700",
+                              )}
+                            >
+                              {activeTab === "total"
+                                ? "IA Ativa"
+                                : "+ Nova Inscrição"}
+                            </div>
+                          </div>
+
+                          {/* TAB: Desbravador — class cards grid */}
+                          {activeTab === "desbravador" && (
+                            <div className="grid grid-cols-3 gap-3">
+                              {[
+                                {
+                                  name: "Amigo",
+                                  age: "10 anos",
+                                  color: "text-blue-500",
+                                  bg: "bg-blue-500/10",
+                                  count: 12,
+                                  pct: 45,
+                                },
+                                {
+                                  name: "Companheiro",
+                                  age: "11 anos",
+                                  color: "text-green-500",
+                                  bg: "bg-green-500/10",
+                                  count: 8,
+                                  pct: 60,
+                                },
+                                {
+                                  name: "Pesquisador",
+                                  age: "12 anos",
+                                  color: "text-amber-500",
+                                  bg: "bg-amber-500/10",
+                                  count: 7,
+                                  pct: 72,
+                                },
+                                {
+                                  name: "Pioneiro",
+                                  age: "13 anos",
+                                  color: "text-indigo-500",
+                                  bg: "bg-indigo-500/10",
+                                  count: 5,
+                                  pct: 30,
+                                },
+                                {
+                                  name: "Excursionista",
+                                  age: "14 anos",
+                                  color: "text-purple-500",
+                                  bg: "bg-purple-500/10",
+                                  count: 4,
+                                  pct: 55,
+                                },
+                                {
+                                  name: "Guia",
+                                  age: "15 anos",
+                                  color: "text-orange-500",
+                                  bg: "bg-orange-500/10",
+                                  count: 2,
+                                  pct: 80,
+                                },
+                              ].map((cls, i) => (
+                                <div
+                                  key={i}
+                                  className="bg-white border border-amber-50 rounded-2xl p-4 shadow-sm hover:shadow-md hover:border-amber-200 transition-all group"
+                                >
+                                  <div
+                                    className={cn(
+                                      "w-9 h-9 rounded-xl flex items-center justify-center mb-3",
+                                      cls.bg,
+                                    )}
+                                  >
+                                    <Shield size={16} className={cls.color} />
+                                  </div>
+                                  <p className="font-black text-slate-900 text-xs mb-0.5">
+                                    {cls.name}
+                                  </p>
+                                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-3">
+                                    {cls.count} membros
+                                  </p>
+                                  <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                                    <div
+                                      className={cn(
+                                        "h-full rounded-full",
+                                        cls.color.replace("text-", "bg-"),
+                                      )}
+                                      style={{ width: `${cls.pct}%` }}
+                                    />
+                                  </div>
+                                  <p
+                                    className={cn(
+                                      "text-[9px] font-black mt-1 text-right",
+                                      cls.color,
+                                    )}
+                                  >
+                                    {cls.pct}%
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* TAB: Aventureiro — specialty cards */}
+                          {activeTab === "aventureiro" && (
+                            <div className="space-y-3">
+                              <div className="grid grid-cols-2 gap-3">
+                                {[
+                                  {
+                                    name: "Fichas de Atividades",
+                                    badge: "12 fichas",
+                                    color: "text-orange-600",
+                                    bg: "bg-orange-50",
+                                    border: "border-orange-100",
+                                  },
+                                  {
+                                    name: "Manual do Conselheiro",
+                                    badge: "Atualizado",
+                                    color: "text-blue-600",
+                                    bg: "bg-blue-50",
+                                    border: "border-blue-100",
+                                  },
+                                  {
+                                    name: "Especialidades Áudio",
+                                    badge: "48 esp.",
+                                    color: "text-purple-600",
+                                    bg: "bg-purple-50",
+                                    border: "border-purple-100",
+                                  },
+                                  {
+                                    name: "Caderno de Requisitos",
+                                    badge: "6 classes",
+                                    color: "text-emerald-600",
+                                    bg: "bg-emerald-50",
+                                    border: "border-emerald-100",
+                                  },
+                                ].map((item, i) => (
+                                  <div
+                                    key={i}
+                                    className={cn(
+                                      "p-3.5 rounded-xl border",
+                                      item.bg,
+                                      item.border,
+                                    )}
+                                  >
+                                    <p
+                                      className={cn(
+                                        "text-xs font-black mb-1",
+                                        item.color,
+                                      )}
+                                    >
+                                      {item.name}
+                                    </p>
+                                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                                      {item.badge}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="bg-white border border-amber-100 rounded-xl p-4 flex items-center justify-between shadow-sm">
+                                <div>
+                                  <p className="text-xs font-black text-slate-900">
+                                    Próxima Atividade
+                                  </p>
+                                  <p className="text-[10px] text-slate-500">
+                                    Natureza e Acampar · Sáb. 08h
+                                  </p>
+                                </div>
+                                <div className="px-3 py-1.5 bg-orange-100 text-orange-700 rounded-lg text-[9px] font-black">
+                                  Ver Fichas
+                                </div>
                               </div>
                             </div>
-                          ))}
-                        </div>
+                          )}
 
-                        {/* Recent Activity Card Simulation */}
-                        <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hidden md:block">
-                          <div className="flex items-center justify-between mb-4">
-                            <h6 className="text-[10px] font-black uppercase tracking-widest text-slate-900">
-                              Atividades Recentes
-                            </h6>
-                            <div className="w-16 h-2 bg-slate-100 rounded-full" />
-                          </div>
-                          <div className="space-y-3">
-                            {[1, 2].map((n) => (
-                              <div
-                                key={n}
-                                className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0"
-                              >
-                                <div className="flex items-center gap-3">
-                                  <div className="w-1 h-6 rounded-full bg-blue-500" />
-                                  <div className="h-3 w-32 bg-slate-100 rounded-full" />
+                          {/* TAB: Total — AI chat interface */}
+                          {activeTab === "total" && (
+                            <div className="space-y-3">
+                              <div className="bg-white border border-yellow-100 rounded-2xl p-4 shadow-sm">
+                                <div className="flex items-center gap-2 mb-3">
+                                  <div className="w-7 h-7 bg-yellow-400 rounded-lg flex items-center justify-center">
+                                    <Bot size={14} className="text-slate-900" />
+                                  </div>
+                                  <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">
+                                    IA Desbrava · Cantinho
+                                  </span>
+                                  <span className="ml-auto w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
                                 </div>
-                                <div className="h-2 w-12 bg-slate-50 rounded-full" />
+                                <div className="space-y-2">
+                                  <div className="bg-slate-50 rounded-xl p-3 text-xs text-slate-600 font-medium">
+                                    Olá, Líder! Me diga o tema da sua reunião e
+                                    eu crio um roteiro completo agora. 📝
+                                  </div>
+                                  <div className="bg-yellow-50 border border-yellow-100 rounded-xl p-3 text-xs text-slate-700 font-medium text-right">
+                                    Cria um roteiro sobre Lealdade para
+                                    Pioneiros
+                                  </div>
+                                  <div className="bg-slate-50 rounded-xl p-3 text-xs text-slate-600 font-medium">
+                                    <p className="font-black text-slate-800 mb-1">
+                                      ✅ Roteiro:{" "}
+                                      <span className="text-yellow-700">
+                                        Lealdade
+                                      </span>{" "}
+                                      · Classe Pioneiro
+                                    </p>
+                                    <p>
+                                      1. Abertura com hino — 5min
+                                      <br />
+                                      2. Dinâmica de confiança — 10min
+                                      <br />
+                                      3. Lição: Ruthe e Noemi — 15min
+                                      <br />
+                                      4. Teste de especialidade gerado ✨
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="mt-3 flex items-center gap-2">
+                                  <div className="flex-1 h-8 bg-slate-50 border border-slate-200 rounded-lg flex items-center px-3">
+                                    <span className="text-xs text-slate-400">
+                                      Digite para a IA...
+                                    </span>
+                                  </div>
+                                  <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center">
+                                    <ArrowRight
+                                      size={14}
+                                      className="text-slate-900"
+                                    />
+                                  </div>
+                                </div>
                               </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Floating elements based on activeTab */}
-                        {activeTab === "total" && (
-                          <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className="absolute bottom-6 right-6 bg-yellow-400 p-4 rounded-2xl shadow-xl z-20"
-                          >
-                            <Bot size={24} className="text-slate-900" />
-                          </motion.div>
-                        )}
-                      </motion.div>
-                    </AnimatePresence>
+                              <div className="grid grid-cols-3 gap-2">
+                                {[
+                                  {
+                                    label: "Roteiros",
+                                    val: "14",
+                                    color:
+                                      "text-yellow-700 bg-yellow-50 border-yellow-100",
+                                  },
+                                  {
+                                    label: "Provas Geradas",
+                                    val: "38",
+                                    color:
+                                      "text-blue-700 bg-blue-50 border-blue-100",
+                                  },
+                                  {
+                                    label: "Horas Poupadas",
+                                    val: "22h",
+                                    color:
+                                      "text-emerald-700 bg-emerald-50 border-emerald-100",
+                                  },
+                                ].map((s, i) => (
+                                  <div
+                                    key={i}
+                                    className={cn(
+                                      "border rounded-xl p-3 text-center",
+                                      s.color,
+                                    )}
+                                  >
+                                    <p className="font-black text-lg leading-none">
+                                      {s.val}
+                                    </p>
+                                    <p className="text-[9px] font-bold uppercase tracking-widest mt-0.5">
+                                      {s.label}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </motion.div>
+                      </AnimatePresence>
+                    </div>
                   </div>
                 </div>
 
@@ -961,38 +1172,15 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── IDEAIS SECTION ─── */}
-      <section className="py-24 bg-[#0D111A] border-y border-white/5">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <div className="text-center mb-16">
-            <h2 className="font-bebas text-5xl md:text-6xl text-white uppercase tracking-wider">
-              Nossos <span className="text-yellow-500">Ideais</span>
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {ideals.map((ideal, i) => (
-              <div
-                key={i}
-                className="bg-[#161C2C] border border-white/5 p-8 rounded-[2rem] hover:border-yellow-500/30 transition-all"
-              >
-                <h3 className="font-bebas text-3xl text-yellow-500 mb-4 tracking-widest">
-                  {ideal.title}
-                </h3>
-                <p className="text-slate-400 text-sm leading-relaxed font-medium">
-                  {ideal.text}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ─── CLASSES SECTION ─── */}
       <section className="py-24 bg-[#0A0D14]">
         <div className="max-w-7xl mx-auto px-6 md:px-10 text-center">
-          <h2 className="font-bebas text-5xl md:text-6xl text-white uppercase tracking-wider mb-16">
+          <h2 className="font-bebas text-5xl md:text-6xl text-white uppercase tracking-wider mb-4">
             Classes <span className="text-blue-500">Oficiais</span>
           </h2>
+          <p className="text-slate-400 font-medium mb-16 text-base">
+            Todos os materiais para facilitar a classe do seu desbravador.
+          </p>
           <div className="flex flex-wrap justify-center gap-4">
             {classes.map((cls, i) => (
               <div key={i} className="flex flex-col items-center gap-4">
@@ -1185,32 +1373,32 @@ export default function LandingPage() {
             </div>
             <div className="order-1 lg:order-2">
               <div className="relative">
-                <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-[3rem] p-12 border border-white/10 shadow-2xl overflow-hidden">
+                <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-[3rem] p-8 border border-white/10 shadow-2xl overflow-hidden">
                   <div className="absolute -top-24 -right-24 w-80 h-80 bg-blue-500/10 blur-3xl rounded-full pointer-events-none" />
 
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5">
+                    <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5 hover:border-blue-500/30 transition-all">
                       <BookOpen size={40} className="text-blue-400 mb-4" />
                       <span className="text-[10px] font-black text-slate-400 uppercase">
                         Manuais
                       </span>
                     </div>
-                    <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5">
+                    <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5 hover:border-yellow-500/30 transition-all">
                       <Trophy size={40} className="text-yellow-500 mb-4" />
                       <span className="text-[10px] font-black text-slate-400 uppercase">
-                        Insignias
+                        Especialidades
                       </span>
                     </div>
-                    <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5">
+                    <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5 hover:border-emerald-500/30 transition-all">
                       <Globe size={40} className="text-emerald-400 mb-4" />
                       <span className="text-[10px] font-black text-slate-400 uppercase">
-                        Global
+                        Certificados
                       </span>
                     </div>
-                    <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5">
+                    <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5 hover:border-red-500/30 transition-all">
                       <Compass size={40} className="text-red-500 mb-4" />
                       <span className="text-[10px] font-black text-slate-400 uppercase">
-                        Explorar
+                        Classes
                       </span>
                     </div>
                   </div>
@@ -1594,7 +1782,7 @@ function AIChatBot() {
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState([
     {
-      text: "Olá! Sou o assistente do Desbrava Total. Como posso ajudar seu clube hoje?",
+      text: "Olá! 👋 Sou o assistente com IA do Desbrava Total. Posso te ajudar a encontrar o plano ideal ou esclarecer dúvidas sobre o sistema. Por onde começamos?",
       isBot: true,
     },
   ]);
@@ -1619,10 +1807,10 @@ function AIChatBot() {
   > = {
     start: {
       response:
-        "Olá! Sou o assistente do Desbrava Total. Como posso ajudar seu clube hoje?",
+        "Olá! 👋 Sou o assistente com IA do Desbrava Total. Posso te ajudar a encontrar o plano ideal ou esclarecer dúvidas sobre o sistema. Por onde começamos?",
       options: [
         { label: "Ver Planos", action: "pricing", next: "pricing_node" },
-        { label: "Dúvidas sobre IA", action: "ia", next: "ia_node" },
+        { label: "O que é a IA?", action: "ia", next: "ia_node" },
         {
           label: "Recursos do Sistema",
           action: "features",
@@ -1632,59 +1820,125 @@ function AIChatBot() {
     },
     pricing_node: {
       response:
-        "Temos 3 planos ideais: Bom Aventureiro (R$ 24,90), Só Desbravador (R$ 25,90) e o Desbrava Total (R$ 32,90) com IA ilimitada. Qual você quer conhecer melhor?",
+        "Temos 3 planos! 🚀 Aventureiro (R$ 24,90) para clubes de crianças, Desbravador (R$ 25,90) para clubes de jovens, e o Desbrava Total (R$ 32,90) com IA ilimitada para criar roteiros e provas em segundos. Qual te interessa?",
       options: [
         {
-          label: "Bom Aventureiro",
+          label: "Aventureiro",
           action: "info_aventureiro",
-          next: "cta_node",
+          next: "cta_aventureiro",
         },
         {
-          label: "Só Desbravador",
+          label: "Desbravador",
           action: "info_desbravador",
-          next: "cta_node",
+          next: "cta_desbravador",
         },
-        { label: "Desbrava Total", action: "info_total", next: "cta_node" },
+        { label: "Desbrava Total ⭐", action: "info_total", next: "cta_total" },
         { label: "Voltar", action: "back", next: "start" },
+      ],
+    },
+    cta_aventureiro: {
+      response:
+        "O plano Aventureiro é perfeito para o Ministério da Criança! Fichas lúdicas, manual do conselheiro e gestão de classes tudo em um app. Quer garantir o acesso agora?",
+      options: [
+        { label: "Quero este plano! 🎉", action: "go_pricing_aventureiro" },
+        { label: "Chamar no WhatsApp", action: "whatsapp" },
+        { label: "Ver outros planos", action: "back", next: "pricing_node" },
+      ],
+    },
+    cta_desbravador: {
+      response:
+        "O plano Desbravador tem gestão completa de classes, banco de +200 especialidades e relatórios mensais automáticos! Quer garantir agora?",
+      options: [
+        { label: "Quero este plano! 🎉", action: "go_pricing_desbravador" },
+        { label: "Chamar no WhatsApp", action: "whatsapp" },
+        { label: "Ver outros planos", action: "back", next: "pricing_node" },
+      ],
+    },
+    cta_total: {
+      response:
+        "O Desbrava Total é nossa joia da coroa! ⭐ Inclui IA que gera roteiros e provas em segundos, emissor de certificados, PWA offline para acampamentos, e TUDO dos outros planos. Quer começar agora?",
+      options: [
+        { label: "Quero o Total! 🚀", action: "go_pricing_total" },
+        { label: "Chamar no WhatsApp", action: "whatsapp" },
+        { label: "Ver outros planos", action: "back", next: "pricing_node" },
       ],
     },
     ia_node: {
       response:
-        "Minha Inteligência Artificial cria roteiros, provas e especialidades em segundos, poupando horas de trabalho do líder. O que deseja saber?",
+        "🤖 Nossa IA é o coração do Desbrava Total! Ela usa modelos avançados treinados com os manuais da DSA para criar roteiros de reunião, provas de especialidades e planos de aula em segundos. Quer saber mais?",
       options: [
         {
-          label: "Como criar roteiros?",
+          label: "Criar roteiros com IA",
           action: "ia_roteiros",
-          next: "ia_node",
+          next: "ia_roteiros_node",
         },
-        { label: "Gerador de Provas", action: "ia_provas", next: "ia_node" },
-        { label: "Como falar com a IA?", action: "ia_how", next: "ia_node" },
+        { label: "Gerar provas", action: "ia_provas", next: "ia_provas_node" },
+        { label: "Ver plano com IA", action: "back", next: "cta_total" },
         { label: "Voltar", action: "back", next: "start" },
+      ],
+    },
+    ia_roteiros_node: {
+      response:
+        "📋 Com a IA, você digita o tema da reunião e ela gera um roteiro completo com abertura, atividades, mensagem espiritual e encerramento — tudo em menos de 30 segundos! Disponível no plano Desbrava Total.",
+      options: [
+        { label: "Quero experimentar!", action: "back", next: "cta_total" },
+        { label: "Outras funções da IA", action: "back", next: "ia_node" },
+        { label: "Voltar ao início", action: "back", next: "start" },
+      ],
+    },
+    ia_provas_node: {
+      response:
+        "📝 O gerador de provas da IA cria questões baseadas nos requisitos oficiais de qualquer especialidade. Você escolhe a especialidade, a IA monta a prova! Recurso exclusivo do plano Desbrava Total.",
+      options: [
+        { label: "Quero este recurso!", action: "back", next: "cta_total" },
+        { label: "Outras funções da IA", action: "back", next: "ia_node" },
+        { label: "Voltar ao início", action: "back", next: "start" },
       ],
     },
     features_node: {
       response:
-        "Além de IA, temos PWA (funciona sem internet), emissor de certificados e gestão completa de classes. Qual recurso te interessa?",
+        "Além da IA, temos: PWA offline para acampamentos 🏕️, emissor de certificados, integração com SGC, gestão completa de classes e muito mais. O que te interessa?",
       options: [
         {
           label: "Funciona Offline?",
           action: "off_pwa",
-          next: "features_node",
+          next: "pwa_node",
         },
-        { label: "SGC Integração", action: "sgc", next: "features_node" },
-        { label: "Certificados", action: "certs", next: "features_node" },
+        { label: "SGC Integração", action: "sgc", next: "sgc_node" },
+        { label: "Certificados", action: "certs", next: "certs_node" },
         { label: "Voltar", action: "back", next: "start" },
       ],
     },
-    cta_node: {
+    pwa_node: {
       response:
-        "Excelente escolha! Quer garantir seu acesso agora com desconto ou prefere tirar mais dúvidas no WhatsApp?",
+        "🏕️ Sim! O Desbrava Total usa tecnologia PWA que permite usar o sistema SEM INTERNET. Perfeito para acampamentos em locais remotos. Os dados sincronizam automaticamente quando a conexão volta.",
       options: [
-        { label: "Garantir Acesso", action: "go_pricing" },
-        { label: "Chamar no WhatsApp", action: "whatsapp" },
-        { label: "Voltar ao Início", action: "back", next: "start" },
+        { label: "Incrível! Ver planos", action: "back", next: "pricing_node" },
+        { label: "Outros recursos", action: "back", next: "features_node" },
       ],
     },
+    sgc_node: {
+      response:
+        "📤 A integração com o SGC permite exportar dados de presença, classes e especialidades no formato oficial. Poupa horas de trabalho burocrático toda semana!",
+      options: [
+        { label: "Ver planos", action: "back", next: "pricing_node" },
+        { label: "Outros recursos", action: "back", next: "features_node" },
+      ],
+    },
+    certs_node: {
+      response:
+        "🏆 O emissor de certificados gera documentos personalizados e prontos para impressão com apenas um clique. Cerimônias de entrega de insígnias nunca foram tão organizadas!",
+      options: [
+        { label: "Ver planos", action: "back", next: "pricing_node" },
+        { label: "Outros recursos", action: "back", next: "features_node" },
+      ],
+    },
+  };
+
+  const scrollToPricing = () => {
+    const el = document.getElementById("pricing");
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+    setIsOpen(false);
   };
 
   const handleAction = (action: string, label: string, next?: string) => {
@@ -1702,16 +1956,23 @@ function AIChatBot() {
         // Simple action handling
         if (action === "whatsapp") {
           botResponse =
-            "Perfeito! Vou te direcionar agora para o nosso WhatsApp oficial. Um segundo...";
+            "Perfeito! Vou te direcionar agora para o nosso WhatsApp oficial. Um segundo... 📱";
           setTimeout(
             () => window.open("https://wa.me/556699762785", "_blank"),
             1500,
           );
-        } else if (action === "go_pricing") {
+        } else if (
+          action === "go_pricing" ||
+          action === "go_pricing_aventureiro" ||
+          action === "go_pricing_desbravador" ||
+          action === "go_pricing_total"
+        ) {
           botResponse =
-            "Ótimo! Role um pouco para baixo ou clique no botão 'Preços' no menu superior.";
+            "Perfeito! 🎉 Redirecionando você para a seção de planos agora!";
+          setTimeout(() => scrollToPricing(), 1000);
         } else {
-          botResponse = "Entendi! Como posso te ajudar mais?";
+          botResponse =
+            "Entendido! Nossa IA está aqui para ajudar. 🤖 Como posso te ajudar mais?";
         }
       }
 
@@ -1733,11 +1994,11 @@ function AIChatBot() {
       setMessages((prev) => [
         ...prev,
         {
-          text: `Ótima pergunta sobre "${userText}"! Minha IA está analisando os manuais da DSA para te dar a melhor resposta. Enquanto isso, posso te ajudar com os atalhos abaixo ou te direcionar para um consultor no WhatsApp?`,
+          text: `🤖 Nossa IA analisou sua pergunta sobre "${userText}"! Para uma resposta personalizada, nossos consultores no WhatsApp têm acesso completo aos manuais da DSA e podem te ajudar agora.`,
           isBot: true,
         },
       ]);
-      setCurrentNamespace("cta_node"); // Drive towards conversion
+      setCurrentNamespace("cta_total"); // Drive towards conversion
     }, 1500);
   };
 
@@ -1831,7 +2092,8 @@ function AIChatBot() {
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   placeholder="Digite sua dúvida aqui..."
-                  className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 text-xs font-medium focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all pr-12"
+                  style={{ fontSize: "16px" }}
+                  className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 font-medium focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all pr-12"
                 />
                 <button
                   type="submit"
