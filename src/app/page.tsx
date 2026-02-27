@@ -2126,7 +2126,7 @@ function AIChatBot() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="absolute bottom-20 right-0 w-[320px] sm:w-[400px] bg-white border border-slate-200 rounded-[2.5rem] shadow-2xl overflow-hidden mb-2 flex flex-col"
+            className="absolute bottom-20 right-0 w-[320px] sm:w-[400px] bg-white border border-slate-200/60 rounded-[2.5rem] shadow-[0_25px_70px_-15px_rgba(0,0,0,0.4)] overflow-hidden mb-2 flex flex-col max-h-[80vh]"
           >
             {/* Header */}
             <div className="bg-slate-900 p-6 text-white flex items-center justify-between shadow-lg">
@@ -2155,7 +2155,7 @@ function AIChatBot() {
             {/* Content Area */}
             <div
               ref={chatContainerRef}
-              className="h-[400px] overflow-y-auto p-6 space-y-5 bg-slate-50/50 custom-scrollbar scroll-smooth"
+              className="flex-1 max-h-[450px] overflow-y-auto p-6 space-y-5 bg-slate-50/50 custom-scrollbar scroll-smooth min-h-[100px]"
             >
               {messages.map((msg, i) => (
                 <motion.div
@@ -2163,10 +2163,10 @@ function AIChatBot() {
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   className={cn(
-                    "max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm",
+                    "max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm transition-all",
                     msg.isBot
-                      ? "bg-white border border-slate-100 text-slate-800 rounded-tl-none"
-                      : "bg-blue-600 text-white ml-auto rounded-tr-none",
+                      ? "bg-white border border-slate-100 text-slate-800 rounded-tl-none ring-1 ring-slate-900/5 shadow-blue-500/5"
+                      : "bg-blue-600 text-white ml-auto rounded-tr-none shadow-blue-600/20",
                   )}
                 >
                   {msg.text}
@@ -2182,7 +2182,7 @@ function AIChatBot() {
             </div>
 
             {/* Interaction Footer */}
-            <div className="p-5 border-t border-slate-100 bg-white">
+            <div className="p-5 border-t border-slate-100/50 bg-slate-50/30">
               {/* Quick Options */}
               <div className="flex flex-wrap gap-2 mb-4">
                 {botBrain[currentNamespace]?.options.map((opt, idx) => (
@@ -2191,7 +2191,7 @@ function AIChatBot() {
                     onClick={() =>
                       handleAction(opt.action, opt.label, opt.next)
                     }
-                    className="text-[10px] font-black tracking-widest uppercase px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:border-blue-500 hover:text-blue-600 transition-all bg-slate-50 group shadow-sm active:scale-95"
+                    className="text-[11px] font-black tracking-[0.1em] uppercase px-5 py-2.5 rounded-xl border border-slate-200 shadow-sm text-slate-700 hover:border-blue-500 hover:text-blue-600 transition-all bg-white group active:scale-95 hover:shadow-md hover:-translate-y-0.5"
                   >
                     {opt.label}
                   </button>
