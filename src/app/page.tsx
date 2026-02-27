@@ -1885,7 +1885,7 @@ export default function LandingPage() {
 
           <div className="text-center md:text-right">
             <p className="text-slate-500 text-sm mb-2">
-              © 2024 — Desbrava Total management system
+              © 2026 — Desbrava Total management system
             </p>
             <p className="text-slate-600 text-xs">
               Todos os direitos reservados ao Ministério dos Clubes.
