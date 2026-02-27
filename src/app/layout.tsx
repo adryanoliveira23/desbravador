@@ -33,6 +33,11 @@ export const metadata: Metadata = {
   title: "Desbrava Total — Plataforma de Gestão para Clubes",
   description:
     "A plataforma definitiva para gestão de Clubes de Desbravadores. IA integrada, classes, especialidades e muito mais.",
+  icons: {
+    icon: [{ url: "/favicon.png" }, { url: "/icon.png", type: "image/png" }],
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
