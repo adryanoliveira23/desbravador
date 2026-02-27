@@ -58,25 +58,9 @@ const plans = [
     gradient: "from-orange-600 to-red-600",
     glow: "rgba(234, 88, 12, 0.15)",
     iconColor: "text-orange-500",
+    bgColor: "bg-orange-500/5",
+    borderColor: "border-orange-500/20",
     link: process.env.NEXT_PUBLIC_CAKTO_BOM_AVENTUREIRO || "#",
-  },
-  {
-    name: "Desbravador",
-    price: "25,90",
-    description: "Para Clubes de Desbravadores (10-15 anos)",
-    theme: "blue",
-    features: [
-      "Gestão de Classes Regulares e Avançadas",
-      "Banco Oficial de +200 Especialidades",
-      "Sistema de Pontuação da Secretaria",
-      "Relatórios Mensais Pré-preenchidos",
-      "Suporte exclusivo direto",
-      "Garantia de 7 dias",
-    ],
-    gradient: "from-blue-600 to-indigo-600",
-    glow: "rgba(37, 99, 235, 0.15)",
-    iconColor: "text-blue-500",
-    link: process.env.NEXT_PUBLIC_CAKTO_SO_DESBRAVADOR || "#",
   },
   {
     name: "Desbrava Total",
@@ -94,8 +78,30 @@ const plans = [
     gradient: "from-yellow-500 via-orange-500 to-purple-600",
     glow: "rgba(245, 158, 11, 0.2)",
     iconColor: "text-yellow-500",
+    bgColor: "bg-yellow-500/10",
+    borderColor: "border-yellow-500/40",
     popular: true,
     link: process.env.NEXT_PUBLIC_CAKTO_DESBRAVA_TOTAL || "#",
+  },
+  {
+    name: "Desbravador",
+    price: "25,90",
+    description: "Para Clubes de Desbravadores (10-15 anos)",
+    theme: "blue",
+    features: [
+      "Gestão de Classes Regulares e Avançadas",
+      "Banco Oficial de +200 Especialidades",
+      "Relatórios Mensais Pré-preenchidos",
+      "Suporte exclusivo direto",
+      "Garantia de 7 dias",
+      "Sistema de Pontuação Secretaria",
+    ],
+    gradient: "from-blue-600 to-indigo-600",
+    glow: "rgba(37, 99, 235, 0.15)",
+    iconColor: "text-blue-500",
+    bgColor: "bg-blue-500/5",
+    borderColor: "border-blue-500/20",
+    link: process.env.NEXT_PUBLIC_CAKTO_SO_DESBRAVADOR || "#",
   },
 ];
 
@@ -206,16 +212,33 @@ const demoTabs: DemoTab[] = [
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
+  const [navVisible, setNavVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [activeTab, setActiveTab] = useState("total");
   const [selectedSolution, setSelectedSolution] = useState<number | null>(null);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      // Fixed background state
+      setScrolled(currentScrollY > 50);
+
+      // Hide/Show logic
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setNavVisible(false);
+      } else {
+        setNavVisible(true);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   const navLinks = [
     { label: "Soluções", href: "#solucoes" },
@@ -233,6 +256,9 @@ export default function LandingPage() {
           scrolled
             ? "bg-[#0A0D14]/80 backdrop-blur-xl border-b border-white/5 shadow-2xl py-3"
             : "bg-transparent py-6",
+          navVisible
+            ? "translate-y-0 opacity-100"
+            : "-translate-y-full opacity-0",
         )}
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between px-6 md:px-10">
@@ -1399,7 +1425,7 @@ export default function LandingPage() {
                   requisitos e orientações pedagógicas em um só lugar.
                   Facilitamos a burocracia para você focar na missão.
                 </p>
-                <div className="space-y-6">
+                <div className="space-y-6 mb-12">
                   {[
                     {
                       title: "Manuais Administrativos",
@@ -1427,38 +1453,49 @@ export default function LandingPage() {
                     </div>
                   ))}
                 </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5 hover:border-blue-500/30 transition-all">
+                    <BookOpen size={40} className="text-blue-400 mb-4" />
+                    <span className="text-[10px] font-black text-slate-400 uppercase">
+                      Manuais
+                    </span>
+                  </div>
+                  <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5 hover:border-yellow-500/30 transition-all">
+                    <Trophy size={40} className="text-yellow-500 mb-4" />
+                    <span className="text-[10px] font-black text-slate-400 uppercase">
+                      Especialidades
+                    </span>
+                  </div>
+                  <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5 hover:border-emerald-500/30 transition-all">
+                    <Globe size={40} className="text-emerald-400 mb-4" />
+                    <span className="text-[10px] font-black text-slate-400 uppercase">
+                      Certificados
+                    </span>
+                  </div>
+                  <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5 hover:border-red-500/30 transition-all">
+                    <Compass size={40} className="text-red-500 mb-4" />
+                    <span className="text-[10px] font-black text-slate-400 uppercase">
+                      Classes
+                    </span>
+                  </div>
+                </div>
               </motion.div>
             </div>
-            <div className="order-1 lg:order-2">
+            <div className="order-1 lg:order-2 hidden lg:block">
               <div className="relative">
-                <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-[3rem] p-8 border border-white/10 shadow-2xl overflow-hidden">
+                <div className="relative bg-white/[0.03] backdrop-blur-xl rounded-[3rem] p-8 border border-white/10 shadow-2xl overflow-hidden min-h-[400px] flex items-center justify-center">
                   <div className="absolute -top-24 -right-24 w-80 h-80 bg-blue-500/10 blur-3xl rounded-full pointer-events-none" />
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5 hover:border-blue-500/30 transition-all">
-                      <BookOpen size={40} className="text-blue-400 mb-4" />
-                      <span className="text-[10px] font-black text-slate-400 uppercase">
-                        Manuais
-                      </span>
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-blue-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-blue-500/20">
+                      <Zap size={40} className="text-blue-500 animate-pulse" />
                     </div>
-                    <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5 hover:border-yellow-500/30 transition-all">
-                      <Trophy size={40} className="text-yellow-500 mb-4" />
-                      <span className="text-[10px] font-black text-slate-400 uppercase">
-                        Especialidades
-                      </span>
-                    </div>
-                    <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5 hover:border-emerald-500/30 transition-all">
-                      <Globe size={40} className="text-emerald-400 mb-4" />
-                      <span className="text-[10px] font-black text-slate-400 uppercase">
-                        Certificados
-                      </span>
-                    </div>
-                    <div className="bg-white/5 rounded-2xl aspect-square flex flex-col items-center justify-center p-6 border border-white/5 hover:border-red-500/30 transition-all">
-                      <Compass size={40} className="text-red-500 mb-4" />
-                      <span className="text-[10px] font-black text-slate-400 uppercase">
-                        Classes
-                      </span>
-                    </div>
+                    <p className="text-sm font-black text-white uppercase tracking-[0.2em]">
+                      SGC Integrado
+                    </p>
+                    <p className="text-xs text-slate-500 mt-2">
+                      Sincronização oficial em tempo real
+                    </p>
                   </div>
                 </div>
               </div>
@@ -1513,8 +1550,8 @@ export default function LandingPage() {
                 bg: "bg-emerald-500/5",
               },
               {
-                title: "Interface Business",
-                desc: "Navegação moderna e fluida, desenhada para máxima produtividade.",
+                title: "INTELIGÊNCIA ARTIFICIAL",
+                desc: "Consegue criar materiais da sua preferência com a inteligência artificial",
                 icon: Zap,
                 color: "text-orange-500",
                 bg: "bg-orange-500/5",
@@ -1676,55 +1713,76 @@ export default function LandingPage() {
               <div
                 key={i}
                 className={cn(
-                  "relative p-10 rounded-[3rem] border transition-all duration-500 flex flex-col h-full",
+                  "relative p-8 rounded-[2.5rem] border transition-all duration-500 flex flex-col h-full group",
+                  plan.bgColor || "bg-white/5",
+                  plan.borderColor || "border-white/10",
                   plan.popular
-                    ? "bg-white/10 border-blue-500/50 shadow-2xl shadow-blue-500/10 scale-105 z-10"
-                    : "bg-white/5 border-white/10 hover:border-white/20",
+                    ? "shadow-2xl shadow-yellow-500/10 scale-105 z-10"
+                    : "hover:border-white/20",
                 )}
               >
                 {plan.popular && (
-                  <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-6 py-2 rounded-full text-xs font-black uppercase tracking-[0.2em] shadow-lg">
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-500 text-slate-900 px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-lg z-20">
                     Recomendado
                   </div>
                 )}
-                <div className="mb-8">
+
+                <div className="mb-6 relative z-10">
+                  <div
+                    className={cn(
+                      "w-12 h-12 rounded-2xl flex items-center justify-center mb-6 shadow-xl",
+                      plan.gradient.replace("from-", "bg-"),
+                    )}
+                  >
+                    {plan.name === "Aventureiro" ? (
+                      <Heart size={24} className="text-white" />
+                    ) : plan.name === "Desbravador" ? (
+                      <Compass size={24} className="text-white" />
+                    ) : (
+                      <Zap size={24} className="text-white" />
+                    )}
+                  </div>
                   <h3 className="text-2xl font-black text-white mb-2 uppercase tracking-tighter">
                     {plan.name}
                   </h3>
-                  <p className="text-slate-400 text-sm font-medium">
+                  <p className="text-slate-400 text-xs font-medium leading-relaxed">
                     {plan.description}
                   </p>
                 </div>
-                <div className="mb-8 flex items-baseline gap-1">
-                  <span className="text-slate-400 font-bold">R$</span>
+
+                <div className="mb-8 flex items-baseline gap-1 relative z-10">
+                  <span className="text-slate-400 font-bold text-sm">R$</span>
                   <span className="text-5xl font-black text-white tracking-tighter">
                     {plan.price}
                   </span>
-                  <span className="text-slate-500 text-sm font-bold">/mês</span>
+                  <span className="text-slate-500 text-xs font-bold uppercase tracking-widest ml-1">
+                    Mensal
+                  </span>
                 </div>
-                <div className="space-y-4 mb-10 border-t border-white/5 pt-8 flex-grow">
+
+                <div className="space-y-3.5 mb-10 border-t border-white/5 pt-8 flex-grow relative z-10">
                   {plan.features.map((feature, j) => (
                     <div key={j} className="flex items-center gap-3">
-                      <CheckCircle2
-                        size={18}
-                        className="text-emerald-500 shrink-0"
-                      />
-                      <span className="text-slate-300 text-sm font-medium">
+                      <div className="w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
+                        <Check size={12} className="text-emerald-500" />
+                      </div>
+                      <span className="text-slate-300 text-[13px] font-medium leading-tight">
                         {feature}
                       </span>
                     </div>
                   ))}
                 </div>
+
                 <Link
                   href={plan.link}
                   className={cn(
-                    "w-full py-5 rounded-2xl font-black uppercase tracking-widest text-center transition-all active:scale-95",
+                    "w-full py-4 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] text-center transition-all active:scale-95 relative z-10",
                     plan.popular
-                      ? "bg-blue-600 hover:bg-blue-500 text-white shadow-xl shadow-blue-600/20"
+                      ? "bg-yellow-500 hover:bg-yellow-400 text-slate-900 shadow-xl shadow-yellow-500/20"
                       : "bg-white/10 hover:bg-white/20 text-white",
                   )}
                 >
-                  {plan.popular ? "Acessar Agora" : "Assinar Plano"}
+                  Escolher Plano
                 </Link>
               </div>
             ))}
@@ -1750,7 +1808,7 @@ export default function LandingPage() {
             href="/auth"
             className="inline-flex items-center justify-center gap-4 bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black px-12 py-6 rounded-[2.5rem] text-2xl transition-all shadow-2xl active:scale-95 group uppercase"
           >
-            Começar Meu Clube Agora
+            QUERO O APLICATIVO
             <ArrowRight
               size={28}
               className="group-hover:translate-x-2 transition-transform"
@@ -2151,7 +2209,7 @@ function AIChatBot() {
                   onChange={(e) => setInputValue(e.target.value)}
                   placeholder="Digite sua dúvida aqui..."
                   style={{ fontSize: "16px" }}
-                  className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 font-medium focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all pr-12"
+                  className="flex-1 bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 font-bold text-[#0A0D14] focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all pr-12"
                 />
                 <button
                   type="submit"
