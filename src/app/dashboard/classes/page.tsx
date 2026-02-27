@@ -201,7 +201,7 @@ export default function ClassesPage() {
         {classes.map((cls) => (
           <Card
             key={cls.id}
-            className="p-0 overflow-hidden group bg-white border-amber-50 hover:border-amber-200 transition-all shadow-lg hover:shadow-2xl shadow-amber-900/5 transition-all duration-500"
+            className="p-0 overflow-hidden group bg-white border-amber-50 hover:border-amber-200 shadow-lg hover:shadow-2xl shadow-amber-900/5 transition-all duration-500"
           >
             <div
               className={cn(

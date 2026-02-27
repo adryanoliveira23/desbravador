@@ -34,9 +34,9 @@ export const metadata: Metadata = {
   description:
     "A plataforma definitiva para gestão de Clubes de Desbravadores. IA integrada, classes, especialidades e muito mais.",
   icons: {
-    icon: [{ url: "/favicon.png" }, { url: "/icon.png", type: "image/png" }],
-    shortcut: "/favicon.png",
-    apple: "/favicon.png",
+    icon: [{ url: "/favicon.jpg" }, { url: "/icon.jpg", type: "image/jpeg" }],
+    shortcut: "/favicon.jpg",
+    apple: "/favicon.jpg",
   },
 };
 
