@@ -209,6 +209,7 @@ export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [activeTab, setActiveTab] = useState("total");
+  const [selectedSolution, setSelectedSolution] = useState<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -369,7 +370,7 @@ export default function LandingPage() {
                   href="/auth"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-4 bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black px-10 py-5 rounded-2xl text-xl transition-all shadow-xl shadow-yellow-500/10 active:scale-95 group uppercase"
                 >
-                  Criar Meu Clube
+                  QUERO O APLICATIVO
                   <ArrowRight
                     size={22}
                     className="group-hover:translate-x-1 transition-transform"
@@ -1126,44 +1127,104 @@ export default function LandingPage() {
                 color: "emerald",
               },
             ].map((sol, i) => (
-              <div
+              <motion.div
                 key={i}
-                className="bg-white/5 border border-white/10 rounded-[2.5rem] p-10 hover:bg-white/[0.08] transition-all group"
+                onClick={() => setSelectedSolution(i)}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                whileTap={{ scale: 0.98 }}
+                className={cn(
+                  "bg-white/5 border rounded-[2.5rem] p-10 transition-all cursor-pointer relative overflow-hidden group",
+                  selectedSolution === i
+                    ? "bg-white/[0.12] border-white/30 shadow-[0_0_40px_-10px_rgba(255,255,255,0.1)] ring-2 ring-white/10"
+                    : "border-white/10 hover:bg-white/[0.08]",
+                )}
               >
-                <div className="flex items-center gap-3 mb-6">
+                {/* Selection indicator animation */}
+                {selectedSolution === i && (
+                  <motion.div
+                    layoutId="selection-glow"
+                    className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                )}
+
+                <div className="flex items-center gap-3 mb-6 relative z-10">
                   <div
                     className={cn(
-                      "w-10 h-10 rounded-xl flex items-center justify-center text-white",
+                      "w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg",
                       sol.color === "blue"
-                        ? "bg-blue-600"
+                        ? "bg-blue-600 shadow-blue-500/20"
                         : sol.color === "gold"
-                          ? "bg-yellow-600"
-                          : "bg-emerald-600",
+                          ? "bg-yellow-600 shadow-yellow-500/20"
+                          : "bg-emerald-600 shadow-emerald-500/20",
                     )}
                   >
                     <sol.icon size={20} />
                   </div>
-                  <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">
+                  <span
+                    className={cn(
+                      "text-xs font-black uppercase tracking-[0.2em] transition-colors",
+                      selectedSolution === i ? "text-white" : "text-slate-300",
+                    )}
+                  >
                     {sol.role}
                   </span>
                 </div>
-                <h3 className="text-3xl font-bebas text-white mb-4 uppercase tracking-wider">
+                <h3 className="text-3xl font-bebas text-white mb-4 uppercase tracking-wider relative z-10">
                   {sol.title}
                 </h3>
-                <p className="text-slate-400 text-sm mb-8 leading-relaxed font-medium">
+                <p
+                  className={cn(
+                    "text-sm mb-8 leading-relaxed font-medium transition-colors relative z-10",
+                    selectedSolution === i
+                      ? "text-slate-100"
+                      : "text-slate-300",
+                  )}
+                >
                   {sol.desc}
                 </p>
-                <div className="space-y-3 pt-6 border-t border-white/5">
+                <div className="space-y-3 pt-6 border-t border-white/5 relative z-10">
                   {sol.features.map((f, j) => (
                     <div key={j} className="flex items-center gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                      <span className="text-[10px] font-bold text-white uppercase tracking-widest">
+                      <div
+                        className={cn(
+                          "w-1.5 h-1.5 rounded-full transition-colors",
+                          selectedSolution === i ? "bg-white" : "bg-blue-500",
+                        )}
+                      />
+                      <span
+                        className={cn(
+                          "text-[10px] font-bold uppercase tracking-widest transition-colors",
+                          selectedSolution === i
+                            ? "text-white"
+                            : "text-slate-200",
+                        )}
+                      >
                         {f}
                       </span>
                     </div>
                   ))}
                 </div>
-              </div>
+
+                {/* Micro-animation Checkmark */}
+                <AnimatePresence>
+                  {selectedSolution === i && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.5, x: 20 }}
+                      animate={{ opacity: 1, scale: 1, x: 0 }}
+                      exit={{ opacity: 0, scale: 0.5, x: 20 }}
+                      className="absolute top-8 right-8 text-white/40"
+                    >
+                      <CheckCircle2 size={24} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             ))}
           </div>
         </div>
