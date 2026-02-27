@@ -63,6 +63,26 @@ const plans = [
     link: process.env.NEXT_PUBLIC_CAKTO_BOM_AVENTUREIRO || "#",
   },
   {
+    name: "Desbravador",
+    price: "25,90",
+    description: "Para Clubes de Desbravadores (10-15 anos)",
+    theme: "blue",
+    features: [
+      "Gestão de Classes Regulares e Avançadas",
+      "Banco Oficial de +200 Especialidades",
+      "Relatórios Mensais Pré-preenchidos",
+      "Suporte exclusivo direto",
+      "Garantia de 7 dias",
+      "Sistema de Pontuação Secretaria",
+    ],
+    gradient: "from-blue-600 to-indigo-600",
+    glow: "rgba(37, 99, 235, 0.15)",
+    iconColor: "text-blue-500",
+    bgColor: "bg-blue-500/5",
+    borderColor: "border-blue-500/20",
+    link: process.env.NEXT_PUBLIC_CAKTO_SO_DESBRAVADOR || "#",
+  },
+  {
     name: "Desbrava Total",
     price: "32,90",
     description: "A solução oficial completa",
@@ -82,26 +102,6 @@ const plans = [
     borderColor: "border-yellow-500/40",
     popular: true,
     link: process.env.NEXT_PUBLIC_CAKTO_DESBRAVA_TOTAL || "#",
-  },
-  {
-    name: "Desbravador",
-    price: "25,90",
-    description: "Para Clubes de Desbravadores (10-15 anos)",
-    theme: "blue",
-    features: [
-      "Gestão de Classes Regulares e Avançadas",
-      "Banco Oficial de +200 Especialidades",
-      "Relatórios Mensais Pré-preenchidos",
-      "Suporte exclusivo direto",
-      "Garantia de 7 dias",
-      "Sistema de Pontuação Secretaria",
-    ],
-    gradient: "from-blue-600 to-indigo-600",
-    glow: "rgba(37, 99, 235, 0.15)",
-    iconColor: "text-blue-500",
-    bgColor: "bg-blue-500/5",
-    borderColor: "border-blue-500/20",
-    link: process.env.NEXT_PUBLIC_CAKTO_SO_DESBRAVADOR || "#",
   },
 ];
 
@@ -388,12 +388,12 @@ export default function LandingPage() {
                 <span className="text-yellow-400 italic">
                   Inteligência Artificial
                 </span>{" "}
-                que cria o que você quiser para você.
+                que cria o que você quiser.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-5 items-center lg:items-start justify-center lg:justify-start">
                 <Link
-                  href="/auth"
+                  href="#pricing"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-4 bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black px-10 py-5 rounded-2xl text-xl transition-all shadow-xl shadow-yellow-500/10 active:scale-95 group uppercase"
                 >
                   QUERO O APLICATIVO
@@ -416,8 +416,15 @@ export default function LandingPage() {
                     {[1, 2, 3, 4].map((i) => (
                       <div
                         key={i}
-                        className="inline-block h-10 w-10 rounded-full ring-2 ring-[#0A0D14] bg-slate-800 border-2 border-blue-500/30"
-                      />
+                        className="inline-block h-10 w-10 rounded-full ring-2 ring-[#0A0D14] bg-slate-800 border-2 border-blue-500/30 overflow-hidden relative"
+                      >
+                        <Image
+                          src={`/avatar_${i}.png`}
+                          alt={`Líder ${i}`}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
                     ))}
                   </div>
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">
@@ -1805,7 +1812,7 @@ export default function LandingPage() {
             cuidar da burocracia.
           </p>
           <Link
-            href="/auth"
+            href="#pricing"
             className="inline-flex items-center justify-center gap-4 bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-black px-12 py-6 rounded-[2.5rem] text-2xl transition-all shadow-2xl active:scale-95 group uppercase"
           >
             QUERO O APLICATIVO
