@@ -1,7 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { db, auth } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -14,9 +17,8 @@ import {
   Zap,
   Loader2,
   ChevronRight,
-  Printer,
   X,
-  Download,
+  Printer,
   Upload,
   Paperclip,
 } from "lucide-react";
@@ -24,6 +26,7 @@ import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
+import { Modal } from "@/components/ui/Modal";
 
 async function callGenerateContent(prompt: string): Promise<string> {
   const res = await fetch("/api/ai/generate", {
@@ -140,6 +143,35 @@ export default function AIHelperPage() {
   const [chatInput, setChatInput] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+  // User Profile State
+  const [clubName, setClubName] = useState("");
+  const [ministry, setMinistry] = useState("");
+
+  // Customization State
+  const [showCustomizer, setShowCustomizer] = useState(false);
+  const [config, setConfig] = useState({
+    primaryColor: "#b91c1c", // Default Red
+    showImage: true,
+    showHeader: true,
+    showFooter: true,
+  });
+
+  useEffect(() => {
+    const authUnsub = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (snap.exists()) {
+          const data = snap.data();
+          setClubName(data.clubName || "");
+          setMinistry(
+            data.ministry === "aventureiro" ? "Aventureiros" : "Desbravadores",
+          );
+        }
+      }
+    });
+    return () => authUnsub();
+  }, []);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
@@ -183,8 +215,15 @@ export default function AIHelperPage() {
       );
     });
 
-    if (activeTool.id === "images") {
-      const generationId = await callGenerateImage(finalPrompt);
+    if (activeTool.id === "images" || activeTool.id === "kits") {
+      const isKit = activeTool.id === "kits";
+      // Se for kit, o prompt original já pede sugestões de imagens.
+      // Vamos tentar gerar uma imagem baseada no tema do kit se o usuário quiser.
+      const imagePrompt = isKit
+        ? `Educational activity for Pathfinders about ${inputData.tema}, coloring book style`
+        : finalPrompt;
+
+      const generationId = await callGenerateImage(imagePrompt);
       if (generationId) {
         let attempts = 0;
         const poll = setInterval(async () => {
@@ -192,18 +231,26 @@ export default function AIHelperPage() {
           const url = await callGetGeneratedImage(generationId);
           if (url) {
             setImageUrl(url);
-            setLoading(false);
+            if (!isKit) setLoading(false); // No kit, a gente deixa o texto carregar também
             clearInterval(poll);
-          } else if (attempts > 15) {
-            setResult(
-              "Erro: A geração da imagem demorou demais. Tente novamente.",
-            );
-            setLoading(false);
+          } else if (attempts > 30) {
+            if (!isKit) {
+              setResult(
+                "Erro: A geração da imagem demorou demais. Tente novamente.",
+              );
+              setLoading(false);
+            }
             clearInterval(poll);
           }
         }, 3000);
-      } else {
+      } else if (!isKit) {
         setResult("Erro ao iniciar geração de imagem.");
+        setLoading(false);
+      }
+
+      if (isKit) {
+        const output = await callGenerateContent(finalPrompt);
+        setResult(output);
         setLoading(false);
       }
     } else {
@@ -253,7 +300,18 @@ export default function AIHelperPage() {
               }}
               className="group text-left"
             >
-              <Card className="h-full bg-white border-slate-100 hover:border-primary/20 shadow-sm hover:shadow-2xl transition-all p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] relative overflow-hidden">
+              <Card
+                className={cn(
+                  "h-full bg-white border-slate-100 hover:border-primary/30 shadow-md hover:shadow-2xl transition-all p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] relative overflow-hidden border-b-4",
+                  tool.color.replace("bg-", "border-b-").split(" ")[1],
+                )}
+              >
+                <div
+                  className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br opacity-[0.03] group-hover:opacity-[0.08] transition-opacity"
+                  style={{
+                    backgroundImage: `linear-gradient(to bottom right, currentColor, transparent)`,
+                  }}
+                ></div>
                 <div
                   className={cn(
                     "w-16 h-16 rounded-2xl flex items-center justify-center mb-8 transition-transform group-hover:scale-110 duration-300",
@@ -595,11 +653,7 @@ export default function AIHelperPage() {
                       activeTool.gradient,
                     )}
                   >
-                    {loading ? (
-                      <Loader2 className="animate-spin" />
-                    ) : (
-                      "Gerar com Inteligência"
-                    )}
+                    {loading ? <Loader2 className="animate-spin" /> : "Gerar"}
                   </Button>
                 )}
               </div>
@@ -612,15 +666,17 @@ export default function AIHelperPage() {
                 Resultado da Geração
               </h3>
               {result && (
-                <button
-                  onClick={() => window.print()}
-                  className="text-[10px] font-black text-primary uppercase tracking-widest flex items-center gap-2 hover:bg-primary/5 px-4 py-2 rounded-lg transition-all"
-                >
-                  <Printer size={14} /> Imprimir
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setShowCustomizer(true)}
+                    className="text-[10px] font-black text-primary uppercase tracking-widest flex items-center gap-2 hover:bg-primary/5 px-4 py-2 rounded-lg transition-all"
+                  >
+                    <Printer size={14} /> Customizar e Imprimir
+                  </button>
+                </div>
               )}
             </div>
-            <Card className="flex-1 min-h-[500px] md:min-h-[600px] bg-slate-900 shadow-2xl shadow-slate-900/20 p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] relative overflow-hidden group">
+            <Card className="flex-1 min-h-[500px] md:min-h-[600px] bg-[#020617] shadow-2xl shadow-slate-900/20 p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] relative overflow-hidden group">
               {/* Decorative elements */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 blur-[100px] rounded-full -mr-32 -mt-32"></div>
               <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full -ml-32 -mb-32"></div>
@@ -628,71 +684,139 @@ export default function AIHelperPage() {
               <div className="relative h-full overflow-y-auto custom-scrollbar pr-4 text-slate-300">
                 {loading ? (
                   <div className="h-full flex flex-col items-center justify-center gap-6">
-                    <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center">
-                      <Loader2
-                        className="animate-spin text-primary"
-                        size={32}
+                    <div className="relative">
+                      <div className="w-16 h-16 border-4 border-primary/10 border-t-primary rounded-full animate-spin"></div>
+                      <Sparkles
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primary animate-pulse"
+                        size={24}
                       />
                     </div>
                     <div className="text-center space-y-2">
                       <p className="text-sm font-black text-white uppercase tracking-[0.2em]">
-                        Consultando o Oráculo
+                        Gerando com Inteligência
                       </p>
-                      <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">
-                        Isso pode levar alguns segundos...
+                      <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">
+                        Aguarde a finalização do processo...
                       </p>
                     </div>
                   </div>
-                ) : imageUrl ? (
-                  <div className="space-y-8 animate-in fade-in zoom-in duration-700">
-                    <Image
-                      src={imageUrl}
-                      alt="IA Generated"
-                      width={800}
-                      height={800}
-                      unoptimized
-                      className="w-full rounded-[2rem] shadow-2xl border-4 border-white/10"
-                    />
-                    <div className="flex gap-4">
-                      <Button className="flex-1 h-14 bg-white text-slate-900 hover:bg-slate-100 font-black uppercase tracking-widest gap-2">
-                        <Download size={18} /> Baixar Atividade
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => window.print()}
-                        className="flex-1 h-14 border-white/10 text-white hover:bg-white/5 font-black uppercase tracking-widest gap-2"
-                      >
-                        <Printer size={18} /> Imprimir
-                      </Button>
-                    </div>
-                  </div>
-                ) : result ? (
-                  <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                    <div className="flex gap-3 mb-8">
-                      <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-primary">
-                        <Zap size={20} />
+                ) : result || imageUrl ? (
+                  <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-1000">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-secondary shadow-lg">
+                        <Zap size={24} />
                       </div>
                       <div>
-                        <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">
-                          Conteúdo Gerado
+                        <p className="text-[10px] font-black text-white/40 uppercase tracking-widest leading-none mb-1">
+                          Resultado Final
                         </p>
-                        <p className="text-xs font-bold text-white uppercase italic">
-                          Análise concluída com sucesso
+                        <p className="text-sm font-bold text-white uppercase italic">
+                          Documento processado com sucesso
                         </p>
                       </div>
                     </div>
-                    <div className="prose prose-invert max-w-none prose-p:text-slate-100 prose-p:leading-relaxed prose-headings:text-white prose-headings:font-black prose-strong:text-primary prose-code:text-primary prose-code:bg-primary/10 prose-code:px-1 prose-code:rounded prose-ul:list-disc prose-li:mb-2">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {result}
-                      </ReactMarkdown>
+
+                    <div className="space-y-8">
+                      {imageUrl && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="relative w-full aspect-video rounded-[2.5rem] overflow-hidden border-4 border-white/5 shadow-2xl group"
+                        >
+                          <Image
+                            src={imageUrl}
+                            alt="IA Generated"
+                            fill
+                            unoptimized
+                            className="object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-8">
+                            <p className="text-white text-xs font-bold uppercase tracking-widest">
+                              Sugerido para: {inputData.tema || "Seu projeto"}
+                            </p>
+                          </div>
+                        </motion.div>
+                      )}
+
+                      {result && (
+                        <div className="prose prose-invert max-w-none prose-p:text-slate-300 prose-p:leading-relaxed prose-headings:text-white prose-headings:font-black prose-strong:text-secondary prose-code:text-secondary prose-code:bg-secondary/10 prose-code:px-1 prose-code:rounded prose-ul:border-l prose-ul:border-white/5 prose-ul:pl-6 prose-li:mb-2 text-slate-300">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {result}
+                          </ReactMarkdown>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* HIDDEN PRINT AREA */}
+                    <div className="hidden print:block print-area">
+                      <div
+                        className="print-border"
+                        style={{ borderColor: config.primaryColor + "20" }}
+                      ></div>
+                      {config.showHeader && (
+                        <div
+                          className="print-header"
+                          style={{ borderBottomColor: config.primaryColor }}
+                        >
+                          <div className="flex items-center gap-4">
+                            <div
+                              className="print-logo text-white p-2 rounded-xl flex items-center justify-center font-black"
+                              style={{ backgroundColor: config.primaryColor }}
+                            >
+                              PB
+                            </div>
+                            <div className="print-title">
+                              <h1 style={{ color: config.primaryColor }}>
+                                {clubName || "Portal dos Desbravadores"}
+                              </h1>
+                              <p>
+                                Ministério {ministry || "Jovem"} •{" "}
+                                {activeTool.title}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {imageUrl && config.showImage && (
+                        <img
+                          src={imageUrl}
+                          alt="Ilustração"
+                          className="print-image"
+                        />
+                      )}
+
+                      <div className="print-content">
+                        <style>{`
+                          .print-content h2 { border-left-color: ${config.primaryColor} !important; }
+                        `}</style>
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {result}
+                        </ReactMarkdown>
+                      </div>
+
+                      {config.showFooter && (
+                        <div className="print-footer">
+                          Este documento foi gerado via Inteligência Artificial
+                          no Portal dos Desbravadores. Ministério{" "}
+                          {ministry || "Jovem"}.
+                        </div>
+                      )}
                     </div>
                   </div>
                 ) : (
                   <div className="h-full flex flex-col items-center justify-center text-center gap-6">
-                    <Bot size={64} className="mb-6 text-slate-700" />
-                    <p className="text-xs font-black text-slate-500 uppercase tracking-[0.3em] max-w-[200px] leading-relaxed">
-                      Aguardando informações para processar...
-                    </p>
+                    <div className="w-24 h-24 bg-white/5 rounded-[2.5rem] flex items-center justify-center text-slate-700 shadow-inner">
+                      <Bot size={56} />
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-xs font-black text-slate-600 uppercase tracking-[0.3em] leading-relaxed">
+                        Sistema em Espera
+                      </p>
+                      <p className="text-[10px] text-slate-700 font-bold uppercase tracking-widest">
+                        Selecione uma ferramenta para começar
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
@@ -700,6 +824,149 @@ export default function AIHelperPage() {
           </div>
         </div>
       )}
+      {/* Customizer Modal */}
+      <Modal
+        isOpen={showCustomizer}
+        onClose={() => setShowCustomizer(false)}
+        title="Customizar Documento"
+      >
+        <div className="space-y-8">
+          <p className="font-medium text-slate-500 text-sm">
+            Escolha as cores e o que deseja incluir no seu documento antes de
+            baixar.
+          </p>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Cor Principal
+              </label>
+              <div className="flex flex-wrap gap-3">
+                {["#b91c1c", "#1e40af", "#166534", "#ea580c", "#6b21a8"].map(
+                  (color) => (
+                    <button
+                      key={color}
+                      onClick={() =>
+                        setConfig({ ...config, primaryColor: color })
+                      }
+                      className={cn(
+                        "w-10 h-10 rounded-full border-2 transition-all",
+                        config.primaryColor === color
+                          ? "border-slate-900 scale-110 shadow-lg"
+                          : "border-transparent",
+                      )}
+                      style={{ backgroundColor: color }}
+                    />
+                  ),
+                )}
+                <div className="relative w-10 h-10 rounded-full border-2 border-slate-100 overflow-hidden">
+                  <input
+                    type="color"
+                    value={config.primaryColor}
+                    onChange={(e) =>
+                      setConfig({ ...config, primaryColor: e.target.value })
+                    }
+                    className="absolute inset-[-50%] w-[200%] h-[200%] cursor-pointer"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-6 pt-4 border-t border-slate-50">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <p className="text-sm font-bold text-slate-900">
+                    Incluir Imagem/Ilustração
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    Mostrar a imagem gerada pela IA.
+                  </p>
+                </div>
+                <button
+                  onClick={() =>
+                    setConfig({ ...config, showImage: !config.showImage })
+                  }
+                  className={cn(
+                    "w-12 h-6 rounded-full transition-colors relative",
+                    config.showImage ? "bg-primary" : "bg-slate-200",
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "w-4 h-4 bg-white rounded-full absolute top-1 transition-all",
+                      config.showImage ? "right-1" : "left-1",
+                    )}
+                  />
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <p className="text-sm font-bold text-slate-900">
+                    Mostrar Cabeçalho
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    Exibir logo e título do clube.
+                  </p>
+                </div>
+                <button
+                  onClick={() =>
+                    setConfig({ ...config, showHeader: !config.showHeader })
+                  }
+                  className={cn(
+                    "w-12 h-6 rounded-full transition-colors relative",
+                    config.showHeader ? "bg-primary" : "bg-slate-200",
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "w-4 h-4 bg-white rounded-full absolute top-1 transition-all",
+                      config.showHeader ? "right-1" : "left-1",
+                    )}
+                  />
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <p className="text-sm font-bold text-slate-900">
+                    Mostrar Rodapé
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    Exibir informações legais e ministério.
+                  </p>
+                </div>
+                <button
+                  onClick={() =>
+                    setConfig({ ...config, showFooter: !config.showFooter })
+                  }
+                  className={cn(
+                    "w-12 h-6 rounded-full transition-colors relative",
+                    config.showFooter ? "bg-primary" : "bg-slate-200",
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "w-4 h-4 bg-white rounded-full absolute top-1 transition-all",
+                      config.showFooter ? "right-1" : "left-1",
+                    )}
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <Button
+            className="w-full h-14 font-black uppercase tracking-widest shadow-xl shadow-primary/20"
+            onClick={() => {
+              setShowCustomizer(false);
+              setTimeout(() => window.print(), 300);
+            }}
+          >
+            Confirmar e Baixar PDF
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }

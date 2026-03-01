@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       "https://cloud.leonardo.ai/api/rest/v1/generations",
       {
         prompt: `Educational activity for children, Pathfinders club (Adventist), ${prompt}, clean illustration, no text, no words, no letters, simple line art, coloring book style`,
-        modelId: "6bef9f1b-29cb-40c7-b9df-cfb050bd5105",
+        modelId: "de7d3faf-762f-48e0-b3b7-9d0ac3a3fcf3", // Leonardo Phoenix 1.0
         width: 1024,
         height: 768,
       },
@@ -30,9 +30,12 @@ export async function POST(request: NextRequest) {
     );
 
     const generationId = response.data.sdGenerationJob.generationId;
+    console.log("Geração iniciada:", generationId);
     return NextResponse.json({ generationId });
-  } catch (error) {
-    console.error("Erro no Leonardo AI:", error);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    const data = (error as { response?: { data?: unknown } }).response?.data;
+    console.error("Erro no Leonardo AI:", data || message);
     return NextResponse.json(
       { error: "Erro ao iniciar geração de imagem." },
       { status: 500 },

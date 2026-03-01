@@ -9,7 +9,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 export function Card({
   children,
   className,
-  variant = "glass",
+  variant = "solid",
   hover = true,
   ...props
 }: CardProps) {
@@ -19,9 +19,9 @@ export function Card({
         "rounded-2xl p-6 transition-all duration-300",
         variant === "glass"
           ? "glass-card"
-          : "bg-navy-800 border border-white/5",
+          : "bg-white border border-slate-100 shadow-sm",
         hover &&
-          "hover:translate-y-[-2px] hover:shadow-2xl hover:shadow-primary/5",
+          "hover:translate-y-[-2px] hover:shadow-xl hover:shadow-slate-200/50",
         className,
       )}
       {...props}

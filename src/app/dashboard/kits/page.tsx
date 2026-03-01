@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -13,9 +15,12 @@ import {
   X,
   Sparkles,
   Zap,
+  FileText,
+  Printer,
 } from "lucide-react";
+import { Modal } from "@/components/ui/Modal";
 import { motion, AnimatePresence } from "framer-motion";
-import { db } from "@/lib/firebase";
+import { db, auth } from "@/lib/firebase";
 import {
   collection,
   onSnapshot,
@@ -24,7 +29,9 @@ import {
   doc,
   query,
   orderBy,
+  getDoc,
 } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 interface Kit {
   id: string;
@@ -33,19 +40,35 @@ interface Kit {
   status: string;
   items: number;
   alert?: boolean;
+  imageUrl?: string;
+  description?: string;
 }
 
 export default function KitsPage() {
   const [kits, setKits] = useState<Kit[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [generatedContent, setGeneratedContent] = useState<string | null>(null);
+
+  // User profile
+  const [clubName, setClubName] = useState("");
+  const [ministry, setMinistry] = useState("");
 
   // Form State
   const [name, setName] = useState("");
   const [category, setCategory] = useState("Logística");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+
+  // Customization State
+  const [showCustomizer, setShowCustomizer] = useState(false);
+  const [config, setConfig] = useState({
+    primaryColor: "#dc2626", // Default Red
+    showImage: true,
+    showHeader: true,
+    showFooter: true,
+  });
 
   useEffect(() => {
     const q = query(collection(db, "kits"), orderBy("name", "asc"));
@@ -57,24 +80,121 @@ export default function KitsPage() {
       setKits(list);
       setLoading(false);
     });
-    return () => unsubscribe();
+
+    // Load user profile
+    const authUnsub = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (snap.exists()) {
+          const data = snap.data();
+          setClubName(data.clubName || "");
+          setMinistry(
+            data.ministry === "aventureiro" ? "Aventureiros" : "Desbravadores",
+          );
+        }
+      }
+    });
+
+    return () => {
+      unsubscribe();
+      authUnsub();
+    };
   }, []);
+
+  const callGenerateImage = async (prompt: string) => {
+    const res = await fetch("/api/ai/image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt }),
+    });
+    const data = await res.json();
+    return data.generationId || null;
+  };
+
+  const callGetGeneratedImage = async (id: string) => {
+    const res = await fetch(`/api/ai/image-status?id=${id}`);
+    const data = await res.json();
+    return data.imageUrl || null;
+  };
 
   const handleGenerateAI = async () => {
     if (!name) return;
     setIsGenerating(true);
     setGeneratedContent(null);
+    setImageUrl(null);
+
     try {
+      // 1. Iniciar Geração de Imagem em paralelo
+      const imagePrompt = `Clean illustration of ${name} for Pathfinders, coloring book style, simple lines`;
+      callGenerateImage(imagePrompt).then((genId) => {
+        if (genId) {
+          let attempts = 0;
+          const poll = setInterval(async () => {
+            attempts++;
+            const url = await callGetGeneratedImage(genId);
+            if (url) {
+              setImageUrl(url);
+              clearInterval(poll);
+            } else if (attempts > 30) {
+              clearInterval(poll);
+            }
+          }, 3000);
+        }
+      });
+
+      // 2. Gerar Conteúdo de Texto
       const response = await fetch("/api/ai/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          prompt: `Crie um kit completo para Desbravadores sobre o tema: ${name}. Liste os itens necessários e uma breve explicação pedagógica.`,
+          prompt: `Crie um kit completo para Desbravadores sobre o tema: ${name}. 
+          Regras:
+          1. Comece com um título chamativo.
+          2. Liste os itens necessários usando marcadores (-).
+          3. Dê uma explicação pedagógica curta.
+          4. Adicione frases de incentivo.`,
         }),
       });
       const data = await response.json();
       if (data.result) {
         setGeneratedContent(data.result);
+
+        // Intelligent Category Detection
+        const content = data.result.toLowerCase();
+        if (
+          content.includes("nós") ||
+          content.includes("amarras") ||
+          content.includes("pioneiria")
+        ) {
+          setCategory("Pioneiria");
+        } else if (
+          content.includes("primeiros socorros") ||
+          content.includes("saúde") ||
+          content.includes("higiene")
+        ) {
+          setCategory("Saúde");
+        } else if (
+          content.includes("bíblia") ||
+          content.includes("espiritual") ||
+          content.includes("versículo")
+        ) {
+          setCategory("Espiritual");
+        } else if (
+          content.includes("natureza") ||
+          content.includes("animais") ||
+          content.includes("plantas") ||
+          content.includes("astronomia")
+        ) {
+          setCategory("Natureza");
+        } else if (
+          content.includes("acampamento") ||
+          content.includes("fogo") ||
+          content.includes("cozinha")
+        ) {
+          setCategory("Atividades ao Ar Livre");
+        } else {
+          setCategory("Geral");
+        }
       }
     } catch (error) {
       console.error(error);
@@ -84,20 +204,300 @@ export default function KitsPage() {
     }
   };
 
+  const handleSavePDF = () => {
+    const contentLines = generatedContent
+      ? generatedContent
+          .split("\n")
+          .map((line) => {
+            const trimmed = line.trim();
+            if (trimmed.startsWith("## ") || trimmed.startsWith("### ")) {
+              const text = trimmed.replace(/^#+\s*/, "");
+              return `<h2>${text}</h2>`;
+            }
+            if (trimmed.startsWith("# ")) {
+              const text = trimmed.replace(/^#\s*/, "");
+              return `<h1 class="main-title">${text}</h1>`;
+            }
+            if (trimmed.startsWith("-") || trimmed.startsWith("*")) {
+              const text = trimmed.replace(/^[-*]\s*/, "");
+              // Bold text: **word** → <strong>word</strong>
+              const formatted = text
+                .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+                .replace(/_(.+?)_/g, "<em><u>$1</u></em>");
+              return `<li>${formatted}</li>`;
+            }
+            if (trimmed === "") return "<br/>";
+            // Normal paragraph
+            const formatted = trimmed
+              .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+              .replace(/_(.+?)_/g, "<u>$1</u>");
+            return `<p>${formatted}</p>`;
+          })
+          .join("")
+      : "<p>Sem conteúdo gerado.</p>";
+
+    const imageHtml = imageUrl
+      ? `<div style="text-align:center;margin:2rem 0;">
+          <img src="${imageUrl}" alt="Ilustração do Kit" 
+            style="max-width:100%;border-radius:1.5rem;border:2px solid #f1f5f9;box-shadow:0 4px 20px rgba(0,0,0,0.1);" />
+        </div>`
+      : "";
+
+    const html = `
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+      <head>
+        <meta charset="UTF-8"/>
+        <title>Kit de Atividades — ${name || "Desbravadores"}</title>
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+
+          body {
+            font-family: 'Inter', sans-serif;
+            background: white;
+            color: #1e293b;
+            padding: 2.5cm 2.5cm 3cm;
+            max-width: 900px;
+            margin: 0 auto;
+          }
+
+          /* ── BORDER DECORATION ── */
+          body::before {
+            content: '';
+            position: fixed;
+            top: 12px; left: 12px; right: 12px; bottom: 12px;
+            border: 3px solid ${config.primaryColor}20;
+            border-radius: 12px;
+            pointer-events: none;
+            z-index: -1;
+          }
+
+          /* ── HEADER ── */
+          .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 3px solid #dc2626;
+            padding-bottom: 1.25rem;
+            margin-bottom: 2rem;
+          }
+          .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+          }
+          .logo-badge {
+            width: 56px; height: 56px;
+            background: #dc2626;
+            border-radius: 14px;
+            color: white;
+            font-size: 20px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: -1px;
+          }
+          .logo-text h1 {
+            font-size: 20px;
+            font-weight: 900;
+            color: #dc2626;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+          }
+          .logo-text p {
+            font-size: 10px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+          }
+          .header-right {
+            text-align: right;
+          }
+          .header-right .kit-name {
+            font-size: 22px;
+            font-weight: 900;
+            color: #0f172a;
+            text-transform: uppercase;
+          }
+          .header-right .kit-type {
+            font-size: 10px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+          }
+
+          /* ── CONTENT ── */
+          .content { line-height: 1.9; }
+          .content .main-title {
+            font-size: 22px;
+            font-weight: 900;
+            color: #0f172a;
+            margin-bottom: 1.5rem;
+            text-decoration: underline;
+            text-decoration-color: #dc2626;
+            text-underline-offset: 6px;
+          }
+          .content h2 {
+            font-size: 15px;
+            font-weight: 900;
+            color: #dc2626;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 2.2rem 0 0.9rem;
+            padding-left: 14px;
+            border-left: 4px solid #dc2626;
+          }
+          .content p {
+            font-size: 13px;
+            color: #334155;
+            margin-bottom: 0.9rem;
+            text-align: justify;
+          }
+          .content li {
+            font-size: 13px;
+            color: #334155;
+            margin-bottom: 0.5rem;
+            padding-left: 1.6rem;
+            position: relative;
+            line-height: 1.7;
+          }
+          .content li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #dc2626;
+            font-size: 12px;
+            top: 2px;
+          }
+          .content strong { color: #0f172a; }
+          .content u { text-decoration-color: #dc2626; text-decoration-thickness: 1.5px; }
+
+          /* ── FOOTER ── */
+          .footer {
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+          .footer p {
+            font-size: 9px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+          }
+
+          /* ── DECORATIVE BADGE ── */
+          .badge {
+            display: inline-block;
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1.5px solid #fca5a5;
+            border-radius: 999px;
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 4px 12px;
+            margin-bottom: 1.5rem;
+          }
+
+          @media print {
+            body::before { display: block; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            body { padding: 1.8cm 2cm 2.5cm; }
+          }
+        </style>
+      </head>
+      <body>
+        ${
+          config.showHeader
+            ? `
+        <div class="header" style="border-bottom-color: ${config.primaryColor}">
+          <div class="logo">
+            <div class="logo-badge" style="background-color: ${config.primaryColor}">PB</div>
+            <div class="logo-text">
+              <h1 style="color: ${config.primaryColor}">${clubName || "Clube de Desbravadores"}</h1>
+              <p>Ministério ${ministry || "Desbravadores"}</p>
+            </div>
+          </div>
+          <div class="header-right">
+            <div class="kit-name">${name || "Kit de Atividades"}</div>
+            <div class="kit-type">Material Pedagógico</div>
+          </div>
+        </div>
+        `
+            : ""
+        }
+
+        ${config.showImage ? imageHtml : ""}
+
+        <div class="content">
+          <style>
+            .content h2 { border-left-color: ${config.primaryColor} !important; color: ${config.primaryColor} !important; }
+            .content .main-title { text-decoration-color: ${config.primaryColor} !important; }
+            .content li::before { color: ${config.primaryColor} !important; }
+            .content u { text-decoration-color: ${config.primaryColor} !important; }
+          </style>
+          ${contentLines}
+        </div>
+
+        ${
+          config.showFooter
+            ? `
+        <div class="footer">
+          <p>${clubName || "Clube de Desbravadores"} — ${new Date().getFullYear()}</p>
+          <p>Ministério ${ministry || "Desbravadores"}</p>
+        </div>
+        `
+            : ""
+        }
+
+        <script>
+          window.onload = function() { window.print(); }
+        </script>
+      </body>
+      </html>
+    `;
+
+    const win = window.open("", "_blank", "width=900,height=700");
+    if (win) {
+      win.document.write(html);
+      win.document.close();
+    }
+  };
+
   const handleCreateKit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    // Calcular número de itens baseado em linhas que começam com "-" ou números
+    const itemLines = generatedContent
+      ? generatedContent
+          .split("\n")
+          .filter((line) => /^[-*•\d+]/.test(line.trim()))
+      : [];
+    const itemCount = itemLines.length || 5; // Fallback se não detectar nada
+
     try {
       await addDoc(collection(db, "kits"), {
         name,
         category,
         status: "Completo",
-        items: 0,
+        items: itemCount,
+        description: generatedContent,
+        imageUrl: imageUrl,
         createdAt: new Date().toISOString(),
       });
       setShowModal(false);
       setName("");
       setGeneratedContent(null);
+      setImageUrl(null);
     } catch (error) {
       console.error(error);
     } finally {
@@ -191,7 +591,7 @@ export default function KitsPage() {
               {isGenerating ? (
                 <Loader2 className="animate-spin mr-2" />
               ) : (
-                "Gerar com Inteligência"
+                "Gerar"
               )}
             </Button>
           </div>
@@ -240,33 +640,117 @@ export default function KitsPage() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="w-full h-full text-left"
+                className="w-full h-full text-left overflow-y-auto custom-scrollbar pr-2"
               >
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between mb-8 sticky top-0 bg-slate-50/95 backdrop-blur-sm z-10 py-2">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center text-white">
+                    <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-green-500/20">
                       <Zap size={20} />
                     </div>
-                    <p className="text-[10px] font-black text-green-600 uppercase tracking-widest">
-                      Análise concluída com sucesso
-                    </p>
+                    <div>
+                      <p className="text-[10px] font-black text-green-600 uppercase tracking-widest leading-none mb-1">
+                        IA Concluída
+                      </p>
+                      <p className="text-[9px] font-bold text-slate-400 uppercase">
+                        Conteúdo e Ilustração
+                      </p>
+                    </div>
                   </div>
-                  <Button
-                    onClick={handleCreateKit}
-                    className="h-10 px-6 font-black uppercase tracking-widest text-[10px]"
-                  >
-                    Salvar Kit
-                  </Button>
-                </div>
-                <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-xl prose prose-slate max-w-none prose-sm">
-                  {generatedContent?.split("\n").map((line, i) => (
-                    <p
-                      key={i}
-                      className="mb-2 last:mb-0 font-medium text-slate-600"
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setShowCustomizer(true)}
+                      className="h-10 px-4 bg-white border border-slate-200 text-slate-600 rounded-xl font-black uppercase tracking-widest text-[9px] flex items-center gap-2 hover:bg-slate-50 transition-all"
                     >
-                      {line}
-                    </p>
-                  ))}
+                      <Printer size={14} /> Customizar e Imprimir
+                    </button>
+                    <Button
+                      onClick={handleCreateKit}
+                      disabled={isSubmitting}
+                      className="h-10 px-6 font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20"
+                    >
+                      {isSubmitting ? (
+                        <Loader2 size={14} className="animate-spin" />
+                      ) : (
+                        "Salvar Kit"
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  {imageUrl && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="relative w-full aspect-video rounded-3xl overflow-hidden border-4 border-white shadow-2xl"
+                    >
+                      <Image
+                        src={imageUrl}
+                        alt="Preview do Kit"
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    </motion.div>
+                  )}
+
+                  <div className="bg-white rounded-[2rem] p-8 md:p-10 border border-slate-100 shadow-xl relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-[5rem] pointer-events-none transition-transform group-hover:scale-110"></div>
+                    <div className="relative space-y-4">
+                      {generatedContent?.split("\n").map((line, i) => (
+                        <p
+                          key={i}
+                          className={cn(
+                            "font-medium text-slate-600 leading-relaxed",
+                            line.trim().startsWith("#")
+                              ? "text-xl font-black text-slate-900 mt-6"
+                              : line.trim().startsWith("-")
+                                ? "pl-4 border-l-2 border-primary/20"
+                                : "",
+                          )}
+                        >
+                          {line.replace(/^#+\s*/, "").replace(/^-+\s*/, "• ")}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* HIDDEN PRINT AREA */}
+                <div className="hidden print:block print-area">
+                  <div className="print-border"></div>
+                  <div className="print-header">
+                    <div className="flex items-center gap-4">
+                      <div className="print-logo bg-primary text-white p-2 rounded-xl flex items-center justify-center font-black">
+                        PB
+                      </div>
+                      <div className="print-title">
+                        <h1>Kit de Atividades</h1>
+                        <p>Portal dos Desbravadores • 2026</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {imageUrl && (
+                    <img
+                      src={imageUrl}
+                      alt="Ilustração"
+                      className="print-image"
+                    />
+                  )}
+
+                  <div className="print-content">
+                    {generatedContent?.split("\n").map((line, i) => {
+                      if (line.trim().startsWith("#"))
+                        return <h2 key={i}>{line.replace(/^#+\s*/, "")}</h2>;
+                      return <p key={i}>{line.replace(/^-+\s*/, "• ")}</p>;
+                    })}
+                  </div>
+
+                  <div className="print-footer">
+                    Documento gerado por Inteligência Artificial para fins
+                    pedagógicos. © Clube de Desbravadores - Ministério Jovem.
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -362,6 +846,150 @@ export default function KitsPage() {
         </div>
       )}
 
+      {/* Customizer Modal */}
+      <Modal
+        isOpen={showCustomizer}
+        onClose={() => setShowCustomizer(false)}
+        title="Customizar Documento"
+      >
+        <div className="space-y-8">
+          <p className="font-medium text-slate-500 text-sm">
+            Escolha as cores e o que deseja incluir no seu documento antes de
+            baixar.
+          </p>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Cor Principal
+              </label>
+              <div className="flex flex-wrap gap-3">
+                {["#dc2626", "#1e40af", "#166534", "#ea580c", "#6b21a8"].map(
+                  (color) => (
+                    <button
+                      key={color}
+                      onClick={() =>
+                        setConfig({ ...config, primaryColor: color })
+                      }
+                      className={cn(
+                        "w-10 h-10 rounded-full border-2 transition-all",
+                        config.primaryColor === color
+                          ? "border-slate-900 scale-110 shadow-lg"
+                          : "border-transparent",
+                      )}
+                      style={{ backgroundColor: color }}
+                    />
+                  ),
+                )}
+                <div className="relative w-10 h-10 rounded-full border-2 border-slate-100 overflow-hidden">
+                  <input
+                    type="color"
+                    value={config.primaryColor}
+                    onChange={(e) =>
+                      setConfig({ ...config, primaryColor: e.target.value })
+                    }
+                    className="absolute inset-[-50%] w-[200%] h-[200%] cursor-pointer"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-6 pt-4 border-t border-slate-50">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <p className="text-sm font-bold text-slate-900">
+                    Incluir Imagem/Ilustração
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    Mostrar a imagem gerada pela IA.
+                  </p>
+                </div>
+                <button
+                  onClick={() =>
+                    setConfig({ ...config, showImage: !config.showImage })
+                  }
+                  className={cn(
+                    "w-12 h-6 rounded-full transition-colors relative",
+                    config.showImage ? "bg-primary" : "bg-slate-200",
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "w-4 h-4 bg-white rounded-full absolute top-1 transition-all",
+                      config.showImage ? "right-1" : "left-1",
+                    )}
+                  />
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <p className="text-sm font-bold text-slate-900">
+                    Mostrar Cabeçalho
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    Exibir logo e título do clube.
+                  </p>
+                </div>
+                <button
+                  onClick={() =>
+                    setConfig({ ...config, showHeader: !config.showHeader })
+                  }
+                  className={cn(
+                    "w-12 h-6 rounded-full transition-colors relative",
+                    config.showHeader ? "bg-primary" : "bg-slate-200",
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "w-4 h-4 bg-white rounded-full absolute top-1 transition-all",
+                      config.showHeader ? "right-1" : "left-1",
+                    )}
+                  />
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <p className="text-sm font-bold text-slate-900">
+                    Mostrar Rodapé
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    Exibir informações legais e ministério.
+                  </p>
+                </div>
+                <button
+                  onClick={() =>
+                    setConfig({ ...config, showFooter: !config.showFooter })
+                  }
+                  className={cn(
+                    "w-12 h-6 rounded-full transition-colors relative",
+                    config.showFooter ? "bg-primary" : "bg-slate-200",
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "w-4 h-4 bg-white rounded-full absolute top-1 transition-all",
+                      config.showFooter ? "right-1" : "left-1",
+                    )}
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <Button
+            className="w-full h-14 font-black uppercase tracking-widest shadow-xl shadow-primary/20"
+            onClick={() => {
+              setShowCustomizer(false);
+              setTimeout(() => handleSavePDF(), 300);
+            }}
+          >
+            Confirmar e Baixar PDF
+          </Button>
+        </div>
+      </Modal>
+
       {/* Modal Novo Kit */}
       <AnimatePresence>
         {showModal && (
@@ -420,6 +1048,13 @@ export default function KitsPage() {
                     <option value="Instrução">Instrução</option>
                     <option value="Segurança">Segurança</option>
                     <option value="Cozinha">Cozinha</option>
+                    <option value="Pioneiria">Pioneiria</option>
+                    <option value="Saúde">Saúde</option>
+                    <option value="Espiritual">Espiritual</option>
+                    <option value="Natureza">Natureza</option>
+                    <option value="Atividades ao Ar Livre">
+                      Atividades ao Ar Livre
+                    </option>
                   </select>
                 </div>
                 <Button
@@ -430,7 +1065,7 @@ export default function KitsPage() {
                   {isSubmitting ? (
                     <Loader2 className="animate-spin" />
                   ) : (
-                    "Criar Kit"
+                    "Criar Kit Manualmente"
                   )}
                 </Button>
               </form>

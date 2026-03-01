@@ -256,7 +256,10 @@ export default function DashboardPage() {
         {stats.map((stat, i) => (
           <Card
             key={i}
-            className="bg-white border-slate-100 shadow-sm hover:shadow-md transition-all p-6 flex items-center justify-between group"
+            className={cn(
+              "bg-white border-l-4 shadow-xl shadow-slate-200/50 p-6 flex items-center justify-between group",
+              stat.color.replace("text-", "border-l-"),
+            )}
           >
             <div className="space-y-1">
               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
@@ -290,7 +293,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {mainTools.map((tool, i) => (
             <Link key={i} href={tool.href}>
-              <Card className="bg-white border-slate-100 hover:border-primary/20 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all p-5 md:p-6 group cursor-pointer flex items-center justify-between min-h-[100px]">
+              <Card className="bg-white border-slate-100 hover:border-primary/30 shadow-md hover:shadow-2xl hover:shadow-primary/10 transition-all p-5 md:p-6 group cursor-pointer flex items-center justify-between min-h-[100px] border-b-2">
                 <div className="flex items-center gap-4 md:gap-5">
                   <div
                     className={cn(
@@ -322,7 +325,7 @@ export default function DashboardPage() {
       {/* Timeline & Premium Promo */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
         <div className="lg:col-span-2">
-          <Card className="bg-white border-slate-100 shadow-sm p-6 md:p-8">
+          <Card className="bg-white border-slate-100 shadow-xl shadow-slate-200/50 p-6 md:p-8 border-t-4 border-t-primary">
             <div className="flex items-center justify-between mb-6 md:mb-8 border-b border-slate-50 pb-4">
               <div>
                 <h3 className="text-base md:text-lg font-black text-slate-900 uppercase tracking-tight">
@@ -400,8 +403,8 @@ export default function DashboardPage() {
             <div className="absolute top-1/2 right-[-20px] w-48 h-48 border-[20px] border-white/5 rounded-full -translate-y-1/2"></div>
             <div className="relative z-10 flex flex-col h-full justify-between">
               <div>
-                <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-6">
-                  <Sparkles size={24} className="text-secondary" />
+                <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-6">
+                  <Sparkles size={24} className="text-[#FDB022]" />
                 </div>
                 <h3 className="text-xl font-black mb-2 uppercase tracking-tight">
                   IA <span className="text-secondary">Premium</span>

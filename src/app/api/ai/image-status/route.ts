@@ -27,12 +27,16 @@ export async function GET(request: NextRequest) {
 
     const images = response.data.generations_by_pk?.generated_images;
     if (images && images.length > 0) {
+      console.log("Imagem gerada com sucesso:", images[0].url);
       return NextResponse.json({ imageUrl: images[0].url });
     }
-
+    console.log("Imagem ainda não disponível para ID:", generationId);
     return NextResponse.json({ imageUrl: null });
-  } catch (error) {
-    console.error("Erro ao buscar imagem:", error);
+  } catch (error: any) {
+    console.error(
+      "Erro ao buscar imagem:",
+      error.response?.data || error.message,
+    );
     return NextResponse.json({ imageUrl: null });
   }
 }

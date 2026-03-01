@@ -227,7 +227,7 @@ export default function SpecialtiesPage() {
                       "w-6 h-6",
                       mainSpecializations.find(
                         (c) => c.category === spec.category,
-                      )?.color || "text-slate-400",
+                      )?.color || "text-slate-600",
                     )}
                   />
                 </div>

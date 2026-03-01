@@ -209,31 +209,33 @@ export default function ClassesPage() {
                 cls.bg,
               )}
             >
-              <div className="flex items-center gap-5">
-                <div
-                  className={cn(
-                    "w-16 h-16 rounded-2xl flex items-center justify-center shadow-inner",
-                    cls.bg,
-                  )}
-                >
-                  <cls.icon className={cn("w-8 h-8", cls.color)} />
+              <div className="flex items-center justify-between w-full gap-4">
+                <div className="flex items-center gap-4 min-w-0">
+                  <div
+                    className={cn(
+                      "w-12 h-12 rounded-xl flex items-center justify-center shadow-sm shrink-0",
+                      cls.bg,
+                    )}
+                  >
+                    <cls.icon className={cn("w-6 h-6", cls.color)} />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-lg font-black text-slate-900 leading-none mb-1 truncate">
+                      {cls.name}
+                    </h3>
+                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest truncate">
+                      {cls.age}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-2xl font-black text-slate-900 leading-none mb-1">
-                    {cls.name}
-                  </h3>
-                  <p className="text-[10px] text-slate-700 font-black uppercase tracking-widest">
-                    Público: {cls.age}
+                <div className="text-right shrink-0">
+                  <p className="text-3xl font-black text-slate-900 leading-none">
+                    {stats[cls.id] || 0}
+                  </p>
+                  <p className="text-[8px] text-slate-400 font-black uppercase tracking-widest">
+                    Membros
                   </p>
                 </div>
-              </div>
-              <div className="text-right">
-                <p className="text-4xl font-black text-slate-900">
-                  {stats[cls.id] || 0}
-                </p>
-                <p className="text-[10px] text-slate-600 font-black uppercase tracking-widest">
-                  Membros
-                </p>
               </div>
             </div>
             <div className="p-8 space-y-6">
