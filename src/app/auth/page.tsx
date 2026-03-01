@@ -23,6 +23,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -33,6 +34,9 @@ export default function AuthPage() {
   const [rememberMe, setRememberMe] = useState(true);
   const [name, setName] = useState("");
   const [clubName, setClubName] = useState("");
+  const [ministry, setMinistry] = useState<"desbravador" | "aventureiro">(
+    "desbravador",
+  );
   const [error, setError] = useState("");
   const [showReset, setShowReset] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
@@ -83,6 +87,8 @@ export default function AuthPage() {
           email,
           role: "diretor",
           clubName,
+          ministry,
+          plan: ministry === "aventureiro" ? "bom_aventureiro" : "desbravador",
           createdAt: new Date().toISOString(),
         });
         router.push("/dashboard");
@@ -291,6 +297,39 @@ export default function AuthPage() {
                             "rgba(255,255,255,0.05)";
                         }}
                       />
+                    </div>
+                  </div>
+
+                  {/* Ministry Selection */}
+                  <div>
+                    <label className="text-[10px] font-black text-white/30 uppercase tracking-widest block mb-2">
+                      Ministério Principal
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setMinistry("aventureiro")}
+                        className={cn(
+                          "h-12 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
+                          ministry === "aventureiro"
+                            ? "bg-orange-600 border-orange-600 text-white"
+                            : "bg-white/5 border-white/10 text-white/40 hover:bg-white/10",
+                        )}
+                      >
+                        Aventureiro
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setMinistry("desbravador")}
+                        className={cn(
+                          "h-12 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
+                          ministry === "desbravador"
+                            ? "bg-blue-600 border-blue-600 text-white"
+                            : "bg-white/5 border-white/10 text-white/40 hover:bg-white/10",
+                        )}
+                      >
+                        Desbravador
+                      </button>
                     </div>
                   </div>
                 </motion.div>

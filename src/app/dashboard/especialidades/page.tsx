@@ -3,15 +3,7 @@
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import {
-  Award,
-  Search,
-  Filter,
-  Plus,
-  ChevronRight,
-  X,
-  Loader2,
-} from "lucide-react";
+import { Award, Search, Plus, ChevronRight, X, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { db } from "@/lib/firebase";
 import {
@@ -22,7 +14,9 @@ import {
   orderBy,
   limit,
 } from "firebase/firestore";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { SPECIALTIES_CATALOG } from "@/lib/specialties-catalog";
+import { cn } from "@/lib/utils";
 
 const mainSpecializations = [
   {
@@ -116,6 +110,20 @@ export default function SpecialtiesPage() {
     };
   }, []);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const filteredCatalog = useMemo(() => {
+    return SPECIALTIES_CATALOG.filter((item) => {
+      const matchesSearch = item.title
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const matchesCategory =
+        !selectedCategory || item.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [searchTerm, selectedCategory]);
+
   const handleAddSpecialty = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newSpecTitle) return;
@@ -129,6 +137,7 @@ export default function SpecialtiesPage() {
       });
       setShowAddModal(false);
       setNewSpecTitle("");
+      // Add a small success state here if possible
     } catch (error) {
       console.error(error);
     } finally {
@@ -157,20 +166,106 @@ export default function SpecialtiesPage() {
         </div>
       </div>
 
-      <div className="flex gap-4">
-        <div className="flex-1">
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex-1 relative">
           <Input
-            placeholder="Buscar especialidade..."
+            placeholder="Buscar especialidade pelo nome..."
             icon={<Search size={18} />}
-            className="bg-white border-amber-50 h-14 rounded-2xl"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="bg-white border-slate-100 h-14 rounded-2xl shadow-sm focus:ring-primary/10"
           />
         </div>
-        <Button
-          variant="outline"
-          className="gap-2 h-14 px-6 rounded-2xl border-amber-100 text-slate-600 font-bold"
-        >
-          <Filter size={18} /> Filtros
-        </Button>
+        <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 scroll-hide">
+          <Button
+            variant={selectedCategory === null ? "primary" : "outline"}
+            onClick={() => setSelectedCategory(null)}
+            className="h-14 px-6 rounded-2xl whitespace-nowrap font-bold"
+          >
+            Todas
+          </Button>
+          {mainSpecializations.map((cat) => (
+            <Button
+              key={cat.category}
+              variant={
+                selectedCategory === cat.category ? "primary" : "outline"
+              }
+              onClick={() => setSelectedCategory(cat.category)}
+              className={cn(
+                "h-14 px-6 rounded-2xl whitespace-nowrap font-bold transition-all",
+                selectedCategory === cat.category
+                  ? ""
+                  : "border-slate-100 text-slate-500 hover:text-primary",
+              )}
+            >
+              {cat.title}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {filteredCatalog.slice(0, 20).map((spec, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05 }}
+          >
+            <Card className="p-5 h-full border-slate-100 group hover:border-primary/20 transition-all cursor-pointer">
+              <div className="flex items-center gap-4">
+                <div
+                  className={cn(
+                    "p-3 rounded-xl",
+                    mainSpecializations.find(
+                      (c) => c.category === spec.category,
+                    )?.bg || "bg-slate-100",
+                  )}
+                >
+                  <Award
+                    className={cn(
+                      "w-6 h-6",
+                      mainSpecializations.find(
+                        (c) => c.category === spec.category,
+                      )?.color || "text-slate-400",
+                    )}
+                  />
+                </div>
+                <div>
+                  <h4 className="font-black text-slate-900 leading-tight group-hover:text-primary transition-colors italic uppercase text-sm">
+                    {spec.title}
+                  </h4>
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
+                    {mainSpecializations.find(
+                      (c) => c.category === spec.category,
+                    )?.title || spec.category}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        ))}
+        {filteredCatalog.length > 20 && (
+          <div className="col-span-full py-8 text-center">
+            <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">
+              E mais {filteredCatalog.length - 20} especialidades disponíveis no
+              catálogo
+            </p>
+            <Button
+              variant="outline"
+              className="rounded-2xl border-slate-100 font-black uppercase tracking-widest text-xs h-12 px-10"
+            >
+              Ver Catálogo Completo (205)
+            </Button>
+          </div>
+        )}
+      </div>
+
+      <div className="pt-12 border-t border-slate-100">
+        <h2 className="text-2xl font-black text-slate-900 mb-6 uppercase tracking-tight italic">
+          Resumo de{" "}
+          <span className="text-primary italic">Conquistas do Clube</span>
+        </h2>
       </div>
 
       {loading ? (

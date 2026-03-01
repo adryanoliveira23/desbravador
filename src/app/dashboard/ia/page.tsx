@@ -17,8 +17,12 @@ import {
   Printer,
   X,
   Download,
+  Upload,
+  Paperclip,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
 
 async function callGenerateContent(prompt: string): Promise<string> {
@@ -134,6 +138,13 @@ export default function AIHelperPage() {
     { role: "user" | "ai"; text: string }[]
   >([]);
   const [chatInput, setChatInput] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
 
   const handleChat = async () => {
     if (!chatInput.trim() || loading) return;
@@ -411,18 +422,78 @@ export default function AIHelperPage() {
                 )}
 
                 {activeTool.id === "reports" && (
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                      Seu relatório ou texto
-                    </label>
-                    <textarea
-                      className="w-full min-h-[150px] bg-slate-50 border border-slate-100 rounded-3xl p-6 text-sm font-bold outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all resize-none"
-                      value={inputData.texto || ""}
-                      onChange={(e) =>
-                        setInputData({ ...inputData, texto: e.target.value })
-                      }
-                      placeholder="Cole aqui o texto que deseja melhorar..."
-                    />
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                        Seu relatório ou texto
+                      </label>
+                      <textarea
+                        className="w-full min-h-[150px] bg-slate-50 border border-slate-100 rounded-3xl p-6 text-sm font-bold outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all resize-none placeholder:text-slate-300"
+                        value={inputData.texto || ""}
+                        onChange={(e) =>
+                          setInputData({ ...inputData, texto: e.target.value })
+                        }
+                        placeholder="Cole aqui o texto que deseja melhorar..."
+                      />
+                    </div>
+
+                    <div className="relative">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">
+                        Upload de Documento (Opcional)
+                      </label>
+                      <div
+                        className={cn(
+                          "border-2 border-dashed rounded-[2rem] p-8 text-center transition-all cursor-pointer hover:bg-slate-50",
+                          selectedFile
+                            ? "border-primary bg-primary/5"
+                            : "border-slate-100",
+                        )}
+                        onClick={() =>
+                          document.getElementById("file-upload")?.click()
+                        }
+                      >
+                        <input
+                          id="file-upload"
+                          type="file"
+                          className="hidden"
+                          accept="image/*,.pdf,.doc,.docx"
+                          onChange={handleFileChange}
+                        />
+                        {selectedFile ? (
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="p-3 bg-primary text-white rounded-full">
+                              <Paperclip size={20} />
+                            </div>
+                            <p className="text-xs font-black text-slate-900 uppercase truncate max-w-full">
+                              {selectedFile.name}
+                            </p>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedFile(null);
+                              }}
+                              className="text-[10px] text-primary font-black uppercase tracking-widest hover:underline"
+                            >
+                              Remover
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center gap-3">
+                            <div className="p-4 bg-slate-100 rounded-2xl text-slate-400 group-hover:bg-primary group-hover:text-white transition-all">
+                              <Upload size={24} />
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-sm font-black text-slate-900 uppercase">
+                                Clique para enviar
+                              </p>
+                              <p className="text-[10px] text-slate-400 font-bold">
+                                JPG, PNG ou PDF até 10MB
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 )}
 
@@ -610,10 +681,10 @@ export default function AIHelperPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="prose prose-invert max-w-none">
-                      <p className="text-lg leading-relaxed font-medium text-slate-100 whitespace-pre-wrap">
+                    <div className="prose prose-invert max-w-none prose-p:text-slate-100 prose-p:leading-relaxed prose-headings:text-white prose-headings:font-black prose-strong:text-primary prose-code:text-primary prose-code:bg-primary/10 prose-code:px-1 prose-code:rounded prose-ul:list-disc prose-li:mb-2">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
                         {result}
-                      </p>
+                      </ReactMarkdown>
                     </div>
                   </div>
                 ) : (

@@ -119,7 +119,9 @@ export default function DashboardLayout({
               <h2 className="text-base md:text-xl font-bold text-slate-800 tracking-tight">
                 Portal{" "}
                 <span className="text-primary uppercase tracking-tighter">
-                  Desbravadores
+                  {userData?.ministry === "aventureiro"
+                    ? "Aventureiros"
+                    : "Desbravadores"}
                 </span>
               </h2>
             </div>

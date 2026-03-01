@@ -80,6 +80,24 @@ export default function AdminPanel() {
   const [editMinistry, setEditMinistry] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
 
+  // Sync Ministry with Plan on Creation
+  useEffect(() => {
+    if (newPlan === "bom_aventureiro") {
+      setNewMinistry("aventureiro");
+    } else {
+      setNewMinistry("desbravador");
+    }
+  }, [newPlan]);
+
+  // Sync Ministry with Plan on Edit
+  useEffect(() => {
+    if (editPlan === "bom_aventureiro") {
+      setEditMinistry("aventureiro");
+    } else {
+      setEditMinistry("desbravador");
+    }
+  }, [editPlan]);
+
   useEffect(() => {
     if (isAuthenticated) {
       const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
@@ -398,9 +416,9 @@ export default function AdminPanel() {
               ))}
             </div>
 
-            {/* User Table */}
-            <Card className="glass-card !p-0 overflow-hidden border-white/5">
-              <div className="p-8 border-b border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4">
+            {/* User Table / Cards */}
+            <div className="space-y-4">
+              <div className="p-4 md:p-8 border-b border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4 bg-white/[0.02] rounded-t-[2rem]">
                 <h3 className="text-xl font-black text-white px-2 uppercase tracking-tight italic">
                   Monitoramento de Usuários
                 </h3>
@@ -418,131 +436,195 @@ export default function AdminPanel() {
                   />
                 </div>
               </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="border-b border-white/5 bg-white/[0.02]">
-                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-white/30">
-                        Clube / Diretor
-                      </th>
-                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-white/30">
-                        Plano / Ministério
-                      </th>
-                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-white/30">
-                        Status
-                      </th>
-                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-white/30 text-right">
-                        Ações
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="premium-table">
-                    {loading ? (
-                      <tr>
-                        <td colSpan={4} className="px-8 py-20 text-center">
-                          <Loader2
-                            className="animate-spin mx-auto text-primary"
-                            size={32}
-                          />
-                        </td>
-                      </tr>
-                    ) : filteredUsers.length === 0 ? (
-                      <tr>
-                        <td
-                          colSpan={4}
-                          className="px-8 py-20 text-center text-white/20 font-bold uppercase tracking-widest"
-                        >
-                          Nenhum registro encontrado
-                        </td>
-                      </tr>
-                    ) : (
-                      filteredUsers.map((u, i) => (
-                        <tr
-                          key={i}
-                          className="hover:bg-white/[0.01] transition-colors group border-b border-white/5 last:border-0"
-                        >
-                          <td className="px-8 py-5">
-                            <div className="font-bold text-white text-md">
-                              {u.fullName || u.clubName || "Usuário Sem Nome"}
+
+              {loading ? (
+                <div className="py-20 text-center">
+                  <Loader2
+                    className="animate-spin mx-auto text-primary"
+                    size={32}
+                  />
+                </div>
+              ) : filteredUsers.length === 0 ? (
+                <div className="py-20 text-center text-white/20 font-bold uppercase tracking-widest">
+                  Nenhum registro encontrado
+                </div>
+              ) : (
+                <>
+                  {/* Desktop Table View */}
+                  <div className="hidden lg:block overflow-hidden rounded-b-[2rem] border border-white/5 bg-white/[0.01]">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="border-b border-white/5 bg-white/[0.02]">
+                          <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-white/30">
+                            Clube / Diretor
+                          </th>
+                          <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-white/30">
+                            Plano / Ministério
+                          </th>
+                          <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-white/30">
+                            Status
+                          </th>
+                          <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-white/30 text-right">
+                            Ações
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredUsers.map((u, i) => (
+                          <tr
+                            key={i}
+                            className="hover:bg-white/[0.01] transition-colors group border-b border-white/5 last:border-0"
+                          >
+                            <td className="px-8 py-5">
+                              <div className="font-bold text-white text-md">
+                                {u.fullName || u.clubName || "Usuário Sem Nome"}
+                              </div>
+                              <div className="text-[10px] font-bold text-white/40 uppercase tracking-wider">
+                                {u.clubName
+                                  ? `${u.clubName} • ${u.email}`
+                                  : u.email}
+                              </div>
+                            </td>
+                            <td className="px-8 py-5">
+                              <div className="flex flex-col gap-1.5">
+                                <span
+                                  className={cn(
+                                    "px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border w-fit",
+                                    u.plan === "premium" ||
+                                      u.plan === "desbrava_total"
+                                      ? "bg-primary/10 border-primary/20 text-primary"
+                                      : "bg-white/5 border-white/10 text-white/40",
+                                  )}
+                                >
+                                  {u.plan === "desbrava_total"
+                                    ? "DESBRAVA TOTAL"
+                                    : u.plan?.toUpperCase() || "FREE"}
+                                </span>
+                                <span className="text-[9px] font-bold text-white/30 uppercase tracking-widest italic">
+                                  {u.ministry || "desbravador"}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-8 py-5">
+                              <button
+                                onClick={() =>
+                                  handleToggleStatus(u.id, u.status || "ativo")
+                                }
+                                className="flex items-center gap-2 group/status"
+                              >
+                                {u.status === "ativo" ? (
+                                  <CheckCircle2
+                                    size={14}
+                                    className="text-green-500"
+                                  />
+                                ) : (
+                                  <XCircle size={14} className="text-red-500" />
+                                )}
+                                <span
+                                  className={cn(
+                                    "text-[10px] font-black uppercase tracking-widest transition-all",
+                                    u.status === "ativo"
+                                      ? "text-green-500/60 group-hover/status:text-green-500"
+                                      : "text-red-500/60 group-hover/status:text-red-500",
+                                  )}
+                                >
+                                  {u.status || "ativo"}
+                                </span>
+                              </button>
+                            </td>
+                            <td className="px-8 py-5 text-right">
+                              <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button
+                                  onClick={() => handleEditClick(u)}
+                                  className="p-2 text-white/20 hover:text-white hover:bg-white/5 rounded-lg transition-all"
+                                >
+                                  <Settings size={18} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteUser(u.id)}
+                                  className="p-2 text-white/20 hover:text-red-500 hover:bg-red-500/5 rounded-lg transition-all"
+                                >
+                                  <Trash2 size={18} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mobile Card View */}
+                  <div className="lg:hidden grid grid-cols-1 gap-4">
+                    {filteredUsers.map((u, i) => (
+                      <Card
+                        key={i}
+                        className="glass-card !p-6 border-white/5 space-y-4"
+                      >
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <div className="font-bold text-white text-lg leading-tight mb-1">
+                              {u.fullName || u.clubName || "Sem Nome"}
                             </div>
                             <div className="text-[10px] font-bold text-white/40 uppercase tracking-wider">
-                              {u.clubName
-                                ? `${u.clubName} • ${u.email}`
-                                : u.email}
+                              {u.email}
                             </div>
-                          </td>
-                          <td className="px-8 py-5">
-                            <div className="flex flex-col gap-1.5">
-                              <span
-                                className={cn(
-                                  "px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border w-fit",
-                                  u.plan === "premium" ||
-                                    u.plan === "desbrava_total"
-                                    ? "bg-primary/10 border-primary/20 text-primary"
-                                    : "bg-white/5 border-white/10 text-white/40",
-                                )}
-                              >
-                                {u.plan === "desbrava_total"
-                                  ? "DESBRAVA TOTAL"
-                                  : u.plan?.toUpperCase() || "FREE"}
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleEditClick(u)}
+                              className="p-2 bg-white/5 rounded-lg text-white/40"
+                            >
+                              <Settings size={16} />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteUser(u.id)}
+                              className="p-2 bg-red-500/10 rounded-lg text-red-500"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
+                          <div className="space-y-1">
+                            <p className="text-[8px] font-black text-white/20 uppercase tracking-widest">
+                              Plano/Min.
+                            </p>
+                            <div className="flex flex-col gap-1">
+                              <span className="text-[10px] font-black text-primary uppercase">
+                                {u.plan || "FREE"}
                               </span>
-                              <span className="text-[9px] font-bold text-white/30 uppercase tracking-widest italic">
+                              <span className="text-[9px] font-bold text-white/40 uppercase italic">
                                 {u.ministry || "desbravador"}
                               </span>
                             </div>
-                          </td>
-                          <td className="px-8 py-5">
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-[8px] font-black text-white/20 uppercase tracking-widest">
+                              Status
+                            </p>
                             <button
                               onClick={() =>
                                 handleToggleStatus(u.id, u.status || "ativo")
                               }
-                              className="flex items-center gap-2 group/status"
-                            >
-                              {u.status === "ativo" ? (
-                                <CheckCircle2
-                                  size={14}
-                                  className="text-green-500"
-                                />
-                              ) : (
-                                <XCircle size={14} className="text-red-500" />
+                              className={cn(
+                                "text-[10px] font-black uppercase px-2 py-1 rounded-md border",
+                                u.status === "ativo"
+                                  ? "bg-green-500/10 border-green-500/20 text-green-500"
+                                  : "bg-red-500/10 border-red-500/20 text-red-500",
                               )}
-                              <span
-                                className={cn(
-                                  "text-[10px] font-black uppercase tracking-widest transition-all",
-                                  u.status === "ativo"
-                                    ? "text-green-500/60 group-hover/status:text-green-500"
-                                    : "text-red-500/60 group-hover/status:text-red-500",
-                                )}
-                              >
-                                {u.status || "ativo"}
-                              </span>
+                            >
+                              {u.status || "ativo"}
                             </button>
-                          </td>
-                          <td className="px-8 py-5 text-right">
-                            <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <button
-                                onClick={() => handleEditClick(u)}
-                                className="p-2 text-white/20 hover:text-white hover:bg-white/5 rounded-lg transition-all"
-                                title="Editar Usuário"
-                              >
-                                <Settings size={18} />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteUser(u.id)}
-                                className="p-2 text-white/20 hover:text-red-500 hover:bg-red-500/5 rounded-lg transition-all"
-                                title="Excluir"
-                              >
-                                <Trash2 size={18} />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </Card>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
