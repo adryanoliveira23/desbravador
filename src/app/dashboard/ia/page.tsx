@@ -779,9 +779,12 @@ export default function AIHelperPage() {
                       )}
 
                       {imageUrl && config.showImage && (
-                        <img
+                        <Image
                           src={imageUrl}
                           alt="Ilustração"
+                          width={800}
+                          height={600}
+                          unoptimized
                           className="print-image"
                         />
                       )}

@@ -15,7 +15,6 @@ import {
   X,
   Sparkles,
   Zap,
-  FileText,
   Printer,
 } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
@@ -732,9 +731,12 @@ export default function KitsPage() {
                   </div>
 
                   {imageUrl && (
-                    <img
+                    <Image
                       src={imageUrl}
                       alt="Ilustração"
+                      width={800}
+                      height={600}
+                      unoptimized
                       className="print-image"
                     />
                   )}

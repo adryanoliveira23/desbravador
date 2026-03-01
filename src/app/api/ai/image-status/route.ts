@@ -32,11 +32,15 @@ export async function GET(request: NextRequest) {
     }
     console.log("Imagem ainda não disponível para ID:", generationId);
     return NextResponse.json({ imageUrl: null });
-  } catch (error: any) {
-    console.error(
-      "Erro ao buscar imagem:",
-      error.response?.data || error.message,
-    );
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error(
+        "Erro ao buscar imagem:",
+        error.response?.data || error.message,
+      );
+    } else {
+      console.error("Erro desconhecido ao buscar imagem:", error);
+    }
     return NextResponse.json({ imageUrl: null });
   }
 }
