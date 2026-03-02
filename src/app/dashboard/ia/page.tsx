@@ -87,16 +87,7 @@ const aiTools = [
     prompt:
       "Descreva detalhadamente uma atividade visual de [TIPO] sobre o tema [TEMA] para ser gerada como imagem (colorir, labirinto, etc).",
   },
-  {
-    id: "certs",
-    title: "Certificados Express",
-    desc: "Gere textos ideais e personalizados para certificados e honras.",
-    icon: Printer,
-    color: "bg-green-50 text-green-600",
-    gradient: "from-green-600 to-emerald-600",
-    prompt:
-      "Escreva um texto formal e inspirador para um certificado de conclusão da especialidade [TEMA] para o desbravador [NOME], citando a importância desta conquista.",
-  },
+
   {
     id: "reports",
     title: "Corretor de Relatórios",
@@ -438,37 +429,6 @@ export default function AIHelperPage() {
                       </label>
                       <Input
                         placeholder="Ex: Animais da Bíblia, Acampamento..."
-                        value={inputData.tema || ""}
-                        onChange={(e) =>
-                          setInputData({ ...inputData, tema: e.target.value })
-                        }
-                        className="h-14"
-                      />
-                    </div>
-                  </>
-                )}
-
-                {activeTool.id === "certs" && (
-                  <>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                        Nome do Desbravador
-                      </label>
-                      <Input
-                        placeholder="Ex: Lucas Silva"
-                        value={inputData.nome || ""}
-                        onChange={(e) =>
-                          setInputData({ ...inputData, nome: e.target.value })
-                        }
-                        className="h-14"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                        Especialidade/Honra
-                      </label>
-                      <Input
-                        placeholder="Ex: Astronomia"
                         value={inputData.tema || ""}
                         onChange={(e) =>
                           setInputData({ ...inputData, tema: e.target.value })
