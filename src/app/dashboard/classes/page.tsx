@@ -3,7 +3,15 @@
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Zap, Shield, BookOpen, Loader2, X, ChevronRight } from "lucide-react";
+import {
+  Zap,
+  Shield,
+  BookOpen,
+  Loader2,
+  X,
+  ChevronRight,
+  Trash2,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { db } from "@/lib/firebase";
@@ -13,7 +21,12 @@ import {
   where,
   onSnapshot,
   addDoc,
+  deleteDoc,
+  doc,
+  getDoc,
 } from "firebase/firestore";
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import { Input } from "@/components/ui/Input";
 
 interface Member {
@@ -93,6 +106,26 @@ export default function ClassesPage() {
   const [newUserEmail, setNewUserEmail] = useState("");
   const [newUserClass, setNewUserClass] = useState("amigo");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentUserClub, setCurrentUserClub] = useState("Clube Central");
+  const [manageUnsubscribe, setManageUnsubscribe] = useState<
+    (() => void) | null
+  >(null);
+
+  useEffect(() => {
+    const unsubAuth = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const uDoc = await getDoc(doc(db, "users", user.uid));
+        if (uDoc.exists()) {
+          setCurrentUserClub(uDoc.data().clubName || "Clube Central");
+        }
+      }
+    });
+
+    return () => {
+      unsubAuth();
+      if (manageUnsubscribe) manageUnsubscribe();
+    };
+  }, [manageUnsubscribe]);
 
   useEffect(() => {
     const q = query(
@@ -125,38 +158,56 @@ export default function ClassesPage() {
         activeClass: newUserClass,
         role: "desbravador",
         createdAt: new Date().toISOString(),
-        clubName: "Clube Central", // Placeholder or fetch from context
+        clubName: currentUserClub,
       });
       setShowEnrollModal(false);
       setNewUserName("");
       setNewUserEmail("");
+      alert("Inscrição realizada com sucesso!");
     } catch (error) {
       console.error(error);
+      alert("Erro ao realizar inscrição.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleManageClass = (cls: (typeof classes)[0]) => {
+    if (manageUnsubscribe) manageUnsubscribe();
+
     setSelectedClassForManage(cls);
     setShowManageModal(true);
-    // Fetch members for this specific class
+
     const mq = query(
       collection(db, "users"),
       where("activeClass", "==", cls.id),
       where("role", "==", "desbravador"),
     );
-    onSnapshot(mq, (snapshot) => {
+
+    const unsub = onSnapshot(mq, (snapshot) => {
       const members = snapshot.docs.map((doc) => ({
         ...(doc.data() as Member),
         id: doc.id,
       }));
       setClassMembers(members);
     });
-    // This unsubscribe needs to be handled when the modal closes or component unmounts
-    // For simplicity, we'll let it run until the component unmounts or a new class is selected.
-    // In a real app, you might want to return this unsubscribe and call it on modal close.
-    // return unsubscribe;
+
+    setManageUnsubscribe(() => unsub);
+  };
+
+  const handleRemoveMember = async (id: string) => {
+    if (
+      confirm(
+        "Tem certeza que deseja remover este membro da classe? Isso não excluirá a conta dele.",
+      )
+    ) {
+      try {
+        await deleteDoc(doc(db, "users", id));
+      } catch (error) {
+        console.error("Erro ao remover membro:", error);
+        alert("Erro ao remover membro. Verifique suas permissões.");
+      }
+    }
   };
 
   if (loading) {
@@ -184,6 +235,11 @@ export default function ClassesPage() {
         <div className="flex gap-3">
           <Button
             variant="outline"
+            onClick={() =>
+              alert(
+                "Funcionalidade em desenvolvimento: Catálogo de Requisitos Oficial DSA",
+              )
+            }
             className="gap-2 h-14 px-6 border-amber-100 text-slate-600 font-bold rounded-2xl"
           >
             <BookOpen size={18} /> Requisitos
@@ -241,9 +297,13 @@ export default function ClassesPage() {
             <div className="p-8 space-y-6">
               <div>
                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest mb-3">
-                  <span className="text-slate-600">Progresso Médio</span>
+                  <span className="text-slate-600">Meta de Inscrição</span>
                   <span className="text-primary">
-                    {stats[cls.id] ? "5%" : "0%"}
+                    {Math.min(
+                      100,
+                      Math.round(((stats[cls.id] || 0) / 20) * 100),
+                    )}
+                    %
                   </span>
                 </div>
                 <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
@@ -252,13 +312,20 @@ export default function ClassesPage() {
                       "h-full rounded-full transition-all duration-1000",
                       cls.color.replace("text-", "bg-"),
                     )}
-                    style={{ width: stats[cls.id] ? "12%" : "0%" }}
+                    style={{
+                      width: `${Math.min(100, Math.round(((stats[cls.id] || 0) / 20) * 100))}%`,
+                    }}
                   ></div>
                 </div>
               </div>
               <div className="flex gap-3 pt-2">
                 <Button
                   variant="ghost"
+                  onClick={() =>
+                    alert(
+                      "Funcionalidade em desenvolvimento: Gráficos de Rendimento por Classe",
+                    )
+                  }
                   className="w-full text-[10px] font-black uppercase h-11 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl"
                 >
                   Relatórios
@@ -421,13 +488,28 @@ export default function ClassesPage() {
                           </p>
                         </div>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-[10px] font-black text-slate-400 group-hover:text-primary uppercase tracking-widest"
-                      >
-                        Ver Cartão <ChevronRight size={14} />
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveMember(member.id)}
+                          className="text-[10px] font-black text-red-400 hover:text-red-600 uppercase tracking-widest"
+                        >
+                          <Trash2 size={14} />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            alert(
+                              "Funcionalidade em desenvolvimento: Cartão de Requisitos Digital",
+                            )
+                          }
+                          className="text-[10px] font-black text-slate-400 group-hover:text-primary uppercase tracking-widest"
+                        >
+                          Ver Cartão <ChevronRight size={14} />
+                        </Button>
+                      </div>
                     </div>
                   ))
                 )}

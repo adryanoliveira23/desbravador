@@ -26,21 +26,24 @@ export async function GET(request: NextRequest) {
     );
 
     const images = response.data.generations_by_pk?.generated_images;
-    if (images && images.length > 0) {
+    if (images && images.length > 0 && images[0].url) {
       console.log("Imagem gerada com sucesso:", images[0].url);
       return NextResponse.json({ imageUrl: images[0].url });
     }
-    console.log("Imagem ainda não disponível para ID:", generationId);
-    return NextResponse.json({ imageUrl: null });
+
+    // Check if it's still pending
+    const status = response.data.generations_by_pk?.status;
+    console.log(`Status da geração ${generationId}: ${status}`);
+
+    return NextResponse.json({ imageUrl: null, status });
   } catch (error: unknown) {
+    let message = "Erro desconhecido";
     if (axios.isAxiosError(error)) {
-      console.error(
-        "Erro ao buscar imagem:",
-        error.response?.data || error.message,
-      );
-    } else {
-      console.error("Erro desconhecido ao buscar imagem:", error);
+      message = error.response?.data?.message || error.message;
+    } else if (error instanceof Error) {
+      message = error.message;
     }
-    return NextResponse.json({ imageUrl: null });
+    console.error("Erro ao buscar imagem:", message);
+    return NextResponse.json({ imageUrl: null, error: message });
   }
 }

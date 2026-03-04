@@ -3,17 +3,29 @@
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Award, Search, Plus, ChevronRight, X, Loader2 } from "lucide-react";
+import {
+  Award,
+  Search,
+  Plus,
+  ChevronRight,
+  X,
+  Loader2,
+  Trash2,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { db } from "@/lib/firebase";
 import {
   collection,
   query,
   onSnapshot,
   addDoc,
+  doc,
+  deleteDoc,
   orderBy,
   limit,
+  getDoc,
 } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth, db } from "@/lib/firebase";
 import { useState, useEffect, useMemo } from "react";
 import { SPECIALTIES_CATALOG } from "@/lib/specialties-catalog";
 import { cn } from "@/lib/utils";
@@ -76,8 +88,28 @@ export default function SpecialtiesPage() {
   const [newSpecCategory, setNewSpecCategory] = useState("artes");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [recentConclusions, setRecentConclusions] = useState<Conclusion[]>([]);
+  const [currentUserName, setCurrentUserName] = useState("");
+  const [currentUserId, setCurrentUserId] = useState("");
 
   useEffect(() => {
+    // Auth Listener
+    const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setCurrentUserId(user.uid);
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          setCurrentUserName(
+            userDoc.data().fullName ||
+              userDoc.data().name ||
+              user.displayName ||
+              "Usuário",
+          );
+        } else {
+          setCurrentUserName(user.displayName || "Usuário");
+        }
+      }
+    });
+
     // 1. Optimized listener for category counts
     const qCount = query(collection(db, "specialties_concluded"));
     const unsubscribeCounts = onSnapshot(qCount, (snapshot) => {
@@ -107,6 +139,7 @@ export default function SpecialtiesPage() {
     return () => {
       unsubscribeCounts();
       unsubscribeRecent();
+      unsubscribeAuth();
     };
   }, []);
 
@@ -126,22 +159,35 @@ export default function SpecialtiesPage() {
 
   const handleAddSpecialty = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newSpecTitle) return;
+    if (!newSpecTitle || !currentUserId) return;
     setIsSubmitting(true);
     try {
       await addDoc(collection(db, "specialties_concluded"), {
         title: newSpecTitle,
         category: newSpecCategory,
         concludedAt: new Date().toISOString(),
-        userId: "demo-user", // In a real app, get from Auth context
+        userId: currentUserId,
+        displayName: currentUserName,
       });
       setShowAddModal(false);
       setNewSpecTitle("");
-      // Add a small success state here if possible
+      alert("Especialidade registrada com sucesso!");
     } catch (error) {
       console.error(error);
+      alert("Erro ao registrar especialidade.");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteSpecialty = async (id: string) => {
+    if (!confirm("Deseja realmente excluir este registro?")) return;
+    try {
+      await deleteDoc(doc(db, "specialties_concluded", id));
+      alert("Registro excluído com sucesso!");
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao excluir registro.");
     }
   };
   return (
@@ -314,10 +360,19 @@ export default function SpecialtiesPage() {
                     .map((c) => (
                       <div
                         key={c.id}
-                        className="w-10 h-10 rounded-full border-4 border-white bg-primary flex items-center justify-center text-[10px] text-white font-black overflow-hidden shadow-sm uppercase"
-                        title={c.title}
+                        className="w-10 h-10 rounded-full border-4 border-white bg-primary flex items-center justify-center text-[10px] text-white font-black overflow-hidden shadow-sm uppercase group/avatar relative"
+                        title={`${c.displayName || "Usuário"}: ${c.title}`}
                       >
-                        {c.title.charAt(0)}
+                        {c.displayName?.charAt(0) || c.title.charAt(0)}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteSpecialty(c.id);
+                          }}
+                          className="absolute inset-0 bg-red-600/90 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity"
+                        >
+                          <Trash2 size={14} />
+                        </button>
                       </div>
                     ))}
                   {(counts[spec.category] || 0) > 0 &&

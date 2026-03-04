@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
         modelId: "de7d3faf-762f-48e0-b3b7-9d0ac3a3fcf3", // Leonardo Phoenix 1.0
         width: 1024,
         height: 768,
+        num_images: 1,
       },
       {
         headers: {
@@ -29,15 +30,24 @@ export async function POST(request: NextRequest) {
       },
     );
 
+    if (!response.data?.sdGenerationJob?.generationId) {
+      console.error("Resposta inesperada do Leonardo AI:", response.data);
+      throw new Error("Falha ao obter ID de geração");
+    }
+
     const generationId = response.data.sdGenerationJob.generationId;
     console.log("Geração iniciada:", generationId);
     return NextResponse.json({ generationId });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : String(error);
-    const data = (error as { response?: { data?: unknown } }).response?.data;
-    console.error("Erro no Leonardo AI:", data || message);
+    let message = "Erro desconhecido";
+    if (axios.isAxiosError(error)) {
+      message = error.response?.data?.message || error.message;
+      console.error("Erro no Leonardo AI:", error.response?.data);
+    } else if (error instanceof Error) {
+      message = error.message;
+    }
     return NextResponse.json(
-      { error: "Erro ao iniciar geração de imagem." },
+      { error: "Erro ao iniciar geração de imagem.", details: message },
       { status: 500 },
     );
   }

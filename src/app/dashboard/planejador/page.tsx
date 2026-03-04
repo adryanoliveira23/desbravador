@@ -39,7 +39,7 @@ interface PlannerEvent {
   items: string[];
 }
 
-import { generateContent } from "@/lib/ai";
+// import { generateContent } from "@/lib/ai"; // Removed to avoid client-side API key usage
 
 export default function PlannerPage() {
   const [events, setEvents] = useState<PlannerEvent[]>([]);
@@ -65,8 +65,15 @@ export default function PlannerPage() {
     setIsSuggesting(true);
     try {
       const prompt = `Sugira um título criativo e curto para um evento de Desbravadores/Aventureiros no mês de ${monthNames[currentMonth]}. Retorne APENAS o título (máximo 4 palavras).`;
-      const suggestion = await generateContent(prompt);
-      setTitle(suggestion.replace(/"/g, ""));
+      const response = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      });
+      const data = await response.json();
+      if (data.result) {
+        setTitle(data.result.replace(/"/g, ""));
+      }
     } catch (error) {
       console.error("Erro na sugestão IA:", error);
     } finally {
@@ -92,14 +99,21 @@ export default function PlannerPage() {
   useEffect(() => {
     // Buscar todos os eventos do clube (podemos filtrar por ano no futuro se crescer muito)
     const q = query(collection(db, "meetings"), orderBy("date", "asc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const list = snapshot.docs.map((d) => ({
-        id: d.id,
-        ...(d.data() as Omit<PlannerEvent, "id">),
-      }));
-      setEvents(list);
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const list = snapshot.docs.map((d) => ({
+          id: d.id,
+          ...(d.data() as Omit<PlannerEvent, "id">),
+        }));
+        setEvents(list);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Erro ao carregar eventos:", error);
+        setLoading(false);
+      },
+    );
     return () => unsubscribe();
   }, []);
 
