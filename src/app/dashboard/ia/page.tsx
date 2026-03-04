@@ -21,6 +21,7 @@ import {
   Printer,
   Upload,
   Paperclip,
+  Download,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
@@ -920,13 +921,13 @@ export default function AIHelperPage() {
           </div>
 
           <Button
-            className="w-full h-14 font-black uppercase tracking-widest shadow-xl shadow-primary/20"
+            className="w-full h-14 font-black uppercase tracking-widest shadow-xl shadow-primary/20 gap-2"
             onClick={() => {
               setShowCustomizer(false);
               setTimeout(() => window.print(), 300);
             }}
           >
-            Confirmar e Baixar PDF
+            <Download size={20} /> Baixar em PDF
           </Button>
         </div>
       </Modal>

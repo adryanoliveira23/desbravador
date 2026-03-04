@@ -7,12 +7,15 @@ import {
   Award,
   Search,
   Plus,
+  Download,
   ChevronRight,
   X,
   Loader2,
   Trash2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import {
   collection,
   query,
@@ -90,6 +93,8 @@ export default function SpecialtiesPage() {
   const [recentConclusions, setRecentConclusions] = useState<Conclusion[]>([]);
   const [currentUserName, setCurrentUserName] = useState("");
   const [currentUserId, setCurrentUserId] = useState("");
+  const [clubName, setClubName] = useState("");
+  const [ministry, setMinistry] = useState("");
 
   useEffect(() => {
     // Auth Listener
@@ -98,11 +103,15 @@ export default function SpecialtiesPage() {
         setCurrentUserId(user.uid);
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
+          const userData = userDoc.data();
           setCurrentUserName(
-            userDoc.data().fullName ||
-              userDoc.data().name ||
-              user.displayName ||
-              "Usuário",
+            userData.fullName || userData.name || user.displayName || "Usuário",
+          );
+          setClubName(userData.clubName || "");
+          setMinistry(
+            userData.ministry === "aventureiro"
+              ? "Aventureiros"
+              : "Desbravadores",
           );
         } else {
           setCurrentUserName(user.displayName || "Usuário");
@@ -609,18 +618,46 @@ export default function SpecialtiesPage() {
                       </div>
                       <Button
                         onClick={() => window.print()}
-                        variant="outline"
-                        className="border-white/10 hover:bg-white/5 text-slate-300 h-10 rounded-xl text-[10px] font-black uppercase tracking-widest gap-2"
+                        className="bg-primary hover:bg-primary/90 text-white h-12 px-6 rounded-xl text-xs font-black uppercase tracking-widest gap-2 shadow-lg shadow-primary/20"
                       >
-                        <Plus size={14} /> Imprimir / PDF
+                        <Download size={16} /> Baixar Prova (PDF)
                       </Button>
                     </div>
 
-                    <div className="prose prose-invert max-w-none prose-p:text-slate-400 prose-p:leading-relaxed prose-headings:text-white prose-headings:font-black prose-strong:text-primary prose-code:text-primary prose-code:bg-primary/5 prose-code:px-1 prose-code:rounded relative z-10">
-                      {/* Using pre-wrap for simplicity since no library like ReactMarkdown is imported here yet, 
-                          but in real scenario we'd use it or wrap in a better layout */}
-                      <div className="whitespace-pre-wrap font-medium">
+                    <div className="prose prose-invert max-w-none prose-p:text-slate-400 prose-p:leading-relaxed prose-headings:text-white prose-headings:font-black prose-strong:text-primary prose-code:text-primary prose-code:bg-primary/5 prose-code:px-1 prose-code:rounded relative z-10 no-print">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
                         {aiResult}
+                      </ReactMarkdown>
+                    </div>
+
+                    {/* HIDDEN PRINT AREA */}
+                    <div className="hidden print:block print-area">
+                      <div className="print-border"></div>
+                      <div className="print-header">
+                        <div className="flex items-center gap-4">
+                          <div className="print-logo bg-primary text-white p-2 rounded-xl flex items-center justify-center font-black">
+                            PB
+                          </div>
+                          <div className="print-title">
+                            <h1>{clubName || "Portal dos Desbravadores"}</h1>
+                            <p>
+                              Ministério {ministry || "Jovem"} •{" "}
+                              {selectedSpec.title}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="print-content">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {aiResult}
+                        </ReactMarkdown>
+                      </div>
+
+                      <div className="print-footer">
+                        Este documento foi gerado via Inteligência Artificial no
+                        Portal dos Desbravadores. Ministério{" "}
+                        {ministry || "Jovem"}.
                       </div>
                     </div>
                   </motion.div>

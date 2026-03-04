@@ -30,9 +30,14 @@ export async function POST(request: NextRequest) {
       },
     );
 
+    console.log("Status da resposta Leonardo AI:", response.status);
+
     if (!response.data?.sdGenerationJob?.generationId) {
-      console.error("Resposta inesperada do Leonardo AI:", response.data);
-      throw new Error("Falha ao obter ID de geração");
+      console.error(
+        "Estrutura de resposta inesperada:",
+        JSON.stringify(response.data, null, 2),
+      );
+      throw new Error("Falha ao obter ID de geração da resposta");
     }
 
     const generationId = response.data.sdGenerationJob.generationId;
