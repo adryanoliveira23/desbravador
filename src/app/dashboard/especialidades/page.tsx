@@ -600,7 +600,7 @@ export default function SpecialtiesPage() {
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-10 md:p-14 bg-slate-900 rounded-[2rem] text-slate-100 shadow-2xl relative overflow-hidden group"
+                    className="p-10 md:p-14 bg-slate-800 rounded-[2rem] text-slate-100 shadow-2xl relative overflow-hidden group"
                   >
                     <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] rounded-full -mr-32 -mt-32"></div>
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 blur-[100px] rounded-full -ml-32 -mb-32"></div>

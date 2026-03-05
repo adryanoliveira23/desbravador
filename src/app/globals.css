@@ -177,9 +177,11 @@
   .no-print,
   nav,
   aside,
+  header,
   button:not(.print-only),
   [role="complementary"],
-  .fixed:not(.print-border):not(.print-footer) {
+  .fixed:not(.print-border):not(.print-footer),
+  .lg\:block.h-full.shrink-0 {
     display: none !important;
   }
 

@@ -15,9 +15,8 @@ import {
   X,
   Sparkles,
   Zap,
-  Printer,
+  Download,
 } from "lucide-react";
-import { Modal } from "@/components/ui/Modal";
 import { motion, AnimatePresence } from "framer-motion";
 import { db, auth } from "@/lib/firebase";
 import {
@@ -60,14 +59,12 @@ export default function KitsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Customization State
-  const [showCustomizer, setShowCustomizer] = useState(false);
-  const [config, setConfig] = useState({
+  const config = {
     primaryColor: "#dc2626", // Default Red
     showImage: true,
     showHeader: true,
     showFooter: true,
-  });
+  };
 
   useEffect(() => {
     const q = query(collection(db, "kits"), orderBy("name", "asc"));
@@ -657,10 +654,10 @@ export default function KitsPage() {
                   </div>
                   <div className="flex gap-2">
                     <button
-                      onClick={() => setShowCustomizer(true)}
+                      onClick={() => handleSavePDF()}
                       className="h-10 px-4 bg-white border border-slate-200 text-slate-600 rounded-xl font-black uppercase tracking-widest text-[9px] flex items-center gap-2 hover:bg-slate-50 transition-all"
                     >
-                      <Printer size={14} /> Customizar e Imprimir
+                      <Download size={14} /> Baixar em PDF
                     </button>
                     <Button
                       onClick={handleCreateKit}
@@ -847,150 +844,6 @@ export default function KitsPage() {
           ))}
         </div>
       )}
-
-      {/* Customizer Modal */}
-      <Modal
-        isOpen={showCustomizer}
-        onClose={() => setShowCustomizer(false)}
-        title="Customizar Documento"
-      >
-        <div className="space-y-8">
-          <p className="font-medium text-slate-500 text-sm">
-            Escolha as cores e o que deseja incluir no seu documento antes de
-            baixar.
-          </p>
-
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                Cor Principal
-              </label>
-              <div className="flex flex-wrap gap-3">
-                {["#dc2626", "#1e40af", "#166534", "#ea580c", "#6b21a8"].map(
-                  (color) => (
-                    <button
-                      key={color}
-                      onClick={() =>
-                        setConfig({ ...config, primaryColor: color })
-                      }
-                      className={cn(
-                        "w-10 h-10 rounded-full border-2 transition-all",
-                        config.primaryColor === color
-                          ? "border-slate-900 scale-110 shadow-lg"
-                          : "border-transparent",
-                      )}
-                      style={{ backgroundColor: color }}
-                    />
-                  ),
-                )}
-                <div className="relative w-10 h-10 rounded-full border-2 border-slate-100 overflow-hidden">
-                  <input
-                    type="color"
-                    value={config.primaryColor}
-                    onChange={(e) =>
-                      setConfig({ ...config, primaryColor: e.target.value })
-                    }
-                    className="absolute inset-[-50%] w-[200%] h-[200%] cursor-pointer"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-6 pt-4 border-t border-slate-50">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <p className="text-sm font-bold text-slate-900">
-                    Incluir Imagem/Ilustração
-                  </p>
-                  <p className="text-xs text-slate-400">
-                    Mostrar a imagem gerada pela IA.
-                  </p>
-                </div>
-                <button
-                  onClick={() =>
-                    setConfig({ ...config, showImage: !config.showImage })
-                  }
-                  className={cn(
-                    "w-12 h-6 rounded-full transition-colors relative",
-                    config.showImage ? "bg-primary" : "bg-slate-200",
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "w-4 h-4 bg-white rounded-full absolute top-1 transition-all",
-                      config.showImage ? "right-1" : "left-1",
-                    )}
-                  />
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <p className="text-sm font-bold text-slate-900">
-                    Mostrar Cabeçalho
-                  </p>
-                  <p className="text-xs text-slate-400">
-                    Exibir logo e título do clube.
-                  </p>
-                </div>
-                <button
-                  onClick={() =>
-                    setConfig({ ...config, showHeader: !config.showHeader })
-                  }
-                  className={cn(
-                    "w-12 h-6 rounded-full transition-colors relative",
-                    config.showHeader ? "bg-primary" : "bg-slate-200",
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "w-4 h-4 bg-white rounded-full absolute top-1 transition-all",
-                      config.showHeader ? "right-1" : "left-1",
-                    )}
-                  />
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <p className="text-sm font-bold text-slate-900">
-                    Mostrar Rodapé
-                  </p>
-                  <p className="text-xs text-slate-400">
-                    Exibir informações legais e ministério.
-                  </p>
-                </div>
-                <button
-                  onClick={() =>
-                    setConfig({ ...config, showFooter: !config.showFooter })
-                  }
-                  className={cn(
-                    "w-12 h-6 rounded-full transition-colors relative",
-                    config.showFooter ? "bg-primary" : "bg-slate-200",
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "w-4 h-4 bg-white rounded-full absolute top-1 transition-all",
-                      config.showFooter ? "right-1" : "left-1",
-                    )}
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <Button
-            className="w-full h-14 font-black uppercase tracking-widest shadow-xl shadow-primary/20"
-            onClick={() => {
-              setShowCustomizer(false);
-              setTimeout(() => handleSavePDF(), 300);
-            }}
-          >
-            Confirmar e Baixar PDF
-          </Button>
-        </div>
-      </Modal>
 
       {/* Modal Novo Kit */}
       <AnimatePresence>
