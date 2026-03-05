@@ -21,7 +21,6 @@ import {
   Upload,
   Paperclip,
   Download,
-  Printer,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
