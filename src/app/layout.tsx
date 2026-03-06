@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Poppins, Roboto, Bebas_Neue } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({
@@ -53,6 +54,54 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className="scroll-smooth">
+      <head>
+        {/* UTMify Script */}
+        <Script
+          src="https://cdn.utmify.com.br/scripts/utms/latest.js"
+          data-utmify-prevent-xcod-sck
+          data-utmify-prevent-subids
+          strategy="afterInteractive"
+        />
+
+        {/* Pixel Script */}
+        <Script id="pixel-setup" strategy="afterInteractive">
+          {`
+            window.pixelId = "69aa40215e32f07f1fc58d60";
+            var a = document.createElement("script");
+            a.setAttribute("async", "");
+            a.setAttribute("defer", "");
+            a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+            document.head.appendChild(a);
+          `}
+        </Script>
+
+        {/* Back Redirect Script */}
+        <Script id="back-redirect" strategy="afterInteractive">
+          {`
+            const link = 'https://meubackredirect.com.br';
+
+            function setBackRedirect(url) {
+              let urlBackRedirect = url;
+              urlBackRedirect = urlBackRedirect.trim() +
+                (urlBackRedirect.indexOf('?') > 0 ? '&' : '?') +
+                document.location.search.replace('?', '').toString();
+
+              history.pushState({}, '', location.href);
+              history.pushState({}, '', location.href);
+              history.pushState({}, '', location.href);
+
+              window.addEventListener('popstate', () => {
+                console.log('onpopstate', urlBackRedirect);
+                setTimeout(() => {
+                  location.href = urlBackRedirect;
+                }, 1);
+              });
+            }
+
+            setBackRedirect(link);
+          `}
+        </Script>
+      </head>
       <body
         className={`${inter.variable} ${poppins.variable} ${roboto.variable} ${bebasNeue.variable} antialiased`}
       >
