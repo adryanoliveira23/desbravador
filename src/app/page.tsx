@@ -1780,17 +1780,19 @@ export default function LandingPage() {
                   ))}
                 </div>
 
-                <Link
+                <a
                   href={plan.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={cn(
-                    "w-full py-4 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] text-center transition-all active:scale-95 relative z-10",
+                    "block w-full py-4 rounded-2xl font-black uppercase tracking-[0.15em] text-[11px] text-center transition-all active:scale-95 relative z-10",
                     plan.popular
                       ? "bg-yellow-500 hover:bg-yellow-400 text-slate-900 shadow-xl shadow-yellow-500/20"
                       : "bg-white/10 hover:bg-white/20 text-white",
                   )}
                 >
                   Escolher Plano
-                </Link>
+                </a>
               </div>
             ))}
           </div>
